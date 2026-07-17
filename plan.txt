@@ -1,0 +1,174 @@
+This is a highly professional, aerospace-grade specification. The requirements for resumable file transfers, dynamic beacon rates, CRC32 verification, and non-blocking I2C error handling are exactly how real CubeSats and nanosatellites are programmed.
+
+Since you are building the Ground Station (GS) in C++ and the Dashboard in Flutter, we will use a Packet-Based State Machine architecture for the Arduino OBC.
+
+Here is the complete project plan, mapping your requirements to the system architecture, followed by the core Arduino C++ code structures to make it work.
+
+🏗️ Phase 1: The Protocol & Architecture Plan
+To handle resumable images and dynamic beacons without freezing the Arduino, everything must be non-blocking.
+
+1. The Communication Protocol
+Instead of sending raw text, the OBC and GS will communicate using strict binary packets.
+
+Packet Structure: [Sync Bytes] [Packet Type] [Payload Length] [Payload (Encrypted)] [Checksum/CRC]
+
+Dynamic Beacon Logic: Every time the GS receives a beacon, it sends an ACK packet back. If the OBC receives an ACK, it sets the beacon timer to 1000ms. If 15 seconds pass without an ACK, the timer reverts to 10000ms.
+
+Resumable Download Logic: The image transfer uses a "Chunk Request" system.
+
+GS requests: DOWNLOAD "img_01.jpg"
+
+OBC replies with file size and CRC32.
+
+GS requests: SEND_CHUNK 0 (e.g., bytes 0-127).
+
+OBC sends chunk. GS verifies chunk CRC.
+
+If connection drops, the GS remembers it has up to chunk 45. When the link returns, GS simply requests: SEND_CHUNK 46. The OBC resumes instantly.
+
+2. Dashboard to GS Mapping
+Your Flutter dashboard will connect to your C++ GS via a local TCP socket.
+
+Telemetry Cards: Parses Beacon packets (Battery, Temps, OBC state, Link Status).
+
+Command Console: Sends UI button clicks (Ping, Reboot, Toggle Camera) to the C++ GS, which packages them into binary commands for the radio.
+
+💻 Phase 2: Core Arduino OBC Code Structure
+This code provides the structural backbone for the OBC. It implements the non-blocking timer, dynamic beacon, I2C scanner, and command router.
+
+#include <Wire.h>
+#include <SPI.h>
+// Include your specific libraries: SD.h, RTClib.h, CRC32.h, etc.
+
+// --- System States & Timing ---
+unsigned long lastBeaconTime = 0;
+unsigned long beaconInterval = 10000; // Defaults to 10s (Lost link)
+unsigned long lastAckTime = 0;
+const unsigned long LINK_TIMEOUT = 15000; // 15s without ACK = lost link
+
+// --- Error Tracking (Bitmask) ---
+uint8_t systemErrors = 0x00; 
+#define ERR_RTC    0b00000001
+#define ERR_CAM    0b00000010
+#define ERR_EPS    0b00000100
+#define ERR_SD     0b00001000
+
+// --- Packet Definitions ---
+enum CommandByte {
+  CMD_PING = 0x01,
+  CMD_ACK = 0x02,
+  CMD_BEACON = 0x03,
+  CMD_TAKE_PIC = 0x04,
+  CMD_PAUSE_TX = 0x05,
+  CMD_REBOOT = 0x06,
+  CMD_TOGGLE_PWR = 0x07,
+  CMD_REQ_CHUNK = 0x08
+};
+
+void setup() {
+  Serial.begin(115200); // Radio/Comms Serial
+  Wire.begin();
+  
+  // 1. Log Boot Count & Reset Reason to SPI Flash here
+  // incrementBootCount();
+  
+  // 2. I2C Scan & Hardware Check (Non-Blocking)
+  checkHardware();
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+
+  // 1. Check Link Status
+  if (currentMillis - lastAckTime > LINK_TIMEOUT) {
+    beaconInterval = 10000; // Link lost, slow down
+  } else {
+    beaconInterval = 1000;  // Link active, speed up
+  }
+
+  // 2. Handle Beacon Transmission
+  if (currentMillis - lastBeaconTime >= beaconInterval) {
+    sendBeacon();
+    lastBeaconTime = currentMillis;
+  }
+
+  // 3. Process Incoming Ground Station Commands
+  if (Serial.available() > 0) {
+    processIncomingData();
+  }
+  
+  // 4. Handle Background Tasks (e.g. sending the next image chunk if active)
+  // handleImageTransfer(); 
+}
+
+// --- Functions ---
+
+void checkHardware() {
+  systemErrors = 0; // Reset errors
+  
+  // Example I2C Check for RTC (Address 0x68)
+  Wire.beginTransmission(0x68);
+  if (Wire.endTransmission() != 0) systemErrors |= ERR_RTC;
+  
+  // Example I2C Check for EPS (Address 0x20)
+  Wire.beginTransmission(0x20);
+  if (Wire.endTransmission() != 0) systemErrors |= ERR_EPS;
+  
+  // Init SD Card without freezing
+  // if (!SD.begin(CS_PIN)) systemErrors |= ERR_SD;
+}
+
+void sendBeacon() {
+  // Construct Beacon Payload
+  // Include: ID, Bat%, BatTemp, OBCTemp, GPS, SolarV, systemErrors
+  
+  byte payload[64];
+  // ... populate payload ...
+  
+  // Encrypt & Checksum here before sending
+  sendPacket(CMD_BEACON, payload, sizeof(payload));
+}
+
+void processIncomingData() {
+  // Read packet structure (Sync, Type, Length, Payload, CRC)
+  byte cmdType = Serial.read(); // Simplified for example
+  
+  switch(cmdType) {
+    case CMD_ACK:
+      lastAckTime = millis();
+      break;
+    case CMD_PING:
+      sendPacket(CMD_ACK, nullptr, 0);
+      break;
+    case CMD_TAKE_PIC:
+      takePictureWithMetadata();
+      break;
+    case CMD_REQ_CHUNK:
+      // GS is asking for image data, read from SD and send
+      // int chunkId = ...;
+      // sendImageChunk(chunkId);
+      break;
+    case CMD_REBOOT:
+      // Trigger Watchdog Timer to reset
+      break;
+    case CMD_TOGGLE_PWR:
+      // Turn MOSFETs on/off for Payload/GPS
+      break;
+  }
+}
+
+void sendPacket(byte cmd, byte* data, int len) {
+  // 1. Add headers
+  // 2. Calculate Checksum/CRC
+  // 3. Encrypt payload
+  // 4. Serial.write() to Radio
+}
+
+void takePictureWithMetadata() {
+  // 1. Grab image from Camera FIFO
+  // 2. Get GPS coordinates & RTC time
+  // 3. Save as new file (e.g., append BootCount_Timestamp.jpg)
+  // 4. Write EXIF/Metadata block or separate text file
+}
+
+Phase 3: C++ Ground Station Logic (The Bridge)Your C++ GS needs to act as the middleman between the radio transceiver and the Flutter UI.Radio Thread: Continuously listens to the COM port. Parses incoming packets, decrypts them, verifies the CRC, and updates a shared state memory.Beacon Monitor: Automatically replies with an ACK packet immediately upon receiving a valid Beacon, ensuring the FlatSat switches to the 1-second interval.Image Downloader: Manages the resumable state.GS Logic: expected_chunk = 0. Send REQ_CHUNK 0. Wait for reply. If CRC matches, write to file, expected_chunk++. If timeout or CRC fails, request REQ_CHUNK 0 again.Flutter Bridge: Runs a local TCP Server or WebSocket. The Flutter app connects here. When Flutter asks for the telemetry, the C++ GS dumps the latest known Beacon data as JSON.🛠️ Step-by-Step Execution PlanTo build this without getting overwhelmed by bugs, assemble the system in this order:The Dummy Link: Write the C++ GS and Arduino packet parser first, passing data over a basic USB cable. Get the Ping, ACK, and dynamic beacon timers working perfectly before adding hardware.Dashboard Integration: Connect Flutter to the C++ GS. Map the incoming beacon data to your UI gauges.Hardware Subsystems: Add the I2C scanning, read the real RTC, GPS, and EPS, and inject that real data into the beacon.The File System: Get the camera saving images to the SD card with the timestamp.The Resumable Downlink: Implement the chunk-request system over the dummy link. Once it can perfectly transfer a file over a USB cable, swap the cable for your actual radio transceivers.
