@@ -1,3 +1,18 @@
+"""
+FlatSat New Architecture
+PC Bridge: GS Serial (KISS) <-> WebSocket (JSON) for Flutter Dashboard
+
+Features:
+- KISS decode/encode over serial to the GS STM32
+- CRC32 verification of all application packets
+- Resumable image download state machine
+- Link timeout detection
+- RSSI/SNR extraction from GS-injected metadata
+- Full command support: ping, status, take_pic, get_gps, toggle_pwr,
+  list_image, remove_image, download, beacon
+- WebSocket server on ws://localhost:8080
+"""
+
 import serial
 import time
 import struct
@@ -6,20 +21,41 @@ import asyncio
 import websockets
 import json
 import threading
+import os
+import logging
+
+# ====================================================================
+# LOGGING
+# ====================================================================
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s: %(message)s',
+    datefmt='%H:%M:%S'
+)
+log = logging.getLogger("gs_bridge")
 
 # ====================================================================
 # CONFIGURATION
 # ====================================================================
-SERIAL_PORT = '/dev/ttyUSB0' # Modify as needed
+SERIAL_PORT = '/dev/ttyUSB0'  # Modify as needed
 BAUD_RATE = 115200
+WS_HOST = 'localhost'
+WS_PORT = 8080
+DOWNLOAD_DIR = './downloads'
+LINK_TIMEOUT_S = 15  # Seconds without a packet before link is "LOST"
+CHUNK_SIZE = 48
 
-# KISS Protocol
-FEND = b'\xC0'
-FESC = b'\xDB'
-TFEND = b'\xDC'
-TFESC = b'\xDD'
+# ====================================================================
+# KISS PROTOCOL CONSTANTS
+# ====================================================================
+FEND  = 0xC0
+FESC  = 0xDB
+TFEND = 0xDC
+TFESC = 0xDD
 
-# Command Bytes
+# ====================================================================
+# COMMAND BYTE DEFINITIONS (Must match OBC firmware)
+# ====================================================================
 CMD_PING         = 0x01
 CMD_ACK          = 0x02
 CMD_BEACON       = 0x03
@@ -31,69 +67,351 @@ CMD_REMOVE_IMAGE = 0x08
 CMD_REQ_CHUNK    = 0x09
 CMD_STATUS       = 0x0A
 CMD_IMAGE_DATA   = 0x0B
+CMD_GPS_DATA     = 0x0C
+CMD_IMAGE_LIST   = 0x0D
+CMD_NACK         = 0x0E
+CMD_GET_EPS      = 0x0F
+CMD_EPS_DATA     = 0x10
 
-# State
+# ====================================================================
+# APPLICATION STATE
+# ====================================================================
 latest_telemetry = {
     "system_errors": 0,
     "payload_pwr": False,
+    "gps_pwr": False,
+    "cam_pwr": False,
     "battery_pct": 0,
     "temperature": 0,
     "voltage": 0,
     "link_status": "LOST",
-    "last_ack": 0
+    "rssi": 0.0,
+    "snr": 0.0,
+    "last_packet_time": 0,
+    "eps": None,
 }
 
-# WebSocket Clients
+# WebSocket clients
 connected_clients = set()
 
-# Download Manager State
-downloading = False
-current_chunk = 0
-image_buffer = bytearray()
+# Download Manager
+download_state = {
+    "active": False,
+    "filename": "",
+    "current_chunk": 0,
+    "total_size": 0,
+    "buffer": bytearray(),
+    "start_time": 0,
+}
 
+# Serial port handle
 ser = None
 
+# Event loop reference for cross-thread broadcasting
+main_loop = None
+
 # ====================================================================
-# SERIAL INTERFACE
+# CRC32 CALCULATION
 # ====================================================================
 def calculate_crc32(data: bytes) -> int:
     return binascii.crc32(data) & 0xFFFFFFFF
 
-def encode_kiss(payload: bytes) -> bytes:
+# ====================================================================
+# KISS ENCODE / PACKET BUILDER
+# ====================================================================
+def kiss_encode(payload: bytes) -> bytes:
+    """Wrap raw bytes in KISS framing."""
     encoded = bytearray()
-    encoded.extend(FEND)
+    encoded.append(FEND)
     for b in payload:
-        if b == 0xC0:
-            encoded.extend(b'\xDB\xDC')
-        elif b == 0xDB:
-            encoded.extend(b'\xDB\xDD')
+        if b == FEND:
+            encoded.extend([FESC, TFEND])
+        elif b == FESC:
+            encoded.extend([FESC, TFESC])
         else:
             encoded.append(b)
-    encoded.extend(FEND)
+    encoded.append(FEND)
     return bytes(encoded)
 
-def build_packet(cmd_type, payload=b''):
+def build_packet(cmd_type: int, payload: bytes = b'') -> bytes:
+    """Build application packet with sync, cmd, length, payload, and CRC32."""
     packet = bytearray([0xAA, 0xBB, cmd_type, len(payload)])
     packet.extend(payload)
-    crc = calculate_crc32(packet)
+    crc = calculate_crc32(bytes(packet))
     packet.extend(struct.pack('>I', crc))
-    return encode_kiss(bytes(packet))
+    return kiss_encode(bytes(packet))
 
-def send_command(cmd_type, payload=b''):
+def send_command(cmd_type: int, payload: bytes = b''):
+    """Send a command to the GS over serial."""
     if ser and ser.is_open:
-        ser.write(build_packet(cmd_type, payload))
+        data = build_packet(cmd_type, payload)
+        ser.write(data)
+        log.info(f"TX -> CMD 0x{cmd_type:02X} payload={payload.hex() if payload else 'none'}")
+
+# ====================================================================
+# PACKET PROCESSOR
+# ====================================================================
+def process_packet(raw_bytes: bytearray):
+    """
+    Process a decoded KISS frame.
+    The GS firmware appends 3 bytes of RSSI/SNR metadata after the
+    application packet, so we need to strip those first.
+    """
+    global download_state
+
+    # The GS appends 3 bytes: [RSSI_H, RSSI_L, SNR]
+    # Minimum: 8 (app packet) + 3 (metadata) = 11 bytes
+    if len(raw_bytes) < 11:
+        log.warning(f"Packet too short: {len(raw_bytes)} bytes")
+        return
+
+    # Extract RSSI/SNR metadata from the tail
+    rssi_raw = struct.unpack('>h', raw_bytes[-3:-1])[0]
+    snr_raw = struct.unpack('b', bytes([raw_bytes[-1]]))[0]
+    latest_telemetry["rssi"] = rssi_raw / 10.0
+    latest_telemetry["snr"] = snr_raw / 10.0
+
+    # The actual application packet (without metadata)
+    app_packet = raw_bytes[:-3]
+
+    if len(app_packet) < 8:
+        log.warning("App packet too short after stripping metadata")
+        return
+
+    # Verify sync bytes
+    if app_packet[0] != 0xAA or app_packet[1] != 0xBB:
+        log.warning(f"Bad sync bytes: 0x{app_packet[0]:02X} 0x{app_packet[1]:02X}")
+        return
+
+    cmd_type = app_packet[2]
+    payload_len = app_packet[3]
+
+    # Verify packet length
+    expected_len = 4 + payload_len + 4  # header + payload + CRC32
+    if len(app_packet) != expected_len:
+        log.warning(f"Length mismatch: expected {expected_len}, got {len(app_packet)}")
+        return
+
+    # Verify CRC32
+    payload = app_packet[4:4 + payload_len]
+    expected_crc = struct.unpack('>I', app_packet[4 + payload_len:8 + payload_len])[0]
+    calc_crc = calculate_crc32(bytes(app_packet[:4 + payload_len]))
+
+    if calc_crc != expected_crc:
+        log.error(f"CRC32 Mismatch! Expected 0x{expected_crc:08X}, got 0x{calc_crc:08X}")
+        return
+
+    # Valid packet -> Link is active
+    latest_telemetry["link_status"] = "ACTIVE"
+    latest_telemetry["last_packet_time"] = time.time()
+
+    log.info(f"RX <- CMD 0x{cmd_type:02X} payload_len={payload_len}")
+
+    # ---- Handle by command type ----
+
+    if cmd_type == CMD_BEACON:
+        if payload_len >= 8:
+            latest_telemetry["system_errors"] = payload[0]
+            latest_telemetry["payload_pwr"] = bool(payload[1])
+            latest_telemetry["gps_pwr"] = bool(payload[2])
+            latest_telemetry["cam_pwr"] = bool(payload[3])
+            latest_telemetry["battery_pct"] = payload[4]
+            latest_telemetry["temperature"] = payload[5]
+            latest_telemetry["voltage"] = payload[6]
+            # payload[7] is the OBC's own link status byte
+            log.info(f"BEACON: Bat={payload[4]}% Temp={payload[5]}C "
+                     f"V={payload[6]} Errors=0x{payload[0]:02X} "
+                     f"RSSI={latest_telemetry['rssi']}dBm")
+        schedule_broadcast({"type": "telemetry", "data": latest_telemetry})
+
+    elif cmd_type == CMD_ACK:
+        ack_payload = payload.hex() if payload else ""
+        log.info(f"ACK received: {ack_payload}")
+        schedule_broadcast({"type": "ack", "data": ack_payload})
+
+    elif cmd_type == CMD_NACK:
+        log.warning("NACK received - command failed on OBC")
+        schedule_broadcast({"type": "nack", "data": "Command failed"})
+
+    elif cmd_type == CMD_GPS_DATA:
+        if payload_len >= 13:
+            lat = struct.unpack('<f', payload[0:4])[0]
+            lon = struct.unpack('<f', payload[4:8])[0]
+            alt = struct.unpack('<f', payload[8:12])[0]
+            sat_count = payload[12]
+            gps_data = {
+                "latitude": round(lat, 6),
+                "longitude": round(lon, 6),
+                "altitude": round(alt, 2),
+                "satellites": sat_count,
+            }
+            log.info(f"GPS: Lat={lat:.6f} Lon={lon:.6f} Alt={alt:.1f}m Sats={sat_count}")
+            schedule_broadcast({"type": "gps", "data": gps_data})
+
+    elif cmd_type == CMD_IMAGE_LIST:
+        # Parse file list: [nameLen][name][size(4bytes)] repeating
+        files = []
+        idx = 0
+        while idx < payload_len:
+            if idx >= len(payload):
+                break
+            fn_len = payload[idx]
+            idx += 1
+            if idx + fn_len + 4 > len(payload):
+                break
+            name = payload[idx:idx + fn_len].decode('ascii', errors='replace')
+            idx += fn_len
+            fsize = struct.unpack('>I', payload[idx:idx + 4])[0]
+            idx += 4
+            files.append({"name": name, "size": fsize})
+        log.info(f"IMAGE_LIST: {len(files)} files")
+        schedule_broadcast({"type": "image_list", "data": files})
+
+    elif cmd_type == CMD_IMAGE_DATA:
+        handle_image_chunk(payload, payload_len)
+
+    elif cmd_type == CMD_EPS_DATA:
+        eps = parse_eps_payload(payload)
+        if eps:
+            latest_telemetry["eps"] = eps
+            log.info(f"EPS: {len(eps['ina226'])} INA226, "
+                     f"{len(eps['tmp102'])} TMP102, {len(eps['adm1177'])} ADM1177")
+            schedule_broadcast({"type": "eps", "data": eps})
+
+    else:
+        log.info(f"Unhandled CMD: 0x{cmd_type:02X}")
+
+# ====================================================================
+# EPS TELEMETRY PARSER
+# ====================================================================
+def parse_eps_payload(payload: bytes):
+    """
+    Decode the EPS telemetry packet from the OBC.
+    Layout (multi-byte fields little-endian):
+      [1]  INA count N1
+      N1 x { float busVoltage_V (4), float current_A (4) }
+      [1]  TMP count N2
+      N2 x { float tempC (4) }
+      [1]  ADM count N3
+      N3 x { uint16 voltage_mV (LE), uint16 current_mA (LE) }
+    """
+    try:
+        idx = 0
+        result = {"ina226": [], "tmp102": [], "adm1177": []}
+
+        n_ina = payload[idx]; idx += 1
+        for i in range(n_ina):
+            bus_v = struct.unpack('<f', payload[idx:idx + 4])[0]; idx += 4
+            cur_a = struct.unpack('<f', payload[idx:idx + 4])[0]; idx += 4
+            result["ina226"].append({
+                "index": i,
+                "voltage": round(bus_v, 3),
+                "current": round(cur_a, 3),
+            })
+
+        n_tmp = payload[idx]; idx += 1
+        for i in range(n_tmp):
+            temp_c = struct.unpack('<f', payload[idx:idx + 4])[0]; idx += 4
+            result["tmp102"].append({
+                "index": i,
+                "temperature": round(temp_c, 2),
+            })
+
+        n_adm = payload[idx]; idx += 1
+        for i in range(n_adm):
+            v_mv = struct.unpack('<H', payload[idx:idx + 2])[0]; idx += 2
+            c_ma = struct.unpack('<H', payload[idx:idx + 2])[0]; idx += 2
+            result["adm1177"].append({
+                "index": i,
+                "voltage_mv": v_mv,
+                "current_ma": c_ma,
+            })
+
+        return result
+    except (struct.error, IndexError) as e:
+        log.error(f"Failed to parse EPS payload: {e}")
+        return None
+
+# ====================================================================
+# IMAGE DOWNLOAD STATE MACHINE
+# ====================================================================
+def handle_image_chunk(payload: bytes, payload_len: int):
+    global download_state
+
+    if not download_state["active"]:
+        return
+
+    # Check for EOT (End of Transmission)
+    if payload_len >= 2 and payload[0] == 0xFF and payload[1] == 0xFF:
+        # Download complete
+        elapsed = time.time() - download_state["start_time"]
+        total_bytes = len(download_state["buffer"])
+
+        # Save to file
+        os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+        save_path = os.path.join(DOWNLOAD_DIR, download_state["filename"])
+        with open(save_path, "wb") as f:
+            f.write(download_state["buffer"])
+
+        log.info(f"DOWNLOAD COMPLETE: {save_path} ({total_bytes} bytes in {elapsed:.1f}s)")
+        schedule_broadcast({
+            "type": "download_complete",
+            "data": {
+                "filename": download_state["filename"],
+                "size": total_bytes,
+                "elapsed": round(elapsed, 1),
+                "path": save_path,
+            }
+        })
+
+        download_state["active"] = False
+        download_state["buffer"].clear()
+        return
+
+    if payload_len < 3:
+        return
+
+    chunk_id = struct.unpack('>H', payload[:2])[0]
+    chunk_data = payload[2:]
+
+    if chunk_id == download_state["current_chunk"]:
+        download_state["buffer"].extend(chunk_data)
+        download_state["current_chunk"] += 1
+
+        total_downloaded = len(download_state["buffer"])
+        log.info(f"Chunk #{chunk_id} OK ({len(chunk_data)} bytes, total: {total_downloaded})")
+
+        # Broadcast progress
+        schedule_broadcast({
+            "type": "download_progress",
+            "data": {
+                "chunk": chunk_id,
+                "bytes_received": total_downloaded,
+                "filename": download_state["filename"],
+            }
+        })
+
+        # Request next chunk
+        send_command(CMD_REQ_CHUNK, struct.pack('>H', download_state["current_chunk"]))
+    else:
+        log.warning(f"Chunk mismatch: expected {download_state['current_chunk']}, got {chunk_id}. Retransmitting.")
+        # Re-request the expected chunk
+        send_command(CMD_REQ_CHUNK, struct.pack('>H', download_state["current_chunk"]))
 
 # ====================================================================
 # SERIAL READER THREAD
 # ====================================================================
 def serial_reader_loop():
-    global ser, latest_telemetry, downloading, current_chunk, image_buffer
-    
-    try:
-        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
-    except Exception as e:
-        print(f"Failed to open {SERIAL_PORT}: {e}")
-        return
+    global ser
+
+    while True:
+        try:
+            ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
+            log.info(f"Serial port {SERIAL_PORT} opened at {BAUD_RATE} baud")
+            break
+        except Exception as e:
+            log.error(f"Cannot open {SERIAL_PORT}: {e}. Retrying in 3s...")
+            time.sleep(3)
 
     in_frame = False
     escape_next = False
@@ -102,126 +420,180 @@ def serial_reader_loop():
     while True:
         try:
             if ser.in_waiting > 0:
-                c = ser.read(1)
-                
-                if c == FEND:
-                    if in_frame and len(kiss_buffer) > 0:
-                        process_packet(kiss_buffer)
-                        kiss_buffer.clear()
-                        in_frame = False
-                    else:
-                        in_frame = True
-                elif in_frame:
-                    if c == FESC:
-                        escape_next = True
-                    elif escape_next:
-                        if c == TFEND: kiss_buffer.extend(FEND)
-                        elif c == TFESC: kiss_buffer.extend(FESC)
-                        escape_next = False
-                    else:
-                        kiss_buffer.extend(c)
+                raw = ser.read(ser.in_waiting)
+                for b in raw:
+                    if b == FEND:
+                        if in_frame and len(kiss_buffer) > 0:
+                            process_packet(bytearray(kiss_buffer))
+                            kiss_buffer.clear()
+                            in_frame = False
+                            escape_next = False
+                        else:
+                            in_frame = True
+                            kiss_buffer.clear()
+                            escape_next = False
+                    elif in_frame:
+                        if b == FESC:
+                            escape_next = True
+                        elif escape_next:
+                            if b == TFEND:
+                                kiss_buffer.append(FEND)
+                            elif b == TFESC:
+                                kiss_buffer.append(FESC)
+                            escape_next = False
+                        else:
+                            kiss_buffer.append(b)
+            else:
+                time.sleep(0.01)  # Avoid busy-wait
+
+            # Check link timeout
+            if latest_telemetry["last_packet_time"] > 0:
+                if time.time() - latest_telemetry["last_packet_time"] > LINK_TIMEOUT_S:
+                    if latest_telemetry["link_status"] != "LOST":
+                        latest_telemetry["link_status"] = "LOST"
+                        log.warning("Link LOST (timeout)")
+                        schedule_broadcast({"type": "telemetry", "data": latest_telemetry})
+
+        except serial.SerialException as e:
+            log.error(f"Serial error: {e}. Reconnecting in 3s...")
+            time.sleep(3)
+            try:
+                ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
+            except:
+                pass
         except Exception as e:
-            print(f"Serial read error: {e}")
+            log.error(f"Unexpected error in serial reader: {e}")
             time.sleep(1)
 
-def process_packet(raw_packet: bytearray):
-    global latest_telemetry, downloading, current_chunk, image_buffer
-    
-    if len(raw_packet) < 8:
-        return
-        
-    if raw_packet[0] != 0xAA or raw_packet[1] != 0xBB:
-        return
-        
-    cmd_type = raw_packet[2]
-    payload_len = raw_packet[3]
-    
-    if len(raw_packet) < 8 + payload_len:
-        return
-        
-    payload = raw_packet[4:4+payload_len]
-    expected_crc = struct.unpack('>I', raw_packet[4+payload_len:8+payload_len])[0]
-    
-    calc_crc = calculate_crc32(raw_packet[:4+payload_len])
-    if calc_crc != expected_crc:
-        print(f"CRC Mismatch! Expected {expected_crc}, got {calc_crc}")
-        return
+# ====================================================================
+# ASYNC BROADCAST HELPER
+# ====================================================================
+def schedule_broadcast(data: dict):
+    """Thread-safe: schedule a broadcast on the asyncio event loop."""
+    if main_loop and connected_clients:
+        asyncio.run_coroutine_threadsafe(broadcast(data), main_loop)
 
-    # Valid Packet Received -> Link Active
-    latest_telemetry["link_status"] = "ACTIVE"
-    latest_telemetry["last_ack"] = time.time()
-    
-    if cmd_type == CMD_BEACON and payload_len == 5:
-        latest_telemetry["system_errors"] = payload[0]
-        latest_telemetry["payload_pwr"] = bool(payload[1])
-        latest_telemetry["battery_pct"] = payload[2]
-        latest_telemetry["temperature"] = payload[3]
-        latest_telemetry["voltage"] = payload[4]
-        asyncio.run(broadcast_telemetry())
-        
-    elif cmd_type == CMD_ACK:
-        print("ACK Received")
-        
-    elif cmd_type == CMD_IMAGE_DATA:
-        if downloading:
-            chunk_id = struct.unpack('>H', payload[:2])[0]
-            if chunk_id == current_chunk:
-                print(f"Received chunk {chunk_id}")
-                image_buffer.extend(payload[2:])
-                current_chunk += 1
-                
-                # Check for EOT condition (e.g., chunk size < 48)
-                if len(payload) - 2 < 48:
-                    print("Download complete!")
-                    with open("downloaded_image.jpg", "wb") as f:
-                        f.write(image_buffer)
-                    downloading = False
-                    image_buffer.clear()
-                else:
-                    # Request next chunk
-                    send_command(CMD_REQ_CHUNK, struct.pack('>H', current_chunk))
-            else:
-                print(f"Chunk mismatch. Expected {current_chunk}, got {chunk_id}")
-
-async def broadcast_telemetry():
+async def broadcast(data: dict):
+    """Send a JSON message to all connected WebSocket clients."""
     if connected_clients:
-        message = json.dumps({"type": "telemetry", "data": latest_telemetry})
-        await asyncio.gather(*[client.send(message) for client in connected_clients])
+        message = json.dumps(data, default=str)
+        disconnected = set()
+        for client in connected_clients:
+            try:
+                await client.send(message)
+            except websockets.exceptions.ConnectionClosed:
+                disconnected.add(client)
+        connected_clients -= disconnected
 
 # ====================================================================
-# WEBSOCKET SERVER
+# WEBSOCKET HANDLER
 # ====================================================================
-async def handler(websocket):
+async def ws_handler(websocket):
     connected_clients.add(websocket)
+    log.info(f"Dashboard connected ({len(connected_clients)} clients)")
+
+    # Send current telemetry immediately on connect
+    try:
+        await websocket.send(json.dumps({
+            "type": "telemetry",
+            "data": latest_telemetry
+        }))
+    except:
+        pass
+
     try:
         async for message in websocket:
-            data = json.loads(message)
-            cmd = data.get("cmd")
-            
-            if cmd == "ping":
-                send_command(CMD_PING)
-            elif cmd == "status":
-                send_command(CMD_STATUS)
-            elif cmd == "toggle_pwr":
-                send_command(CMD_TOGGLE_PWR)
-            elif cmd == "take_pic":
-                send_command(CMD_TAKE_PIC)
-            elif cmd == "download":
-                global downloading, current_chunk, image_buffer
-                downloading = True
-                current_chunk = 0
-                image_buffer.clear()
-                print("Starting download...")
-                send_command(CMD_REQ_CHUNK, struct.pack('>H', current_chunk))
-                
-    finally:
-        connected_clients.remove(websocket)
+            try:
+                data = json.loads(message)
+                cmd = data.get("cmd", "")
+                log.info(f"WS CMD: {cmd}")
 
+                if cmd == "ping":
+                    send_command(CMD_PING)
+
+                elif cmd == "status":
+                    send_command(CMD_STATUS)
+
+                elif cmd == "beacon":
+                    send_command(CMD_BEACON)
+
+                elif cmd == "take_pic":
+                    send_command(CMD_TAKE_PIC)
+
+                elif cmd == "get_gps":
+                    send_command(CMD_GET_GPS)
+
+                elif cmd == "get_eps":
+                    send_command(CMD_GET_EPS)
+
+                elif cmd == "toggle_pwr":
+                    subsystem = data.get("subsystem", 0)
+                    send_command(CMD_TOGGLE_PWR, bytes([subsystem]))
+
+                elif cmd == "list_image":
+                    send_command(CMD_LIST_IMAGE)
+
+                elif cmd == "remove_image":
+                    filename = data.get("filename", "")
+                    if filename:
+                        send_command(CMD_REMOVE_IMAGE, filename.encode('ascii'))
+                    else:
+                        await websocket.send(json.dumps({
+                            "type": "error", "data": "Missing filename"
+                        }))
+
+                elif cmd == "download":
+                    filename = data.get("filename", "photo.jpg")
+                    download_state["active"] = True
+                    download_state["filename"] = filename
+                    download_state["current_chunk"] = 0
+                    download_state["buffer"].clear()
+                    download_state["start_time"] = time.time()
+
+                    # Build payload: [chunk_id(2)] + [filename]
+                    payload = struct.pack('>H', 0) + filename.encode('ascii')
+                    send_command(CMD_REQ_CHUNK, payload)
+                    log.info(f"Download started: {filename}")
+
+                    await websocket.send(json.dumps({
+                        "type": "download_started",
+                        "data": {"filename": filename}
+                    }))
+
+                else:
+                    log.warning(f"Unknown WS command: {cmd}")
+                    await websocket.send(json.dumps({
+                        "type": "error", "data": f"Unknown command: {cmd}"
+                    }))
+
+            except json.JSONDecodeError:
+                log.warning("Invalid JSON from dashboard")
+
+    except websockets.exceptions.ConnectionClosed:
+        pass
+    finally:
+        connected_clients.discard(websocket)
+        log.info(f"Dashboard disconnected ({len(connected_clients)} clients)")
+
+# ====================================================================
+# MAIN
+# ====================================================================
 async def main():
-    threading.Thread(target=serial_reader_loop, daemon=True).start()
-    async with websockets.serve(handler, "localhost", 8080):
-        print("WebSocket Server running on ws://localhost:8080")
-        await asyncio.Future()  # run forever
+    global main_loop
+    main_loop = asyncio.get_running_loop()
+
+    # Start serial reader in background thread
+    serial_thread = threading.Thread(target=serial_reader_loop, daemon=True)
+    serial_thread.start()
+
+    # Create downloads directory
+    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
+    # Start WebSocket server
+    log.info(f"WebSocket Server starting on ws://{WS_HOST}:{WS_PORT}")
+    async with websockets.serve(ws_handler, WS_HOST, WS_PORT):
+        log.info("Bridge is running. Waiting for connections...")
+        await asyncio.Future()  # Run forever
 
 if __name__ == "__main__":
     asyncio.run(main())
