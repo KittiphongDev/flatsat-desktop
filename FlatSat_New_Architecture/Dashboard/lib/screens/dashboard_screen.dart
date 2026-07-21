@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/websocket_service.dart';
 import '../widgets/telemetry_card.dart';
+import '../widgets/connection_banner.dart';
+import '../widgets/eps_dashboard.dart';
 import '../theme/app_theme.dart';
 
 /// Breakpoint above which the dashboard uses a multi-column desktop layout.
@@ -24,11 +26,11 @@ class DashboardScreen extends StatelessWidget {
               SliverAppBar(
                 pinned: true,
                 expandedHeight: 70,
-                backgroundColor: c.scaffold,
+                backgroundColor: c.header,
                 surfaceTintColor: Colors.transparent,
                 elevation: 0,
-                scrolledUnderElevation: 0.5,
-                foregroundColor: c.textPrimary,
+                scrolledUnderElevation: 0,
+                foregroundColor: c.onHeader,
                 title: _AppBarTitle(ws: ws),
               ),
 
@@ -40,14 +42,20 @@ class DashboardScreen extends StatelessWidget {
                         const BoxConstraints(maxWidth: kMaxContentWidth),
                     child: Padding(
                       padding: const EdgeInsets.all(20),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final isWide =
-                              constraints.maxWidth >= kWideBreakpoint;
-                          return isWide
-                              ? _wideLayout(context, ws)
-                              : _narrowLayout(context, ws);
-                        },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const ConnectionBanner(),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final isWide =
+                                  constraints.maxWidth >= kWideBreakpoint;
+                              return isWide
+                                  ? _wideLayout(context, ws)
+                                  : _narrowLayout(context, ws);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -76,7 +84,7 @@ class DashboardScreen extends StatelessWidget {
         if (ws.lastGps != null)
           _section(context, 'GPS DATA', _gpsCard(context, ws)),
         if (ws.lastEps != null)
-          _section(context, 'EPS SUBSYSTEM', _epsCard(context, ws)),
+          _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
         if (ws.isDownloading && ws.downloadProgress != null)
           _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
         _section(context, 'EVENT LOG', _eventLog(context, ws)),
@@ -89,8 +97,9 @@ class DashboardScreen extends StatelessWidget {
   Widget _wideLayout(BuildContext context, WebSocketService ws) {
     final primary = <Widget>[
       _section(context, 'TELEMETRY', _telemetryGrid(context, ws)),
+      if (ws.lastEps != null)
+        _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
       _section(context, 'COMMAND CONSOLE', _commandGrid(context, ws)),
-      _section(context, 'IMAGE MANAGER', _imageManager(context, ws)),
       _section(context, 'EVENT LOG', _eventLog(context, ws)),
     ];
 
@@ -98,8 +107,7 @@ class DashboardScreen extends StatelessWidget {
       _section(context, 'SUBSYSTEM POWER', _subsystemPower(context, ws)),
       if (ws.lastGps != null)
         _section(context, 'GPS DATA', _gpsCard(context, ws)),
-      if (ws.lastEps != null)
-        _section(context, 'EPS SUBSYSTEM', _epsCard(context, ws)),
+      _section(context, 'IMAGE MANAGER', _imageManager(context, ws)),
       if (ws.isDownloading && ws.downloadProgress != null)
         _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
     ];
@@ -174,13 +182,17 @@ class DashboardScreen extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final crossAxisCount = constraints.maxWidth > 640 ? 4 : 2;
-        return GridView.count(
-          crossAxisCount: crossAxisCount,
+        return GridView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.6,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            // Fixed row height (in px) so cards never overflow regardless of
+            // how wide each column gets on desktop.
+            mainAxisExtent: 148,
+          ),
           children: [
             TelemetryCard(
               icon: Icons.battery_charging_full,
@@ -223,80 +235,83 @@ class DashboardScreen extends StatelessWidget {
   }
 
   // ---- Subsystem Power ----
+  // Maps to the three controllable ADM1177 EPS outputs (PD1/PD2/PD3).
   Widget _subsystemPower(BuildContext context, WebSocketService ws) {
     return Column(
       children: [
         SubsystemCard(
-          name: 'Payload',
-          icon: Icons.science,
-          isOn: ws.telemetry.payloadPwr,
-          onToggle: () => ws.sendTogglePwr(0),
+          name: 'Communication',
+          icon: Icons.cell_tower,
+          isOn: ws.telemetry.payloadPwr, // channel 0 = COMMS (PD1)
+          onToggle: () => _toggleComms(context, ws),
         ),
         const SizedBox(height: 8),
         SubsystemCard(
-          name: 'GPS Module',
+          name: 'Payload 1 / GPS',
           icon: Icons.gps_fixed,
-          isOn: ws.telemetry.gpsPwr,
+          isOn: ws.telemetry.gpsPwr, // channel 1 = Payload 1 / GPS (PD2)
           onToggle: () => ws.sendTogglePwr(1),
         ),
         const SizedBox(height: 8),
         SubsystemCard(
-          name: 'Camera',
-          icon: Icons.camera_alt,
-          isOn: ws.telemetry.camPwr,
+          name: 'Payload 2 / PC104',
+          icon: Icons.developer_board,
+          isOn: ws.telemetry.camPwr, // channel 2 = Payload 2 / PC104 (PD3)
           onToggle: () => ws.sendTogglePwr(2),
         ),
       ],
     );
   }
 
+  /// Guard the Communication channel: turning it OFF cuts the radio link, so
+  /// confirm first. Turning it back ON is harmless and immediate.
+  void _toggleComms(BuildContext context, WebSocketService ws) {
+    final turningOff = ws.telemetry.payloadPwr;
+    if (!turningOff) {
+      ws.sendTogglePwr(0);
+      return;
+    }
+    final c = context.colors;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: c.surface,
+        title: const Text('Turn off Communication?'),
+        content: const Text(
+          'Powering off the Communication channel will cut the radio link. '
+          'You will not be able to command the satellite remotely until it is '
+          'power-cycled on the board. Continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ws.sendTogglePwr(0);
+              Navigator.pop(ctx);
+            },
+            child: Text('Turn off', style: TextStyle(color: c.error)),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ---- Command Grid ----
   Widget _commandGrid(BuildContext context, WebSocketService ws) {
-    final c = context.colors;
     return Wrap(
       spacing: 10,
       runSpacing: 10,
       children: [
-        CommandButton(
-          icon: Icons.wifi_tethering,
-          label: 'PING',
-          onPressed: ws.sendPing,
-        ),
-        CommandButton(
-          icon: Icons.monitor_heart,
-          label: 'STATUS',
-          onPressed: ws.sendStatus,
-        ),
-        CommandButton(
-          icon: Icons.cell_tower,
-          label: 'BEACON',
-          onPressed: ws.sendBeacon,
-          color: c.warning,
-        ),
-        CommandButton(
-          icon: Icons.camera,
-          label: 'TAKE PIC',
-          onPressed: ws.sendTakePic,
-          color: c.secondary,
-        ),
-        CommandButton(
-          icon: Icons.gps_fixed,
-          label: 'GET GPS',
-          onPressed: ws.sendGetGps,
-          color: c.success,
-        ),
-        CommandButton(
-          icon: Icons.bolt,
-          label: 'GET EPS',
-          onPressed: ws.sendGetEps,
-          color: c.yellow,
-        ),
-        CommandButton(
-          icon: Icons.photo_library,
-          label: 'LIST IMAGES',
-          onPressed: ws.sendListImage,
-          color: c.pink,
-        ),
+        CommandButton(icon: Icons.wifi_tethering, label: 'PING', onPressed: ws.sendPing),
+        CommandButton(icon: Icons.monitor_heart, label: 'STATUS', onPressed: ws.sendStatus),
+        CommandButton(icon: Icons.cell_tower, label: 'BEACON', onPressed: ws.sendBeacon),
+        CommandButton(icon: Icons.camera, label: 'TAKE PIC', onPressed: ws.sendTakePic),
+        CommandButton(icon: Icons.gps_fixed, label: 'GET GPS', onPressed: ws.sendGetGps),
+        CommandButton(icon: Icons.bolt, label: 'GET EPS', onPressed: ws.sendGetEps),
+        CommandButton(icon: Icons.photo_library, label: 'LIST IMAGES', onPressed: ws.sendListImage),
       ],
     );
   }
@@ -450,117 +465,6 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  // ---- EPS Card ----
-  Widget _epsCard(BuildContext context, WebSocketService ws) {
-    final c = context.colors;
-    final eps = ws.lastEps!;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: c.yellow.withOpacity(0.25)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _epsGroupLabel(context, 'INA226 POWER MONITORS'),
-          _epsTable(
-            context,
-            headers: const ['CH', 'Voltage', 'Current', 'Power'],
-            rows: eps.ina226
-                .map((r) => [
-                      '#${r.index}',
-                      '${r.voltage.toStringAsFixed(3)} V',
-                      '${r.current.toStringAsFixed(3)} A',
-                      '${r.power.toStringAsFixed(2)} W',
-                    ])
-                .toList(),
-          ),
-          const SizedBox(height: 16),
-          _epsGroupLabel(context, 'TMP102 TEMPERATURES'),
-          _epsTable(
-            context,
-            headers: const ['CH', 'Temperature'],
-            rows: eps.tmp102
-                .map((r) => [
-                      '#${r.index}',
-                      '${r.temperature.toStringAsFixed(2)} °C',
-                    ])
-                .toList(),
-          ),
-          const SizedBox(height: 16),
-          _epsGroupLabel(context, 'ADM1177 HOT-SWAP MONITORS'),
-          _epsTable(
-            context,
-            headers: const ['CH', 'Voltage', 'Current'],
-            rows: eps.adm1177
-                .map((r) => [
-                      '#${r.index}',
-                      '${r.voltageMv} mV',
-                      '${r.currentMa} mA',
-                    ])
-                .toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _epsGroupLabel(BuildContext context, String label) {
-    final c = context.colors;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: c.yellow,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.5,
-        ),
-      ),
-    );
-  }
-
-  Widget _epsTable(
-    BuildContext context, {
-    required List<String> headers,
-    required List<List<String>> rows,
-  }) {
-    final c = context.colors;
-    TableRow buildRow(List<String> cells, {required bool isHeader}) {
-      return TableRow(
-        children: cells.map((cell) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-            child: Text(
-              cell,
-              style: TextStyle(
-                color: isHeader ? c.textMuted : c.textPrimary,
-                fontSize: isHeader ? 10 : 13,
-                fontWeight: isHeader ? FontWeight.w600 : FontWeight.w500,
-                letterSpacing: isHeader ? 1 : 0,
-                fontFamily: isHeader ? null : 'monospace',
-              ),
-            ),
-          );
-        }).toList(),
-      );
-    }
-
-    return Table(
-      columnWidths: const {0: FixedColumnWidth(48)},
-      border: TableBorder(
-        horizontalInside: BorderSide(color: c.border),
-      ),
-      children: [
-        buildRow(headers, isHeader: true),
-        ...rows.map((r) => buildRow(r, isHeader: false)),
-      ],
     );
   }
 
@@ -730,7 +634,7 @@ class _AppBarTitle extends StatelessWidget {
                 'FlatSat Mission Control',
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: c.textPrimary,
+                  color: c.onHeader,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.5,
@@ -770,7 +674,7 @@ class _AppBarTitle extends StatelessWidget {
             themeProvider.isDark
                 ? Icons.light_mode_outlined
                 : Icons.dark_mode_outlined,
-            color: c.textSecondary,
+            color: c.onHeader.withOpacity(0.8),
             size: 20,
           ),
           onPressed: () => context.read<ThemeProvider>().toggle(),

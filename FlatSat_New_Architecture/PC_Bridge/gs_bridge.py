@@ -14,6 +14,8 @@ Features:
 """
 
 import serial
+from serial.tools import list_ports
+import sys
 import time
 import struct
 import binascii
@@ -37,8 +39,42 @@ log = logging.getLogger("gs_bridge")
 # ====================================================================
 # CONFIGURATION
 # ====================================================================
-SERIAL_PORT = '/dev/ttyUSB0'  # Modify as needed
+# Fallback port if auto-detection finds nothing. You can also override the
+# port without editing this file, in priority order:
+#   1. Command-line arg:   python3 gs_bridge.py /dev/ttyACM0   (or COM4, etc.)
+#   2. Env var:            FLATSAT_SERIAL_PORT=/dev/ttyACM0 python3 gs_bridge.py
+#   3. Auto-detect         (STM32 native-USB shows up as ttyACM* / usbmodem*)
+SERIAL_PORT = '/dev/ttyUSB0'
 BAUD_RATE = 115200
+
+
+def autodetect_serial_port():
+    """Resolve the GS serial port. Explicit override wins; otherwise scan the
+    connected serial devices and prefer STM32-style native-USB (CDC ACM)."""
+    # 1. Explicit overrides
+    if len(sys.argv) > 1 and sys.argv[1].strip():
+        return sys.argv[1].strip()
+    env_port = os.environ.get("FLATSAT_SERIAL_PORT", "").strip()
+    if env_port:
+        return env_port
+
+    # 2. Scan available ports
+    ports = list(list_ports.comports())
+    if not ports:
+        return None
+
+    def rank(dev: str) -> int:
+        d = dev.lower()
+        if 'acm' in d or 'usbmodem' in d:   # STM32 native USB (most likely GS)
+            return 0
+        if 'usbserial' in d or 'slab' in d or 'wch' in d or 'ttyusb' in d:
+            return 1                         # FTDI / CP210x / CH340 adapters
+        if d.startswith('com'):              # Windows
+            return 1
+        return 2
+
+    devices = sorted((p.device for p in ports), key=rank)
+    return devices[0] if devices else None
 WS_HOST = 'localhost'
 WS_PORT = 8080
 DOWNLOAD_DIR = './downloads'
@@ -106,6 +142,10 @@ download_state = {
 
 # Serial port handle
 ser = None
+serial_connected = False       # True while the GS serial port is open
+current_port = None            # Port name currently in use / attempted
+requested_port = None          # User-selected port override (from the app)
+reconnect_event = threading.Event()  # Set to force a serial reconnect
 
 # Event loop reference for cross-thread broadcasting
 main_loop = None
@@ -401,24 +441,84 @@ def handle_image_chunk(payload: bytes, payload_len: int):
 # ====================================================================
 # SERIAL READER THREAD
 # ====================================================================
-def serial_reader_loop():
-    global ser
+def list_available_ports():
+    """Return a list of {device, description} for every serial port present."""
+    ports = []
+    try:
+        for p in list_ports.comports():
+            ports.append({"device": p.device, "description": p.description or ""})
+    except Exception:
+        pass
+    return ports
 
-    while True:
-        try:
-            ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
-            log.info(f"Serial port {SERIAL_PORT} opened at {BAUD_RATE} baud")
-            break
-        except Exception as e:
-            log.error(f"Cannot open {SERIAL_PORT}: {e}. Retrying in 3s...")
-            time.sleep(3)
+def build_bridge_status(error=None):
+    """Status message the app uses to drive the connection banner + port picker."""
+    return {
+        "type": "bridge_status",
+        "data": {
+            "serial_connected": serial_connected,
+            "port": current_port,
+            "available_ports": list_available_ports(),
+            "error": error,
+        },
+    }
+
+def _open_serial():
+    """Attempt to open the serial port. Returns True on success."""
+    global ser, serial_connected, current_port
+    port = requested_port or autodetect_serial_port() or SERIAL_PORT
+    current_port = port
+    try:
+        ser = serial.Serial(port, BAUD_RATE, timeout=0.1)
+        serial_connected = True
+        log.info(f"Serial port {port} opened at {BAUD_RATE} baud")
+        schedule_broadcast(build_bridge_status())
+        return True
+    except Exception as e:
+        serial_connected = False
+        ser = None
+        available = [p.device for p in list_ports.comports()]
+        log.error(
+            f"Cannot open {port}: {e}. "
+            f"Available ports: {available or 'none detected'}. "
+            f"Retrying... (tip: close the Arduino Serial Monitor; "
+            f"on Linux ensure you're in the 'dialout' group)"
+        )
+        schedule_broadcast(build_bridge_status(error=str(e)))
+        return False
+
+def serial_reader_loop():
+    global ser, serial_connected
 
     in_frame = False
     escape_next = False
     kiss_buffer = bytearray()
 
     while True:
+        # (Re)open the port whenever it is not currently connected.
+        if ser is None or not getattr(ser, "is_open", False):
+            if not _open_serial():
+                # Wait up to 3s, but wake immediately on a reconnect request.
+                reconnect_event.wait(timeout=3)
+                reconnect_event.clear()
+                continue
+            in_frame = False
+            escape_next = False
+            kiss_buffer.clear()
+
         try:
+            # Handle a user-requested reconnect / port change.
+            if reconnect_event.is_set():
+                reconnect_event.clear()
+                try:
+                    ser.close()
+                except Exception:
+                    pass
+                ser = None
+                serial_connected = False
+                schedule_broadcast(build_bridge_status())
+                continue
+
             if ser.in_waiting > 0:
                 raw = ser.read(ser.in_waiting)
                 for b in raw:
@@ -455,12 +555,15 @@ def serial_reader_loop():
                         schedule_broadcast({"type": "telemetry", "data": latest_telemetry})
 
         except serial.SerialException as e:
-            log.error(f"Serial error: {e}. Reconnecting in 3s...")
-            time.sleep(3)
+            log.error(f"Serial error: {e}. Reconnecting...")
+            serial_connected = False
             try:
-                ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
-            except:
+                ser.close()
+            except Exception:
                 pass
+            ser = None
+            schedule_broadcast(build_bridge_status(error=str(e)))
+            time.sleep(2)
         except Exception as e:
             log.error(f"Unexpected error in serial reader: {e}")
             time.sleep(1)
@@ -492,12 +595,13 @@ async def ws_handler(websocket):
     connected_clients.add(websocket)
     log.info(f"Dashboard connected ({len(connected_clients)} clients)")
 
-    # Send current telemetry immediately on connect
+    # Send current telemetry + bridge/serial status immediately on connect
     try:
         await websocket.send(json.dumps({
             "type": "telemetry",
             "data": latest_telemetry
         }))
+        await websocket.send(json.dumps(build_bridge_status()))
     except:
         pass
 
@@ -508,7 +612,26 @@ async def ws_handler(websocket):
                 cmd = data.get("cmd", "")
                 log.info(f"WS CMD: {cmd}")
 
-                if cmd == "ping":
+                if cmd == "list_ports":
+                    # App is asking which serial ports are available.
+                    await websocket.send(json.dumps(build_bridge_status()))
+
+                elif cmd == "set_port":
+                    # App picked a specific serial port -> switch to it.
+                    global requested_port
+                    new_port = (data.get("port") or "").strip()
+                    requested_port = new_port or None
+                    log.info(f"Serial port override set to: {requested_port or 'AUTO'}")
+                    reconnect_event.set()
+                    await websocket.send(json.dumps(build_bridge_status()))
+
+                elif cmd == "reconnect":
+                    # Force a fresh serial reconnect (re-runs auto-detect).
+                    log.info("Reconnect requested by app")
+                    reconnect_event.set()
+                    await websocket.send(json.dumps(build_bridge_status()))
+
+                elif cmd == "ping":
                     send_command(CMD_PING)
 
                 elif cmd == "status":

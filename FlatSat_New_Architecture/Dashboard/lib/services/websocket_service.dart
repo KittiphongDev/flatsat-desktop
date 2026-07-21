@@ -17,11 +17,22 @@ class WebSocketService extends ChangeNotifier {
   TelemetryData telemetry = TelemetryData();
   GpsData? lastGps;
   EpsData? lastEps;
+
+  // Rolling EPS history for live charts.
+  static const int epsHistoryCap = 60;
+  final List<EpsData> epsHistory = [];
+  int epsPacketCount = 0;
   List<ImageEntry> imageList = [];
   DownloadProgress? downloadProgress;
   bool isDownloading = false;
   String? downloadCompleteFile;
   List<String> eventLog = [];
+
+  // ---- Serial / bridge status (drives the in-app connection helper) ----
+  bool serialConnected = false;
+  String? currentPort;
+  String? serialError;
+  List<SerialPort> availablePorts = [];
 
   String _wsUrl = 'ws://localhost:8080';
 
@@ -136,6 +147,7 @@ class WebSocketService extends ChangeNotifier {
 
         case 'ack':
           _addLog('ACK: ${data['data'] ?? 'OK'}');
+          _applyPowerAck(data['data']);
           break;
 
         case 'nack':
@@ -154,6 +166,11 @@ class WebSocketService extends ChangeNotifier {
 
         case 'eps':
           lastEps = EpsData.fromJson(data['data']);
+          epsPacketCount++;
+          epsHistory.add(lastEps!);
+          if (epsHistory.length > epsHistoryCap) {
+            epsHistory.removeRange(0, epsHistory.length - epsHistoryCap);
+          }
           _addLog('EPS: ${lastEps!.ina226.length} INA226, '
               '${lastEps!.tmp102.length} TMP102, '
               '${lastEps!.adm1177.length} ADM1177');
@@ -186,6 +203,22 @@ class WebSocketService extends ChangeNotifier {
           final elapsed = data['data']['elapsed'] ?? 0;
           _addLog('Download complete: $downloadCompleteFile '
               '(${size}B in ${elapsed}s)');
+          break;
+
+        case 'bridge_status':
+          final d = data['data'] as Map<String, dynamic>;
+          final wasConnected = serialConnected;
+          serialConnected = d['serial_connected'] == true;
+          currentPort = d['port'] as String?;
+          serialError = d['error'] as String?;
+          availablePorts = ((d['available_ports'] as List?) ?? [])
+              .map((e) => SerialPort.fromJson(e))
+              .toList();
+          if (serialConnected && !wasConnected) {
+            _addLog('Serial connected: ${currentPort ?? ''}');
+          } else if (!serialConnected && wasConnected) {
+            _addLog('Serial disconnected');
+          }
           break;
 
         case 'error':
@@ -241,6 +274,43 @@ class WebSocketService extends ChangeNotifier {
     _send({'cmd': 'toggle_pwr', 'subsystem': subsystem});
     final names = ['Payload', 'GPS', 'Camera'];
     _addLog('>> TOGGLE_PWR ${names[subsystem]}');
+    // Optimistically flip the switch immediately for responsive UI.
+    // The OBC's ACK (and the next beacon) will confirm the real state.
+    switch (subsystem) {
+      case 0:
+        telemetry = telemetry.copyWith(payloadPwr: !telemetry.payloadPwr);
+        break;
+      case 1:
+        telemetry = telemetry.copyWith(gpsPwr: !telemetry.gpsPwr);
+        break;
+      case 2:
+        telemetry = telemetry.copyWith(camPwr: !telemetry.camPwr);
+        break;
+    }
+    notifyListeners();
+  }
+
+  /// Apply the authoritative power state from an OBC ACK payload.
+  /// The ACK data is a hex string: [subsystem_byte][state_byte], e.g. "0001".
+  void _applyPowerAck(dynamic ackData) {
+    if (ackData is! String || ackData.length < 4) return;
+    try {
+      final subsystem = int.parse(ackData.substring(0, 2), radix: 16);
+      final isOn = int.parse(ackData.substring(2, 4), radix: 16) != 0;
+      switch (subsystem) {
+        case 0:
+          telemetry = telemetry.copyWith(payloadPwr: isOn);
+          break;
+        case 1:
+          telemetry = telemetry.copyWith(gpsPwr: isOn);
+          break;
+        case 2:
+          telemetry = telemetry.copyWith(camPwr: isOn);
+          break;
+      }
+    } catch (_) {
+      // Not a power ACK (e.g. ping ack) — ignore.
+    }
   }
 
   void sendListImage() {
@@ -256,6 +326,39 @@ class WebSocketService extends ChangeNotifier {
   void sendDownload(String filename) {
     _send({'cmd': 'download', 'filename': filename});
     _addLog('>> DOWNLOAD $filename');
+  }
+
+  // ---- Connection helper commands ----
+
+  /// Ask the bridge for the list of available serial ports.
+  void requestPorts() {
+    _send({'cmd': 'list_ports'});
+  }
+
+  /// Tell the bridge to switch to a specific serial port ('' = auto-detect).
+  void selectPort(String device) {
+    _send({'cmd': 'set_port', 'port': device});
+    _addLog('>> SET PORT ${device.isEmpty ? 'AUTO' : device}');
+  }
+
+  /// Force the whole connection to re-establish: reconnect the WebSocket if the
+  /// bridge is down, otherwise tell the bridge to re-open the serial port.
+  void reconnect() {
+    if (_isConnected) {
+      _send({'cmd': 'reconnect'});
+      _addLog('>> RECONNECT');
+    } else {
+      _addLog('>> RECONNECT (bridge)');
+      connect();
+    }
+  }
+
+  /// Overall connection stage used by the in-app banner.
+  ConnectionStage get stage {
+    if (!_isConnected) return ConnectionStage.bridgeOffline;
+    if (!serialConnected) return ConnectionStage.noGroundStation;
+    if (!telemetry.isLinkActive) return ConnectionStage.waitingForSatellite;
+    return ConnectionStage.live;
   }
 
   // ---- Event Log ----
@@ -279,4 +382,30 @@ class WebSocketService extends ChangeNotifier {
     _disconnect();
     super.dispose();
   }
+}
+
+/// Stages of the end-to-end connection, from the app to the satellite.
+enum ConnectionStage {
+  bridgeOffline, // WebSocket to the Python bridge is down
+  noGroundStation, // Bridge up, but the GS serial port isn't open
+  waitingForSatellite, // GS connected, but no beacon received yet
+  live, // Receiving telemetry from the satellite
+}
+
+/// A serial port reported by the bridge.
+class SerialPort {
+  final String device;
+  final String description;
+
+  SerialPort({required this.device, required this.description});
+
+  factory SerialPort.fromJson(Map<String, dynamic> json) {
+    return SerialPort(
+      device: json['device'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+    );
+  }
+
+  String get label =>
+      description.isEmpty ? device : '$device  —  $description';
 }

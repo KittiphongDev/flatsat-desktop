@@ -26,9 +26,12 @@
 #define I2C_SDA PB9
 
 // --- MOSFET POWER SWITCHES ---
-#define PAYLOAD_PWR_PIN PG6   // Payload subsystem power MOSFET
-#define GPS_PWR_PIN PG7       // GPS module power MOSFET
-#define CAM_PWR_PIN PG8       // Camera module power MOSFET
+// EPS controllable power outputs (ADM1177 hot-swap channels).
+// The OBC drives the channel enable lines on pins PD1/PD2/PD3.
+// (Output 1 = OBC itself and cannot be switched off.)
+#define PAYLOAD_PWR_PIN PD1   // Output 2: Communication power   (ADM1177 0x59)
+#define GPS_PWR_PIN     PD2   // Output 3: Payload 1 / GPS power (ADM1177 0x5A)
+#define CAM_PWR_PIN     PD3   // Output 4: Payload 2 / PC104     (ADM1177 0x5B)
 
 // --- EPS SENSOR BUS (I2C2 - Dedicated to EPS sensors) ---
 #define EPS_SDA PF0
@@ -258,9 +261,11 @@ uint8_t systemErrors = 0x00;
 #define ERR_GPS  0x10
 
 // --- Subsystem Power States ---
-bool payloadPwrState = false;
-bool gpsPwrState = false;
-bool camPwrState = false;
+// Channels boot powered ON (HIGH) so the radio link and payloads are live.
+// Index mapping: payload=Communication(PD1), gps=Payload1/GPS(PD2), cam=Payload2/PC104(PD3)
+bool payloadPwrState = true;
+bool gpsPwrState = true;
+bool camPwrState = true;
 
 // --- Image Counter ---
 uint32_t imageCounter = 0;
@@ -784,13 +789,14 @@ void setup() {
   // EPS Sensor Bus (INA226 / TMP102 / ADM1177)
   initEPS();
 
-  // Power MOSFET Pins
+  // EPS power-channel enable pins (PD1/PD2/PD3). Boot HIGH = powered ON,
+  // matching the FlatSat power-control reference, so the COMMS link stays up.
   pinMode(PAYLOAD_PWR_PIN, OUTPUT);
   pinMode(GPS_PWR_PIN, OUTPUT);
   pinMode(CAM_PWR_PIN, OUTPUT);
-  digitalWrite(PAYLOAD_PWR_PIN, LOW);
-  digitalWrite(GPS_PWR_PIN, LOW);
-  digitalWrite(CAM_PWR_PIN, LOW);
+  digitalWrite(PAYLOAD_PWR_PIN, payloadPwrState ? HIGH : LOW);
+  digitalWrite(GPS_PWR_PIN, gpsPwrState ? HIGH : LOW);
+  digitalWrite(CAM_PWR_PIN, camPwrState ? HIGH : LOW);
 
   // SD Card (SPI3)
   Serial.print("[SYSTEM] Initializing SD Card... ");

@@ -42,6 +42,34 @@ class TelemetryData {
     );
   }
 
+  TelemetryData copyWith({
+    int? systemErrors,
+    bool? payloadPwr,
+    bool? gpsPwr,
+    bool? camPwr,
+    int? batteryPct,
+    int? temperature,
+    int? voltage,
+    String? linkStatus,
+    double? rssi,
+    double? snr,
+    double? lastPacketTime,
+  }) {
+    return TelemetryData(
+      systemErrors: systemErrors ?? this.systemErrors,
+      payloadPwr: payloadPwr ?? this.payloadPwr,
+      gpsPwr: gpsPwr ?? this.gpsPwr,
+      camPwr: camPwr ?? this.camPwr,
+      batteryPct: batteryPct ?? this.batteryPct,
+      temperature: temperature ?? this.temperature,
+      voltage: voltage ?? this.voltage,
+      linkStatus: linkStatus ?? this.linkStatus,
+      rssi: rssi ?? this.rssi,
+      snr: snr ?? this.snr,
+      lastPacketTime: lastPacketTime ?? this.lastPacketTime,
+    );
+  }
+
   bool get isLinkActive => linkStatus == 'ACTIVE';
 
   String get errorString {

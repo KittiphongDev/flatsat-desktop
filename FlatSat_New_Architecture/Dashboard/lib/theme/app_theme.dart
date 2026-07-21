@@ -13,6 +13,8 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color surface; // cards
   final Color surfaceAlt; // terminal / log panel
   final Color border;
+  final Color header; // top app-bar background (black, NBSPACE style)
+  final Color onHeader; // text/icons on the header
 
   // ---- Text ----
   final Color textPrimary;
@@ -20,8 +22,9 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color textMuted;
 
   // ---- Brand + status accents ----
-  final Color accent; // primary brand
+  final Color accent; // primary brand (NBSPACE red)
   final Color secondary; // secondary brand (violet)
+  final Color info; // neutral informational blue
   final Color success;
   final Color warning;
   final Color error;
@@ -33,11 +36,14 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.surface,
     required this.surfaceAlt,
     required this.border,
+    required this.header,
+    required this.onHeader,
     required this.textPrimary,
     required this.textSecondary,
     required this.textMuted,
     required this.accent,
     required this.secondary,
+    required this.info,
     required this.success,
     required this.warning,
     required this.error,
@@ -45,17 +51,20 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.pink,
   });
 
-  /// Dark "mission control" palette (original look, refined).
+  /// Dark "mission control" palette (NBSPACE red accent).
   static const dark = AppColors(
-    scaffold: Color(0xFF0A0E1A),
-    surface: Color(0xFF111827),
-    surfaceAlt: Color(0xFF080C15),
+    scaffold: Color(0xFF0B0D10),
+    surface: Color(0xFF15181D),
+    surfaceAlt: Color(0xFF090B0E),
     border: Color(0x14FFFFFF), // white @ ~8%
+    header: Color(0xFF000000),
+    onHeader: Color(0xFFFFFFFF),
     textPrimary: Color(0xFFFFFFFF),
     textSecondary: Color(0x99FFFFFF), // white @ 60%
     textMuted: Color(0x66FFFFFF), // white @ 40%
-    accent: Color(0xFF00D4FF),
+    accent: Color(0xFFEE3B2B), // NBSPACE red
     secondary: Color(0xFF7B61FF),
+    info: Color(0xFF3B9EFF),
     success: Color(0xFF00E676),
     warning: Color(0xFFFFAB40),
     error: Color(0xFFFF4D6A),
@@ -64,21 +73,24 @@ class AppColors extends ThemeExtension<AppColors> {
   );
 
   /// Light "documentation" palette, matching the clean Material-for-MkDocs
-  /// aesthetic of the FlatSat docs site.
+  /// NBSPACE docs site: white content, black header bar, red brand accent.
   static const light = AppColors(
-    scaffold: Color(0xFFF5F7FA),
+    scaffold: Color(0xFFF6F7F9),
     surface: Color(0xFFFFFFFF),
-    surfaceAlt: Color(0xFF0F1729), // terminal stays dark for readability
-    border: Color(0xFFE2E8F0),
-    textPrimary: Color(0xFF15202B),
-    textSecondary: Color(0xFF475569),
-    textMuted: Color(0xFF94A3B8),
-    accent: Color(0xFF0091C7),
+    surfaceAlt: Color(0xFF15181D), // terminal stays dark for readability
+    border: Color(0xFFE4E7EC),
+    header: Color(0xFF0D0D0D),
+    onHeader: Color(0xFFFFFFFF),
+    textPrimary: Color(0xFF14181F),
+    textSecondary: Color(0xFF4B5563),
+    textMuted: Color(0xFF98A2B3),
+    accent: Color(0xFFE5392A), // NBSPACE red
     secondary: Color(0xFF6D4AFF),
+    info: Color(0xFF2D7FF9),
     success: Color(0xFF10A56A),
-    warning: Color(0xFFE08600),
+    warning: Color(0xFFD97706),
     error: Color(0xFFE11D48),
-    yellow: Color(0xFFC98A00),
+    yellow: Color(0xFFB98600),
     pink: Color(0xFFDB2A8B),
   );
 
@@ -88,11 +100,14 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? surface,
     Color? surfaceAlt,
     Color? border,
+    Color? header,
+    Color? onHeader,
     Color? textPrimary,
     Color? textSecondary,
     Color? textMuted,
     Color? accent,
     Color? secondary,
+    Color? info,
     Color? success,
     Color? warning,
     Color? error,
@@ -104,11 +119,14 @@ class AppColors extends ThemeExtension<AppColors> {
       surface: surface ?? this.surface,
       surfaceAlt: surfaceAlt ?? this.surfaceAlt,
       border: border ?? this.border,
+      header: header ?? this.header,
+      onHeader: onHeader ?? this.onHeader,
       textPrimary: textPrimary ?? this.textPrimary,
       textSecondary: textSecondary ?? this.textSecondary,
       textMuted: textMuted ?? this.textMuted,
       accent: accent ?? this.accent,
       secondary: secondary ?? this.secondary,
+      info: info ?? this.info,
       success: success ?? this.success,
       warning: warning ?? this.warning,
       error: error ?? this.error,
@@ -125,11 +143,14 @@ class AppColors extends ThemeExtension<AppColors> {
       surface: Color.lerp(surface, other.surface, t)!,
       surfaceAlt: Color.lerp(surfaceAlt, other.surfaceAlt, t)!,
       border: Color.lerp(border, other.border, t)!,
+      header: Color.lerp(header, other.header, t)!,
+      onHeader: Color.lerp(onHeader, other.onHeader, t)!,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
       textMuted: Color.lerp(textMuted, other.textMuted, t)!,
       accent: Color.lerp(accent, other.accent, t)!,
       secondary: Color.lerp(secondary, other.secondary, t)!,
+      info: Color.lerp(info, other.info, t)!,
       success: Color.lerp(success, other.success, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
       error: Color.lerp(error, other.error, t)!,

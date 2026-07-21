@@ -1,0 +1,493 @@
+[13:53:03] INFO: WebSocket Server starting on ws://localhost:8080
+[13:53:03] INFO: server listening on 127.0.0.1:8080
+[13:53:03] INFO: Bridge is running. Waiting for connections...
+[13:53:03] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
+[13:53:03] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:53:11] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:53:12] INFO: connection open
+[13:53:12] INFO: Dashboard connected (1 clients)
+[13:53:21] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:53:31] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:53:35] INFO: WS CMD: list_ports
+[13:53:40] INFO: WS CMD: set_port
+[13:53:40] INFO: Serial port override set to: /dev/ttyACM0
+[13:53:40] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
+[13:53:40] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:53:50] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:53:55] INFO: WS CMD: toggle_pwr
+[13:53:55] INFO: TX -> CMD 0x06 payload=01
+[13:53:55] INFO: RX <- CMD 0x02 payload_len=2
+[13:53:55] INFO: ACK received: 0101
+[13:53:55] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:53:56] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:53:57] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:53:58] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:53:59] INFO: RX <- CMD 0x03 payload_len=8
+[13:53:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:00] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:54:01] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:54:02] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:03] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:04] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:05] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:06] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:07] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:08] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:09] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:10] INFO: WS CMD: toggle_pwr
+[13:54:10] INFO: TX -> CMD 0x06 payload=01
+[13:54:10] INFO: RX <- CMD 0x02 payload_len=2
+[13:54:10] INFO: ACK received: 0100
+[13:54:10] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:11] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:12] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:13] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:14] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:15] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:16] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:17] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:18] INFO: WS CMD: toggle_pwr
+[13:54:18] INFO: TX -> CMD 0x06 payload=02
+[13:54:19] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:20] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:21] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[13:54:21] INFO: WS CMD: toggle_pwr
+[13:54:21] INFO: TX -> CMD 0x06 payload=00
+[13:54:21] INFO: RX <- CMD 0x02 payload_len=2
+[13:54:21] INFO: ACK received: 0000
+[13:54:22] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:23] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[13:54:24] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:25] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:26] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:27] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.5dBm
+[13:54:28] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:28] INFO: WS CMD: toggle_pwr
+[13:54:28] INFO: TX -> CMD 0x06 payload=00
+[13:54:28] INFO: RX <- CMD 0x02 payload_len=2
+[13:54:28] INFO: ACK received: 0001
+[13:54:29] INFO: WS CMD: toggle_pwr
+[13:54:29] INFO: TX -> CMD 0x06 payload=01
+[13:54:29] INFO: WS CMD: toggle_pwr
+[13:54:29] INFO: TX -> CMD 0x06 payload=02
+[13:54:29] INFO: RX <- CMD 0x02 payload_len=2
+[13:54:29] INFO: ACK received: 0200
+[13:54:30] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:31] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:31] INFO: WS CMD: toggle_pwr
+[13:54:31] INFO: TX -> CMD 0x06 payload=02
+[13:54:31] INFO: RX <- CMD 0x02 payload_len=2
+[13:54:31] INFO: ACK received: 0201
+[13:54:32] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:32] INFO: WS CMD: toggle_pwr
+[13:54:32] INFO: TX -> CMD 0x06 payload=01
+[13:54:33] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:54:33] INFO: WS CMD: toggle_pwr
+[13:54:33] INFO: TX -> CMD 0x06 payload=00
+[13:54:33] INFO: RX <- CMD 0x02 payload_len=2
+[13:54:33] INFO: ACK received: 0000
+[13:54:34] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:35] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:36] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:54:37] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:54:38] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:54:39] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:54:40] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:54:41] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:42] INFO: WS CMD: beacon
+[13:54:42] INFO: TX -> CMD 0x03 payload=none
+[13:54:42] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:54:43] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:54:44] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:45] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:46] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:54:47] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:48] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:54:49] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:50] INFO: WS CMD: get_eps
+[13:54:50] INFO: TX -> CMD 0x0F payload=none
+[13:54:50] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:51] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:54:52] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:53] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:54] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:54:55] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:54:56] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:57] INFO: WS CMD: get_gps
+[13:54:57] INFO: TX -> CMD 0x05 payload=none
+[13:54:57] INFO: RX <- CMD 0x0C payload_len=13
+[13:54:57] INFO: GPS: Lat=13.756300 Lon=100.501801 Alt=150.0m Sats=8
+[13:54:57] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:58] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:54:58] INFO: WS CMD: status
+[13:54:58] INFO: TX -> CMD 0x0A payload=none
+[13:54:59] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:54:59] INFO: RX <- CMD 0x03 payload_len=8
+[13:54:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:00] INFO: WS CMD: ping
+[13:55:00] INFO: TX -> CMD 0x01 payload=none
+[13:55:00] INFO: RX <- CMD 0x02 payload_len=0
+[13:55:00] INFO: ACK received: 
+[13:55:00] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:01] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:02] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:03] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:04] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:05] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:06] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:07] INFO: WS CMD: beacon
+[13:55:07] INFO: TX -> CMD 0x03 payload=none
+[13:55:07] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:07] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:08] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:09] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:10] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:11] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:12] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:55:13] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:55:14] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:15] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:16] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:17] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[13:55:18] INFO: WS CMD: toggle_pwr
+[13:55:18] INFO: TX -> CMD 0x06 payload=00
+[13:55:18] INFO: RX <- CMD 0x02 payload_len=2
+[13:55:18] INFO: ACK received: 0001
+[13:55:18] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:19] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:20] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:20] INFO: WS CMD: toggle_pwr
+[13:55:20] INFO: TX -> CMD 0x06 payload=00
+[13:55:20] INFO: RX <- CMD 0x02 payload_len=2
+[13:55:20] INFO: ACK received: 0000
+[13:55:21] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:22] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:23] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:24] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:25] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:26] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:55:27] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:55:28] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:55:29] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:55:30] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:55:31] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:55:32] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:55:33] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[13:55:34] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:35] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:55:44] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:55:54] INFO: RX <- CMD 0x03 payload_len=8
+[13:55:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[13:56:04] INFO: RX <- CMD 0x03 payload_len=8
+[13:56:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:56:14] INFO: RX <- CMD 0x03 payload_len=8
+[13:56:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[13:56:24] INFO: RX <- CMD 0x03 payload_len=8
+[13:56:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:56:33] INFO: RX <- CMD 0x03 payload_len=8
+[13:56:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:56:43] INFO: RX <- CMD 0x03 payload_len=8
+[13:56:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[13:56:53] INFO: RX <- CMD 0x03 payload_len=8
+[13:56:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[13:57:03] INFO: RX <- CMD 0x03 payload_len=8
+[13:57:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[13:57:18] WARNING: Link LOST (timeout)
+[13:57:22] INFO: RX <- CMD 0x03 payload_len=8
+[13:57:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[13:57:32] INFO: RX <- CMD 0x03 payload_len=8
+[13:57:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[13:57:42] INFO: RX <- CMD 0x03 payload_len=8
+[13:57:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[13:57:52] INFO: RX <- CMD 0x03 payload_len=8
+[13:57:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:58:02] INFO: RX <- CMD 0x03 payload_len=8
+[13:58:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:58:11] INFO: RX <- CMD 0x03 payload_len=8
+[13:58:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.5dBm
+[13:58:21] INFO: RX <- CMD 0x03 payload_len=8
+[13:58:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:58:31] INFO: RX <- CMD 0x03 payload_len=8
+[13:58:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[13:58:41] INFO: RX <- CMD 0x03 payload_len=8
+[13:58:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[13:58:51] INFO: RX <- CMD 0x03 payload_len=8
+[13:58:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:59:00] INFO: RX <- CMD 0x03 payload_len=8
+[13:59:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:59:10] INFO: RX <- CMD 0x03 payload_len=8
+[13:59:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[13:59:20] INFO: RX <- CMD 0x03 payload_len=8
+[13:59:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:59:30] INFO: RX <- CMD 0x03 payload_len=8
+[13:59:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-52.0dBm
+[13:59:40] INFO: RX <- CMD 0x03 payload_len=8
+[13:59:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[13:59:50] INFO: RX <- CMD 0x03 payload_len=8
+[13:59:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[13:59:59] INFO: RX <- CMD 0x03 payload_len=8
+[13:59:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[14:00:09] INFO: RX <- CMD 0x03 payload_len=8
+[14:00:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:00:19] INFO: RX <- CMD 0x03 payload_len=8
+[14:00:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-51.0dBm
+[14:00:29] INFO: RX <- CMD 0x03 payload_len=8
+[14:00:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:00:39] INFO: RX <- CMD 0x03 payload_len=8
+[14:00:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:00:48] INFO: RX <- CMD 0x03 payload_len=8
+[14:00:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:01:03] WARNING: Link LOST (timeout)
+[14:01:08] INFO: RX <- CMD 0x03 payload_len=8
+[14:01:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[14:01:18] INFO: RX <- CMD 0x03 payload_len=8
+[14:01:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.0dBm
+[14:01:28] INFO: RX <- CMD 0x03 payload_len=8
+[14:01:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:01:37] INFO: RX <- CMD 0x03 payload_len=8
+[14:01:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:01:47] INFO: RX <- CMD 0x03 payload_len=8
+[14:01:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-53.0dBm
+[14:01:57] INFO: RX <- CMD 0x03 payload_len=8
+[14:01:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-50.5dBm
+[14:02:07] INFO: RX <- CMD 0x03 payload_len=8
+[14:02:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:02:17] INFO: RX <- CMD 0x03 payload_len=8
+[14:02:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:02:27] INFO: RX <- CMD 0x03 payload_len=8
+[14:02:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:02:36] INFO: RX <- CMD 0x03 payload_len=8
+[14:02:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:02:46] INFO: RX <- CMD 0x03 payload_len=8
+[14:02:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:03:01] WARNING: Link LOST (timeout)
+[14:03:06] INFO: RX <- CMD 0x03 payload_len=8
+[14:03:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:03:16] INFO: RX <- CMD 0x03 payload_len=8
+[14:03:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.5dBm
+[14:03:25] INFO: RX <- CMD 0x03 payload_len=8
+[14:03:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.5dBm
+[14:03:35] INFO: RX <- CMD 0x03 payload_len=8
+[14:03:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.5dBm
+[14:03:45] INFO: RX <- CMD 0x03 payload_len=8
+[14:03:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.5dBm
+[14:03:55] INFO: RX <- CMD 0x03 payload_len=8
+[14:03:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:04:05] INFO: RX <- CMD 0x03 payload_len=8
+[14:04:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:04:14] INFO: RX <- CMD 0x03 payload_len=8
+[14:04:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:04:24] INFO: RX <- CMD 0x03 payload_len=8
+[14:04:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:04:34] INFO: RX <- CMD 0x03 payload_len=8
+[14:04:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:04:44] INFO: RX <- CMD 0x03 payload_len=8
+[14:04:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.5dBm
+[14:04:54] INFO: RX <- CMD 0x03 payload_len=8
+[14:04:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:05:04] INFO: RX <- CMD 0x03 payload_len=8
+[14:05:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:05:13] INFO: RX <- CMD 0x03 payload_len=8
+[14:05:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:05:23] INFO: RX <- CMD 0x03 payload_len=8
+[14:05:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.5dBm
+[14:05:33] INFO: RX <- CMD 0x03 payload_len=8
+[14:05:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:05:43] INFO: RX <- CMD 0x03 payload_len=8
+[14:05:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:05:53] INFO: RX <- CMD 0x03 payload_len=8
+[14:05:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:06:02] INFO: RX <- CMD 0x03 payload_len=8
+[14:06:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-49.0dBm
+[14:06:12] INFO: RX <- CMD 0x03 payload_len=8
+[14:06:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[14:06:22] INFO: RX <- CMD 0x03 payload_len=8
+[14:06:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-46.5dBm
+[14:06:32] INFO: RX <- CMD 0x03 payload_len=8
+[14:06:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.0dBm
+[14:06:42] INFO: RX <- CMD 0x03 payload_len=8
+[14:06:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.0dBm
+[14:06:51] INFO: RX <- CMD 0x03 payload_len=8
+[14:06:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.0dBm
+[14:07:01] INFO: RX <- CMD 0x03 payload_len=8
+[14:07:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.0dBm
+[14:07:11] INFO: RX <- CMD 0x03 payload_len=8
+[14:07:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:07:21] INFO: RX <- CMD 0x03 payload_len=8
+[14:07:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:07:31] INFO: RX <- CMD 0x03 payload_len=8
+[14:07:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:07:41] INFO: RX <- CMD 0x03 payload_len=8
+[14:07:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.0dBm
+[14:07:50] INFO: RX <- CMD 0x03 payload_len=8
+[14:07:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[14:08:00] INFO: RX <- CMD 0x03 payload_len=8
+[14:08:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.0dBm
+[14:08:10] INFO: RX <- CMD 0x03 payload_len=8
+[14:08:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[14:08:20] INFO: RX <- CMD 0x03 payload_len=8
+[14:08:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:08:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:08:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:08:39] INFO: RX <- CMD 0x03 payload_len=8
+[14:08:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:08:49] INFO: RX <- CMD 0x03 payload_len=8
+[14:08:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:08:59] INFO: RX <- CMD 0x03 payload_len=8
+[14:08:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:09:09] INFO: RX <- CMD 0x03 payload_len=8
+[14:09:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:09:19] INFO: RX <- CMD 0x03 payload_len=8
+[14:09:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.0dBm
+[14:09:29] INFO: RX <- CMD 0x03 payload_len=8
+[14:09:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.0dBm
+[14:09:38] INFO: RX <- CMD 0x03 payload_len=8
+[14:09:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-47.5dBm
+[14:09:44] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:45] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:46] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:47] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:48] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:49] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:50] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:51] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:52] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:53] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:54] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:55] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:56] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:57] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:58] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:09:59] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:00] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:01] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:02] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:03] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:04] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:05] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:06] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:07] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:08] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:09] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:10] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:11] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:12] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:13] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:14] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:15] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:16] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:17] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:18] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:19] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:20] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:21] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:22] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:23] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:24] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error
+[14:10:25] ERROR: Unexpected error in serial reader: [Errno 5] Input/output error

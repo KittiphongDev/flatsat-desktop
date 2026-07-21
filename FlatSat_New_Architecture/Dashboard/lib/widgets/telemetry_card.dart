@@ -25,7 +25,7 @@ class TelemetryCard extends StatelessWidget {
     final c = context.colors;
     final accent = accentColor ?? c.accent;
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: c.surface,
         borderRadius: BorderRadius.circular(16),
@@ -59,6 +59,8 @@ class TelemetryCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: c.textSecondary,
                     fontSize: 12,
@@ -70,20 +72,27 @@ class TelemetryCard extends StatelessWidget {
               if (trailing != null) trailing!,
             ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            value,
-            style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.5,
+          const SizedBox(height: 12),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              maxLines: 1,
+              style: TextStyle(
+                color: c.textPrimary,
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
+              ),
             ),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
             Text(
               subtitle!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: c.textMuted,
                 fontSize: 12,
@@ -239,52 +248,81 @@ class CommandButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onPressed;
-  final Color? color;
 
   const CommandButton({
     super.key,
     required this.icon,
     required this.label,
     required this.onPressed,
-    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    return _CommandButtonBody(icon: icon, label: label, onPressed: onPressed);
+  }
+}
+
+/// Cohesive, low-chroma command button with a subtle accent on hover/press.
+class _CommandButtonBody extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+  const _CommandButtonBody({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  State<_CommandButtonBody> createState() => _CommandButtonBodyState();
+}
+
+class _CommandButtonBodyState extends State<_CommandButtonBody> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
     final c = context.colors;
-    final btnColor = color ?? c.accent;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: btnColor.withOpacity(0.35)),
-            gradient: LinearGradient(
-              colors: [
-                btnColor.withOpacity(0.12),
-                btnColor.withOpacity(0.03),
+    final active = _hover;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      cursor: SystemMouseCursors.click,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: widget.onPressed,
+          borderRadius: BorderRadius.circular(10),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 130),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: active ? c.accent.withOpacity(0.10) : c.surface,
+              border: Border.all(
+                color: active ? c.accent.withOpacity(0.55) : c.border,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  widget.icon,
+                  color: active ? c.accent : c.textSecondary,
+                  size: 17,
+                ),
+                const SizedBox(width: 9),
+                Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: active ? c.accent : c.textPrimary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                  ),
+                ),
               ],
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: btnColor, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: btnColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
           ),
         ),
       ),

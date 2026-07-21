@@ -1,11 +1,9 @@
 #!/bin/bash
 # =====================================================================
-# FlatSat Mission Control - One-Click Launcher (Linux / Raspberry Pi)
-# Double-click this file (or run ./run_mission_control.sh) to:
-#   1. Install the Python dependencies (first run only)
-#   2. Start the ground-station bridge
-#   3. Open the dashboard
-#   4. Clean up automatically when you close it
+# FlatSat Mission Control - One-Click Launcher (macOS)
+# Double-click this file in Finder to start everything.
+# (First time: right-click > Open to bypass Gatekeeper, or run
+#  `chmod +x run_mission_control.command` in Terminal once.)
 # =====================================================================
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -27,7 +25,7 @@ fi
 # ---- 1. Dependencies ----
 echo "[1/3] Checking Python dependencies..."
 $PY -m pip install --quiet --disable-pip-version-check -r "$DIR/PC_Bridge/requirements.txt" 2>/dev/null \
-  || $PY -m pip install --quiet --user --break-system-packages -r "$DIR/PC_Bridge/requirements.txt" 2>/dev/null \
+  || $PY -m pip install --quiet --user -r "$DIR/PC_Bridge/requirements.txt" 2>/dev/null \
   || echo "      (Could not auto-install dependencies; continuing anyway.)"
 
 # ---- 2. Bridge ----
@@ -47,14 +45,14 @@ sleep 1.5
 # ---- 3. Dashboard ----
 echo "[3/3] Launching dashboard..."
 cd "$DIR/Dashboard"
-BIN="build/linux/x64/release/bundle/flatsat_dashboard"
-if [ -x "$BIN" ]; then
-  "./$BIN"
+APP="build/macos/Build/Products/Release/flatsat_dashboard.app"
+if [ -d "$APP" ]; then
+  open -W "$APP"
 elif command -v flutter >/dev/null 2>&1; then
-  flutter run -d linux
+  flutter run -d macos
 else
   echo "ERROR: No built app found and Flutter is not installed."
-  echo "Either install Flutter, or build the app once with: flutter build linux"
+  echo "Either install Flutter, or build the app once with: flutter build macos"
   read -r -p "Press Enter to close..."
   exit 1
 fi
