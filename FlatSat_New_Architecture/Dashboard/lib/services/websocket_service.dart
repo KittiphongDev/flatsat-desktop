@@ -39,6 +39,12 @@ class WebSocketService extends ChangeNotifier {
   List<DeviceHealth> deviceHealth = [];
   DateTime? lastHealthTime;
 
+  // Camera payload power (production build only, ADM-independent PD4 line).
+  // Not carried in the beacon, so this is tracked from the toggle ACK echo.
+  // Defaults to false (off); in a prototype build the camera is always powered
+  // and this field is simply unused.
+  bool cameraPwr = false;
+
   // Ping round-trip time.
   int? pingRttMs;
   DateTime? _pingSentAt;
@@ -362,6 +368,34 @@ class WebSocketService extends ChangeNotifier {
     _addLog('>> TAKE_PIC');
   }
 
+  /// Toggle the Arducam power line (PD4, subsystem 3). Production build only;
+  /// the firmware NACKs this in a prototype build. Optimistically flips the UI;
+  /// the OBC's ACK confirms the real state.
+  void toggleCameraPower() {
+    _send({'cmd': 'toggle_pwr', 'subsystem': 3});
+    _addLog('>> TOGGLE_PWR Camera');
+    cameraPwr = !cameraPwr;
+    notifyListeners();
+  }
+
+  /// Take a picture, optionally powering the camera first.
+  ///
+  /// When [autoPower] is set (production + the auto-power setting) and the
+  /// camera is currently off, this powers it on and waits for the sensor to
+  /// boot before capturing — the dashboard-side implementation of "auto-power
+  /// on capture", so no new firmware command is needed. In a prototype build
+  /// the camera is always on, so [autoPower] should be false and this is a
+  /// plain capture.
+  Future<void> capturePhoto({bool autoPower = false}) async {
+    if (autoPower && !cameraPwr) {
+      toggleCameraPower();
+      _flash('Powering camera…');
+      // Cover the firmware's PD4 boot delay (~2 s) plus a little slack.
+      await Future.delayed(const Duration(milliseconds: 2600));
+    }
+    sendTakePic();
+  }
+
   void sendGetGps() {
     _send({'cmd': 'get_gps'});
     _addLog('>> GET_GPS');
@@ -427,6 +461,9 @@ class WebSocketService extends ChangeNotifier {
           break;
         case 2:
           telemetry = telemetry.copyWith(camPwr: isOn);
+          break;
+        case 3:
+          cameraPwr = isOn; // Arducam PD4 line
           break;
       }
     } catch (_) {

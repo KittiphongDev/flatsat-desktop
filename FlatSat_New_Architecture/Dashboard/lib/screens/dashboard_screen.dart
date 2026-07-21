@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../platform.dart';
 import '../services/websocket_service.dart';
+import '../services/settings_service.dart';
 import '../widgets/telemetry_card.dart';
 import '../widgets/connection_banner.dart';
 import '../widgets/eps_dashboard.dart';
+import '../widgets/settings_dialog.dart';
 import '../theme/app_theme.dart';
 
 /// Breakpoint above which the dashboard uses a multi-column desktop layout.
@@ -173,7 +175,12 @@ class DashboardScreen extends StatelessWidget {
       _cmdBtn(context, Icons.radar, 'SCAN', ws.sendStatus);
 
   Widget _imageAction(BuildContext context, WebSocketService ws) => _cmdRow([
-        _cmdBtn(context, Icons.camera, 'TAKE PIC', ws.sendTakePic),
+        _cmdBtn(context, Icons.camera, 'TAKE PIC', () {
+          // Auto-power is a dashboard-side behaviour: in production with the
+          // setting on, this powers the camera and waits before capturing.
+          final autoPower = context.read<SettingsService>().autoPowerOnCapture;
+          ws.capturePhoto(autoPower: autoPower);
+        }),
         _cmdBtn(context, Icons.photo_library, 'LIST', ws.sendListImage),
       ]);
 
@@ -399,6 +406,17 @@ class DashboardScreen extends StatelessWidget {
           isOn: ws.telemetry.camPwr, // channel 2 = Payload 2 / PC104 (PD3)
           onToggle: () => ws.sendTogglePwr(2),
         ),
+        // Camera payload (Arducam on PD4) — only switchable in a production
+        // build. Hidden in prototype, where the camera is always powered.
+        if (context.watch<SettingsService>().isProduction) ...[
+          const SizedBox(height: 8),
+          SubsystemCard(
+            name: 'Camera (Arducam)',
+            icon: Icons.photo_camera,
+            isOn: ws.cameraPwr,
+            onToggle: ws.toggleCameraPower,
+          ),
+        ],
       ],
     );
   }
@@ -959,6 +977,15 @@ class _AppBarStatus extends StatelessWidget {
           compact: compact,
         ),
         const SizedBox(width: 10),
+        IconButton(
+          tooltip: 'Settings',
+          icon: Icon(
+            Icons.settings_outlined,
+            color: c.onHeader.withOpacity(0.8),
+            size: 20,
+          ),
+          onPressed: () => showSettingsDialog(context),
+        ),
         IconButton(
           tooltip: themeProvider.isDark
               ? 'Switch to light theme'

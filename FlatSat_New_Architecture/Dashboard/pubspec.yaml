@@ -16,6 +16,8 @@ dependencies:
   intl: ^0.20.3
   # Frameless window + custom title bar on Windows/Linux/macOS.
   window_manager: ^0.5.2
+  # Persists user settings (camera mode, auto-power) across restarts.
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:

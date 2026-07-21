@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'platform.dart';
 import 'services/websocket_service.dart';
+import 'services/settings_service.dart';
 import 'screens/dashboard_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -32,11 +33,17 @@ Future<void> main() async {
     });
   }
 
+  // Load persisted settings before the first frame so the UI starts in the
+  // right camera mode instead of flickering from the default.
+  final settings = SettingsService();
+  await settings.load();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => WebSocketService()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: settings),
       ],
       child: const FlatSatApp(),
     ),

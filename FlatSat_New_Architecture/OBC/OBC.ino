@@ -11,6 +11,23 @@
 #include "SdFat_Adafruit_Fork.h"
 #include <IWatchdog.h>
 #include <TinyGPS++.h>   // GPS NMEA parsing (same library as the FlatSat labs)
+#include "Arducam_Mega.h" // Camera payload (same library as Lab 5)
+
+// ====================================================================
+// CAMERA BUILD MODE
+//   PROTOTYPE  = FlatSat prototype board: the camera is always powered
+//                (PD4 is not used to switch it). You cannot turn it on/off,
+//                but you CAN take pictures.
+//   PRODUCTION = flight-style: the camera is powered through PD4 and exposed
+//                as a switchable output (toggle subsystem 3).
+// Change this ONE line and reflash to switch builds. The dashboard has a
+// matching Prototype/Production setting — keep the two in sync.
+// ====================================================================
+#define CAMERA_MODE_PROTOTYPE  0
+#define CAMERA_MODE_PRODUCTION 1
+#ifndef CAMERA_MODE
+#define CAMERA_MODE CAMERA_MODE_PROTOTYPE
+#endif
 
 // ====================================================================
 // HARDWARE PIN DEFINITIONS (STM32F429ZI - Nucleo-144)
@@ -42,12 +59,32 @@
 #define GPS_RX PE0
 #define GPS_TX PE1
 
+// --- Camera Payload (Arducam Mega) ---
+// Power on PD4 is a *separate* GPIO from the ADM1177 outputs (PD1/PD2/PD3);
+// it only does something in the PRODUCTION build. The camera has its own SPI
+// bus (PB3/PB4/PB5), independent of the SD card's dedicated SPI3.
+#define ARDUCAM_PWR_PIN PD4   // production camera power switch
+#define ARDUCAM_CS      PE7   // camera SPI chip-select
+#define ARDUCAM_MISO    PB4
+#define ARDUCAM_MOSI    PB5
+#define ARDUCAM_SCK     PB3
+
 // --- Hardware Instances ---
 SPIClass SD_SPI(SD_MOSI, SD_MISO, SD_SCK);
 SdFat sd;
 HardwareSerial CommsUART(PA1, PA0); // UART to COMMU module
 HardwareSerial GpsUART(GPS_RX, GPS_TX); // NMEA stream from the GPS module
 TinyGPSPlus gps;
+Arducam_Mega myCAM(ARDUCAM_CS);
+
+// --- STM32 Arducam HAL shim (same fix as Lab 5) ---
+// The Arducam C-core has no STM32 definition for the CS pin, so we bridge its
+// hooks to standard Arduino GPIO calls.
+extern "C" {
+  void arducamCsOutputMode() { pinMode(ARDUCAM_CS, OUTPUT); }
+  void arducamSpiCsPinLow()  { digitalWrite(ARDUCAM_CS, LOW); }
+  void arducamSpiCsPinHigh() { digitalWrite(ARDUCAM_CS, HIGH); }
+}
 
 // ====================================================================
 // EPS SENSOR DRIVERS (INA226 / TMP102 / ADM1177 over dedicated I2C)
@@ -256,6 +293,10 @@ enum CommandByte {
 #define EPS_CHUNK_SIZE 32   // EPS telemetry data per chunk
 #define WDT_TIMEOUT_US 10000000 // 10 seconds
 
+// --- Camera ---
+#define CAM_BUF_SIZE 256          // SD write buffer during capture (matches Lab 5)
+#define CAM_BOOT_DELAY_MS 2000    // sensor boot + auto-exposure settle
+
 // ====================================================================
 // SYSTEM STATE
 // ====================================================================
@@ -278,6 +319,13 @@ uint8_t systemErrors = 0x00;
 bool payloadPwrState = true;
 bool gpsPwrState = true;
 bool camPwrState = true;
+
+// --- Camera payload (Arducam on PD4) ---
+// NOTE: this is the real camera, distinct from camPwrState above (which is the
+// ADM1177 "Payload 2 / PC104" rail on PD3). In PROTOTYPE the camera is always
+// powered; in PRODUCTION it is switched via PD4 (toggle subsystem 3).
+bool cameraPwrState = (CAMERA_MODE == CAMERA_MODE_PROTOTYPE); // PD4 state
+bool camReady = false;                                        // myCAM.begin() done
 
 // --- Image Counter ---
 uint32_t imageCounter = 0;
@@ -513,6 +561,101 @@ void sendBeacon() {
 }
 
 // ====================================================================
+// CAMERA CAPTURE  (Arducam Mega -> JPEG on SD)
+// Ported from Lab 5's capture routine: take a VGA JPEG, stream it out of the
+// camera FIFO, and write everything between the JPEG SOI (FF D8) and EOI
+// (FF D9) markers to the SD card. Feeds the watchdog while streaming.
+//
+// Auto-power is handled by the DASHBOARD (it toggles the camera on and waits
+// before sending TAKE_PIC), so this routine assumes the camera is already
+// powered and initialised. In PRODUCTION it refuses if the camera isn't ready.
+// Returns true on success and ACKs with the filename; NACKs on failure.
+// ====================================================================
+bool captureAndSaveImage() {
+#if CAMERA_MODE == CAMERA_MODE_PRODUCTION
+  if (!camReady) {
+    Serial.println("[CAM] Capture refused: camera not powered/ready");
+    sendPacket(CMD_NACK, nullptr, 0);
+    return false;
+  }
+#endif
+
+  char filename[32];
+  snprintf(filename, sizeof(filename), "img_%04lu.jpg", imageCounter);
+
+  File imgFile;
+  if (!imgFile.open(filename, O_WRONLY | O_CREAT | O_TRUNC)) {
+    Serial.println("[CAM] SD open failed");
+    sendPacket(CMD_NACK, nullptr, 0);
+    return false;
+  }
+
+  Serial.print("[CAM] Capturing ");
+  Serial.print(filename);
+  Serial.print(" ... ");
+  myCAM.takePicture(CAM_IMAGE_MODE_VGA, CAM_IMAGE_PIX_FMT_JPG);
+
+  uint8_t  buf[CAM_BUF_SIZE];
+  uint16_t buffIndex = 0;
+  uint8_t  prevByte = 0;
+  uint8_t  curByte = 0;
+  uint8_t  headFlag = 0;       // 1 once the JPEG SOI has been seen
+  uint32_t byteCount = 0;
+  bool     gotEnd = false;
+
+  while (myCAM.getReceivedLength()) {
+    prevByte = curByte;
+    curByte = myCAM.readByte();
+
+    // Once inside the image, buffer every byte and flush in blocks.
+    if (headFlag == 1) {
+      buf[buffIndex++] = curByte;
+      if (buffIndex >= CAM_BUF_SIZE) {
+        imgFile.write(buf, buffIndex);
+        buffIndex = 0;
+      }
+    }
+
+    // JPEG start of image (FF D8): open the stream, keep both marker bytes.
+    if (headFlag == 0 && prevByte == 0xFF && curByte == 0xD8) {
+      headFlag = 1;
+      buf[buffIndex++] = 0xFF;
+      buf[buffIndex++] = 0xD8;
+    }
+
+    // JPEG end of image (FF D9): flush and stop.
+    if (headFlag == 1 && prevByte == 0xFF && curByte == 0xD9) {
+      imgFile.write(buf, buffIndex);
+      buffIndex = 0;
+      gotEnd = true;
+      break;
+    }
+
+    // Keep the hardware watchdog happy during the long SPI read.
+    if ((++byteCount & 0x3FF) == 0) IWatchdog.reload();
+  }
+
+  imgFile.close();
+
+  if (!gotEnd) {
+    Serial.println("no EOI (bad capture)");
+    sd.remove(filename);           // drop the truncated file
+    sendPacket(CMD_NACK, nullptr, 0);
+    return false;
+  }
+
+  imageCounter++;
+  Serial.println("saved");
+
+  // ACK carrying the filename so the dashboard can list/download it.
+  uint8_t ackPayload[32];
+  uint8_t fnLen = strlen(filename);
+  memcpy(ackPayload, filename, fnLen);
+  sendPacket(CMD_ACK, ackPayload, fnLen);
+  return true;
+}
+
+// ====================================================================
 // COMMAND HANDLER (Full Implementation)
 // ====================================================================
 void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
@@ -554,31 +697,10 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
     // --- TAKE PICTURE ---
     case CMD_TAKE_PIC: {
       Serial.println("[CMD] TAKE_PIC");
-      // Build filename: img_XXXX.jpg
-      char filename[32];
-      snprintf(filename, sizeof(filename), "img_%04lu.jpg", imageCounter);
-
-      // TODO: Read actual camera FIFO here
-      // For now, create a placeholder file to confirm SD write works
-      File imgFile;
-      if (imgFile.open(filename, O_WRONLY | O_CREAT | O_TRUNC)) {
-        // Write placeholder data (replace with actual camera data)
-        uint8_t placeholder[] = {0xFF, 0xD8, 0xFF, 0xE0}; // JPEG header stub
-        imgFile.write(placeholder, sizeof(placeholder));
-        imgFile.close();
-        imageCounter++;
-
-        // Respond with ACK containing the filename
-        uint8_t ackPayload[32];
-        uint8_t fnLen = strlen(filename);
-        memcpy(ackPayload, filename, fnLen);
-        sendPacket(CMD_ACK, ackPayload, fnLen);
-        Serial.print("[CMD] Picture saved: ");
-        Serial.println(filename);
-      } else {
-        sendPacket(CMD_NACK, nullptr, 0);
-        Serial.println("[CMD] TAKE_PIC FAILED - SD write error");
-      }
+      // Real Arducam capture. In PRODUCTION the dashboard powers the camera on
+      // (toggle subsystem 3) and waits before sending this, so the camera is
+      // expected to be ready; captureAndSaveImage() NACKs if it isn't.
+      captureAndSaveImage();
       break;
     }
 
@@ -642,13 +764,37 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
             Serial.print("[CMD] GPS Power: ");
             Serial.println(gpsPwrState ? "ON" : "OFF");
             break;
-          case 2: // Camera
+          case 2: // Payload 2 / PC104 (ADM1177 0x5B, PD3)
             camPwrState = !camPwrState;
             digitalWrite(CAM_PWR_PIN, camPwrState ? HIGH : LOW);
             responsePayload[1] = camPwrState ? 1 : 0;
-            Serial.print("[CMD] Camera Power: ");
+            Serial.print("[CMD] Payload2/PC104 Power: ");
             Serial.println(camPwrState ? "ON" : "OFF");
             break;
+          case 3: // Camera payload (Arducam on PD4) — PRODUCTION only
+#if CAMERA_MODE == CAMERA_MODE_PRODUCTION
+            cameraPwrState = !cameraPwrState;
+            digitalWrite(ARDUCAM_PWR_PIN, cameraPwrState ? HIGH : LOW);
+            if (cameraPwrState) {
+              // Give the sensor time to boot, then bring the camera up. Feed
+              // the watchdog around the blocking begin().
+              delay(CAM_BOOT_DELAY_MS);
+              IWatchdog.reload();
+              myCAM.begin();
+              camReady = true;
+              Serial.println("[CMD] Camera Power: ON (ready)");
+            } else {
+              camReady = false;
+              Serial.println("[CMD] Camera Power: OFF");
+            }
+            responsePayload[1] = cameraPwrState ? 1 : 0;
+            break;
+#else
+            // Prototype: the camera can't be switched.
+            Serial.println("[CMD] Camera toggle ignored (prototype build)");
+            sendPacket(CMD_NACK, nullptr, 0);
+            return;
+#endif
           default:
             sendPacket(CMD_NACK, nullptr, 0);
             return;
@@ -891,6 +1037,26 @@ void setup() {
   digitalWrite(PAYLOAD_PWR_PIN, payloadPwrState ? HIGH : LOW);
   digitalWrite(GPS_PWR_PIN, gpsPwrState ? HIGH : LOW);
   digitalWrite(CAM_PWR_PIN, camPwrState ? HIGH : LOW);
+
+  // Camera payload (Arducam Mega) on its own SPI bus (PB3/PB4/PB5).
+  pinMode(ARDUCAM_PWR_PIN, OUTPUT);
+#if CAMERA_MODE == CAMERA_MODE_PROTOTYPE
+  digitalWrite(ARDUCAM_PWR_PIN, HIGH);   // harmless if PD4 is unused; camera is always powered
+#else
+  digitalWrite(ARDUCAM_PWR_PIN, LOW);    // production: powered on demand via toggle subsystem 3
+#endif
+  SPI.setMISO(ARDUCAM_MISO);
+  SPI.setMOSI(ARDUCAM_MOSI);
+  SPI.setSCLK(ARDUCAM_SCK);
+  SPI.begin();
+#if CAMERA_MODE == CAMERA_MODE_PROTOTYPE
+  delay(500);
+  myCAM.begin();
+  camReady = true;
+  Serial.println("[CAM] Prototype build: camera powered and ready");
+#else
+  Serial.println("[CAM] Production build: camera OFF (toggle subsystem 3 to power)");
+#endif
 
   // SD Card (SPI3)
   Serial.print("[SYSTEM] Initializing SD Card... ");
