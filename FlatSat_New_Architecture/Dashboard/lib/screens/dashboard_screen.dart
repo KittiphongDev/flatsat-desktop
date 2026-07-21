@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
+import '../platform.dart';
 import '../services/websocket_service.dart';
 import '../widgets/telemetry_card.dart';
 import '../widgets/connection_banner.dart';
@@ -9,6 +11,19 @@ import '../theme/app_theme.dart';
 /// Breakpoint above which the dashboard uses a multi-column desktop layout.
 const double kWideBreakpoint = 1100;
 const double kMaxContentWidth = 1500;
+
+/// Horizontal breathing room from the window edges. Used by both the header
+/// and the body so the brand, the status cluster, and the content all align.
+const double kEdgePadding = 28;
+
+/// Header bar height — a little taller than the Material default so the
+/// two-line brand block isn't cramped against the window chrome.
+const double kHeaderHeight = 76;
+
+/// Height of the minimize/maximize/close hit area. Kept well below
+/// [kHeaderHeight] so the hover highlight reads as a button, not a full-height
+/// column of color.
+const double kWindowButtonHeight = 40;
 
 /// Main dashboard screen — responsive mission control interface.
 class DashboardScreen extends StatelessWidget {
@@ -35,13 +50,43 @@ class DashboardScreen extends StatelessWidget {
               // ---- App Bar ----
               SliverAppBar(
                 pinned: true,
-                expandedHeight: 70,
+                automaticallyImplyLeading: false,
+                toolbarHeight: kHeaderHeight,
                 backgroundColor: c.header,
                 surfaceTintColor: Colors.transparent,
                 elevation: 0,
                 scrolledUnderElevation: 0,
                 foregroundColor: c.onHeader,
-                title: _AppBarTitle(ws: ws),
+                // titleSpacing: 0 hands padding control to us, so the brand and
+                // the status cluster get matching breathing room from both
+                // window edges instead of sitting flush against them.
+                titleSpacing: 0,
+                // With the OS title bar hidden, this header IS the title bar:
+                // drag it to move the window, double-click to maximize.
+                title: _draggableHeader(
+                  Container(
+                    height: kHeaderHeight,
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(left: headerLeadingInset),
+                    child: const _AppBarBrand(),
+                  ),
+                ),
+                actions: [
+                  _AppBarStatus(ws: ws),
+                  if (usesCustomWindowButtons) ...[
+                    const SizedBox(width: 10),
+                    // AppBar lays actions out with CrossAxisAlignment.stretch,
+                    // so without this the caption buttons fill the full 76px
+                    // header and their hover highlight becomes a tall slab.
+                    const Center(
+                      child: SizedBox(
+                        height: kWindowButtonHeight,
+                        child: _WindowButtons(),
+                      ),
+                    ),
+                  ] else
+                    const SizedBox(width: kEdgePadding),
+                ],
               ),
 
               // ---- Body ----
@@ -51,7 +96,10 @@ class DashboardScreen extends StatelessWidget {
                     constraints:
                         const BoxConstraints(maxWidth: kMaxContentWidth),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: kEdgePadding,
+                        vertical: 20,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -77,6 +125,23 @@ class DashboardScreen extends StatelessWidget {
       );
   }
 
+  /// Makes the header behave like a native title bar: drag anywhere to move
+  /// the window, double-click to toggle maximize. A no-op off desktop, where
+  /// window_manager isn't available.
+  Widget _draggableHeader(Widget child) {
+    if (!isDesktopPlatform) return child;
+    return GestureDetector(
+      onDoubleTap: () async {
+        if (await windowManager.isMaximized()) {
+          await windowManager.unmaximize();
+        } else {
+          await windowManager.maximize();
+        }
+      },
+      child: DragToMoveArea(child: child),
+    );
+  }
+
   // ============================================================
   // Layouts
   // ============================================================
@@ -93,25 +158,21 @@ class DashboardScreen extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontFamily: 'monospace')),
       _cmdBtn(context, Icons.wifi_tethering, 'PING', ws.sendPing),
-      _cmdBtn(context, Icons.cell_tower, 'BEACON', ws.sendBeacon,
-          color: c.warning),
+      _cmdBtn(context, Icons.cell_tower, 'BEACON', ws.sendBeacon),
     ]);
   }
 
   Widget _gpsAction(BuildContext context, WebSocketService ws) =>
-      _cmdBtn(context, Icons.gps_fixed, 'GET GPS', ws.sendGetGps,
-          color: context.colors.success);
+      _cmdBtn(context, Icons.gps_fixed, 'GET GPS', ws.sendGetGps);
 
   Widget _epsAction(BuildContext context, WebSocketService ws) =>
       _cmdBtn(context, Icons.bolt, 'GET EPS', ws.sendGetEps);
 
   Widget _healthAction(BuildContext context, WebSocketService ws) =>
-      _cmdBtn(context, Icons.radar, 'SCAN', ws.sendStatus,
-          color: context.colors.info);
+      _cmdBtn(context, Icons.radar, 'SCAN', ws.sendStatus);
 
   Widget _imageAction(BuildContext context, WebSocketService ws) => _cmdRow([
-        _cmdBtn(context, Icons.camera, 'TAKE PIC', ws.sendTakePic,
-            color: context.colors.secondary),
+        _cmdBtn(context, Icons.camera, 'TAKE PIC', ws.sendTakePic),
         _cmdBtn(context, Icons.photo_library, 'LIST', ws.sendListImage),
       ]);
 
@@ -206,43 +267,12 @@ class DashboardScreen extends StatelessWidget {
   }
 
   /// Compact command button used in panel headers.
+  ///
+  /// All command buttons share the theme accent so the header row reads as one
+  /// consistent control set instead of a rainbow of per-command colors.
   Widget _cmdBtn(BuildContext context, IconData icon, String label,
-      VoidCallback onTap,
-      {Color? color}) {
-    final c = context.colors;
-    final col = color ?? c.accent;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: col.withOpacity(0.5)),
-            color: col.withOpacity(0.08),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 13, color: col),
-              const SizedBox(width: 5),
-              Text(
-                label,
-                style: TextStyle(
-                  color: col,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+          VoidCallback onTap) =>
+      _CmdButton(icon: icon, label: label, onTap: onTap);
 
   /// Row of small command buttons (for headers that need more than one).
   Widget _cmdRow(List<Widget> buttons) {
@@ -836,18 +866,17 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-/// App bar title with brand, live status indicators, and theme toggle.
-class _AppBarTitle extends StatelessWidget {
-  final WebSocketService ws;
-  const _AppBarTitle({required this.ws});
+/// Left side of the header: logo + wordmark.
+class _AppBarBrand extends StatelessWidget {
+  const _AppBarBrand();
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final themeProvider = context.watch<ThemeProvider>();
-    final isNarrow = MediaQuery.of(context).size.width < 640;
+    final isNarrow = MediaQuery.of(context).size.width < 520;
 
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Image.network(
           'https://flatsat.kidorbit.space/assets/nb_logo_w.png',
@@ -862,14 +891,14 @@ class _AppBarTitle extends StatelessWidget {
             child: Icon(Icons.satellite_alt, color: c.accent, size: 22),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 14),
         Flexible(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'FlatSat Mission Control',
+                isNarrow ? 'FlatSat' : 'FlatSat Mission Control',
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: c.onHeader,
@@ -878,6 +907,7 @@ class _AppBarTitle extends StatelessWidget {
                   letterSpacing: 0.5,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 'GROUND STATION DASHBOARD',
                 overflow: TextOverflow.ellipsis,
@@ -891,19 +921,42 @@ class _AppBarTitle extends StatelessWidget {
             ],
           ),
         ),
-        const Spacer(),
-        if (!isNarrow) ...[
-          StatusIndicator(
-            isActive: ws.isConnected,
-            label: ws.isConnected ? 'BRIDGE' : 'OFFLINE',
-          ),
-          const SizedBox(width: 16),
-          StatusIndicator(
-            isActive: ws.telemetry.isLinkActive,
-            label: ws.telemetry.isLinkActive ? 'SAT LINK' : 'NO LINK',
-          ),
-          const SizedBox(width: 8),
-        ],
+      ],
+    );
+  }
+}
+
+/// Right side of the header: bridge + satellite link status, then the theme
+/// toggle. Lives in the AppBar's `actions`, so it stays pinned to the top-right
+/// corner at any window width. On narrow windows the pills collapse to just
+/// their status dot (with a tooltip) rather than disappearing — the link state
+/// is the one thing that should always be visible.
+class _AppBarStatus extends StatelessWidget {
+  final WebSocketService ws;
+  const _AppBarStatus({required this.ws});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final themeProvider = context.watch<ThemeProvider>();
+    final compact = MediaQuery.of(context).size.width < 760;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _HeaderStatus(
+          isActive: ws.isConnected,
+          label: ws.isConnected ? 'BRIDGE' : 'OFFLINE',
+          compact: compact,
+        ),
+        // Wider gap now that there are no pill outlines separating them.
+        const SizedBox(width: 18),
+        _HeaderStatus(
+          isActive: ws.telemetry.isLinkActive,
+          label: ws.telemetry.isLinkActive ? 'SAT LINK' : 'NO LINK',
+          compact: compact,
+        ),
+        const SizedBox(width: 10),
         IconButton(
           tooltip: themeProvider.isDark
               ? 'Switch to light theme'
@@ -918,6 +971,199 @@ class _AppBarTitle extends StatelessWidget {
           onPressed: () => context.read<ThemeProvider>().toggle(),
         ),
       ],
+    );
+  }
+}
+
+/// A status readout (dot + label) in the header's status cluster.
+///
+/// Deliberately borderless — the glowing dot already carries the state, so a
+/// pill outline just adds visual weight next to the window controls.
+class _HeaderStatus extends StatelessWidget {
+  final bool isActive;
+  final String label;
+  final bool compact;
+
+  const _HeaderStatus({
+    required this.isActive,
+    required this.label,
+    this.compact = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final color = isActive ? c.success : c.error;
+
+    return Tooltip(
+      message: label,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+              boxShadow: [
+                BoxShadow(color: color.withOpacity(0.6), blurRadius: 6),
+              ],
+            ),
+          ),
+          if (!compact) ...[
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Minimize / maximize / close buttons for the frameless window.
+///
+/// Only used on Windows and Linux — macOS keeps its native traffic lights
+/// floating over the content even with the title bar hidden, so drawing these
+/// there would duplicate them.
+class _WindowButtons extends StatefulWidget {
+  const _WindowButtons();
+
+  @override
+  State<_WindowButtons> createState() => _WindowButtonsState();
+}
+
+class _WindowButtonsState extends State<_WindowButtons> with WindowListener {
+  bool _isMaximized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+    _syncMaximized();
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  Future<void> _syncMaximized() async {
+    final maximized = await windowManager.isMaximized();
+    if (mounted && maximized != _isMaximized) {
+      setState(() => _isMaximized = maximized);
+    }
+  }
+
+  @override
+  void onWindowMaximize() => _syncMaximized();
+
+  @override
+  void onWindowUnmaximize() => _syncMaximized();
+
+  @override
+  Widget build(BuildContext context) {
+    // The header bar is black in both light and dark themes, so the caption
+    // glyphs always want the light-on-dark variant.
+    const brightness = Brightness.dark;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        WindowCaptionButton.minimize(
+          brightness: brightness,
+          onPressed: () => windowManager.minimize(),
+        ),
+        if (_isMaximized)
+          WindowCaptionButton.unmaximize(
+            brightness: brightness,
+            onPressed: () => windowManager.unmaximize(),
+          )
+        else
+          WindowCaptionButton.maximize(
+            brightness: brightness,
+            onPressed: () => windowManager.maximize(),
+          ),
+        WindowCaptionButton.close(
+          brightness: brightness,
+          onPressed: () => windowManager.close(),
+        ),
+      ],
+    );
+  }
+}
+
+/// Compact panel-header command button. Uses the theme accent for every
+/// command, with a subtle hover fill so the whole set feels like one control
+/// family.
+class _CmdButton extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _CmdButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  State<_CmdButton> createState() => _CmdButtonState();
+}
+
+class _CmdButtonState extends State<_CmdButton> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      cursor: SystemMouseCursors.click,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 130),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: c.accent.withOpacity(_hover ? 0.75 : 0.45),
+              ),
+              color: c.accent.withOpacity(_hover ? 0.16 : 0.08),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(widget.icon, size: 13, color: c.accent),
+                const SizedBox(width: 5),
+                Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: c.accent,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

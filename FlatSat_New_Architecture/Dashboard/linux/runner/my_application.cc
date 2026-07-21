@@ -19,6 +19,40 @@ static void first_frame_cb(MyApplication* self, FlView* view) {
   gtk_widget_show(gtk_widget_get_toplevel(GTK_WIDGET(view)));
 }
 
+// Sets the window/taskbar icon from the bundled Flutter asset.
+//
+// Linux executables don't embed an icon the way a Windows .exe does, so
+// flutter_launcher_icons can't help here. Instead we load the same PNG that
+// pubspec.yaml bundles (assets/icons/app_icon.png), which the build copies to
+// <bundle>/data/flutter_assets/assets/icons/app_icon.png next to the binary.
+//
+// Resolving it relative to /proc/self/exe means this keeps working wherever
+// the bundle is moved to, rather than depending on the current directory.
+static void my_application_set_window_icon(GtkWindow* window) {
+  g_autoptr(GError) link_error = nullptr;
+  g_autofree gchar* exe_path = g_file_read_link("/proc/self/exe", &link_error);
+  if (exe_path == nullptr) {
+    g_warning("Could not resolve executable path for window icon: %s",
+              link_error->message);
+    return;
+  }
+
+  g_autofree gchar* exe_dir = g_path_get_dirname(exe_path);
+  g_autofree gchar* icon_path =
+      g_build_filename(exe_dir, "data", "flutter_assets", "assets", "icons",
+                       "app_icon.png", nullptr);
+
+  if (!g_file_test(icon_path, G_FILE_TEST_EXISTS)) {
+    g_warning("Window icon not found at %s", icon_path);
+    return;
+  }
+
+  g_autoptr(GError) icon_error = nullptr;
+  if (!gtk_window_set_icon_from_file(window, icon_path, &icon_error)) {
+    g_warning("Failed to set window icon: %s", icon_error->message);
+  }
+}
+
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
@@ -32,16 +66,12 @@ static void my_application_activate(GApplication* application) {
   // in case the window manager does more exotic layout, e.g. tiling.
   // If running on Wayland assume the header bar will work (may need changing
   // if future cases occur).
-  gboolean use_header_bar = TRUE;
-#ifdef GDK_WINDOWING_X11
-  GdkScreen* screen = gtk_window_get_screen(window);
-  if (GDK_IS_X11_SCREEN(screen)) {
-    const gchar* wm_name = gdk_x11_screen_get_window_manager_name(screen);
-    if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
-      use_header_bar = FALSE;
-    }
-  }
-#endif
+  // Forced to FALSE because the app draws its own title bar (window_manager's
+  // TitleBarStyle.hidden). A GtkHeaderBar is a *client-side* decoration that
+  // survives gtk_window_set_decorated(false), so leaving it enabled would
+  // still show a bar above the dashboard under GNOME — exactly what we're
+  // removing. A plain title bar is what window_manager can strip cleanly.
+  gboolean use_header_bar = FALSE;
   if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
     gtk_widget_show(GTK_WIDGET(header_bar));
@@ -53,6 +83,7 @@ static void my_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
+  my_application_set_window_icon(window);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(
