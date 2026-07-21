@@ -250,7 +250,8 @@ class DashboardScreen extends StatelessWidget {
           name: 'Communication',
           icon: Icons.cell_tower,
           isOn: ws.telemetry.payloadPwr, // channel 0 = COMMS (PD1)
-          onToggle: () => _toggleComms(context, ws),
+          locked: true, // never switch COMMS off from the ground — cuts the link
+          onToggle: () {},
         ),
         const SizedBox(height: 8),
         SubsystemCard(
@@ -270,41 +271,6 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  /// Guard the Communication channel: turning it OFF cuts the radio link, so
-  /// confirm first. Turning it back ON is harmless and immediate.
-  void _toggleComms(BuildContext context, WebSocketService ws) {
-    final turningOff = ws.telemetry.payloadPwr;
-    if (!turningOff) {
-      ws.sendTogglePwr(0);
-      return;
-    }
-    final c = context.colors;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: c.surface,
-        title: const Text('Turn off Communication?'),
-        content: const Text(
-          'Powering off the Communication channel will cut the radio link. '
-          'You will not be able to command the satellite remotely until it is '
-          'power-cycled on the board. Continue?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              ws.sendTogglePwr(0);
-              Navigator.pop(ctx);
-            },
-            child: Text('Turn off', style: TextStyle(color: c.error)),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ---- Command Grid ----
   Widget _commandGrid(BuildContext context, WebSocketService ws) {

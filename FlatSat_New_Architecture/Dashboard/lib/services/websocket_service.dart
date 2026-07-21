@@ -30,6 +30,10 @@ class WebSocketService extends ChangeNotifier {
   int epsProgress = 0; // 0..100
   int epsChunksReceived = 0;
   int epsChunksTotal = 0;
+  int epsBytes = 0; // bytes reassembled so far
+  double epsSpeedBps = 0; // receive speed, bytes/second
+  DateTime? _epsProgressAt;
+  int _epsLastBytes = 0;
   List<ImageEntry> imageList = [];
   DownloadProgress? downloadProgress;
   bool isDownloading = false;
@@ -210,6 +214,18 @@ class WebSocketService extends ChangeNotifier {
           epsChunksTotal = d['total'] ?? 0;
           epsProgress = d['percent'] ?? 0;
           epsReceiving = epsProgress < 100;
+          // Compute receive speed (bytes/second) from chunk arrivals.
+          final now = DateTime.now();
+          final newBytes = d['bytes'] ?? epsBytes;
+          if (_epsProgressAt != null) {
+            final dt = now.difference(_epsProgressAt!).inMicroseconds / 1e6;
+            if (dt > 0 && newBytes >= _epsLastBytes) {
+              epsSpeedBps = (newBytes - _epsLastBytes) / dt;
+            }
+          }
+          _epsProgressAt = now;
+          _epsLastBytes = newBytes;
+          epsBytes = newBytes;
           // Extend the safety window while chunks keep arriving.
           if (epsReceiving) {
             _epsTimeout?.cancel();
@@ -322,6 +338,10 @@ class WebSocketService extends ChangeNotifier {
     epsProgress = 0;
     epsChunksReceived = 0;
     epsChunksTotal = 0;
+    epsBytes = 0;
+    epsSpeedBps = 0;
+    _epsLastBytes = 0;
+    _epsProgressAt = DateTime.now();
     notifyListeners();
     // Safety: clear the indicator if the transfer never completes.
     _epsTimeout?.cancel();

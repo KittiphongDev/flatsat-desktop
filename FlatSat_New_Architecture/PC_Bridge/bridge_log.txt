@@ -1,6 +1,7 @@
-[15:11:29] INFO: WebSocket Server starting on ws://localhost:8080
+[16:11:19] INFO: WebSocket Server starting on ws://localhost:8080
+[16:11:19] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
 Traceback (most recent call last):
-  File "/home/pi/Desktop/Flatsat_Desktop/FlatSat_New_Architecture/PC_Bridge/gs_bridge.py", line 722, in <module>
+  File "/home/pi/Desktop/Flatsat_Desktop/FlatSat_New_Architecture/PC_Bridge/gs_bridge.py", line 769, in <module>
     asyncio.run(main())
     ~~~~~~~~~~~^^^^^^^^
   File "/usr/lib/python3.14/asyncio/runners.py", line 204, in run
@@ -12,7 +13,7 @@ Traceback (most recent call last):
   File "/usr/lib/python3.14/asyncio/base_events.py", line 719, in run_until_complete
     return future.result()
            ~~~~~~~~~~~~~^^
-  File "/home/pi/Desktop/Flatsat_Desktop/FlatSat_New_Architecture/PC_Bridge/gs_bridge.py", line 717, in main
+  File "/home/pi/Desktop/Flatsat_Desktop/FlatSat_New_Architecture/PC_Bridge/gs_bridge.py", line 764, in main
     async with websockets.serve(ws_handler, WS_HOST, WS_PORT):
                ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/usr/lib/python3/dist-packages/websockets/asyncio/server.py", line 813, in __aenter__

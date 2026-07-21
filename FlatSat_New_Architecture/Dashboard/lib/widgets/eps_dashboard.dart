@@ -240,9 +240,37 @@ class EpsDashboard extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation(c.accent),
             ),
           ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.download_rounded, size: 12, color: c.textMuted),
+              const SizedBox(width: 4),
+              Text(
+                _fmtSpeed(ws.epsSpeedBps),
+                style: TextStyle(
+                    color: c.textSecondary,
+                    fontSize: 10,
+                    fontFamily: 'monospace'),
+              ),
+              const Spacer(),
+              Text(
+                '${ws.epsBytes} B received',
+                style: TextStyle(
+                    color: c.textMuted,
+                    fontSize: 10,
+                    fontFamily: 'monospace'),
+              ),
+            ],
+          ),
         ],
       ),
     );
+  }
+
+  static String _fmtSpeed(double bps) {
+    if (bps <= 0) return '—';
+    if (bps >= 1024) return '${(bps / 1024).toStringAsFixed(1)} KB/s';
+    return '${bps.toStringAsFixed(0)} B/s';
   }
 
   Widget _awaiting(BuildContext context) {

@@ -241,9 +241,9 @@ enum CommandByte {
 #define SYNC2 0xBB
 
 // --- Image Transfer ---
-// Radio-safe chunk sizes. The SX1278 FSK FIFO is 64 bytes and DIO1 is not
-// wired, so every over-the-air frame must stay small. Frame overhead is
-// AX.25(16) + packet header/CRC(8) = 24 bytes, so keep payloads <= ~40.
+// The COMMS->GS radio link carries at most 64 bytes per frame. Each frame is
+// AX.25(16) + packet header/CRC(8) + radio CRC(2) = 26 bytes of overhead, so
+// keep the data per chunk <= ~36 bytes.
 #define CHUNK_SIZE 32       // image download data per chunk
 #define EPS_CHUNK_SIZE 32   // EPS telemetry data per chunk
 #define WDT_TIMEOUT_US 10000000 // 10 seconds
@@ -375,8 +375,8 @@ void sendEPSData() {
     payload[idx++] = (c >> 8) & 0xFF;
   }
 
-  // Split into radio-safe chunks (SX1278 FSK 64-byte FIFO). Each RF frame is
-  // small, framed as [chunkIdx][totalChunks][data...]; the PC bridge
+  // The radio link caps at 64 bytes/frame, so split the EPS blob into small
+  // chunks framed as [chunkIdx][totalChunks][data...]. The PC bridge
   // reassembles them and reports transfer progress.
   uint8_t totalChunks = (idx + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE;
   if (totalChunks == 0) totalChunks = 1;
@@ -391,7 +391,7 @@ void sendEPSData() {
     memcpy(&part[2], &payload[off], len);
     sendPacket(CMD_EPS_DATA, part, len + 2);
 
-    delay(90);            // pace so the COMMS relay + radio FIFO keep up
+    delay(120);           // pace so the COMMS relay + 64-byte radio keep up
     IWatchdog.reload();   // 10s watchdog — reload during the paced send
   }
 

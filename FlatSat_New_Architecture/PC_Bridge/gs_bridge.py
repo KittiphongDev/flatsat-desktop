@@ -393,11 +393,17 @@ def handle_eps_chunk(payload: bytes, payload_len: int):
     eps_reassembly["chunks"][chunk_idx] = data
     received = len(eps_reassembly["chunks"])
     percent = int(received * 100 / total)
+    bytes_so_far = sum(len(v) for v in eps_reassembly["chunks"].values())
 
     log.info(f"EPS chunk {chunk_idx + 1}/{total} ({len(data)} bytes) - {percent}%")
     schedule_broadcast({
         "type": "eps_progress",
-        "data": {"received": received, "total": total, "percent": percent},
+        "data": {
+            "received": received,
+            "total": total,
+            "percent": percent,
+            "bytes": bytes_so_far,
+        },
     })
 
     # Complete once every chunk index 0..total-1 is present.

@@ -159,6 +159,7 @@ class SubsystemCard extends StatelessWidget {
   final IconData icon;
   final bool isOn;
   final VoidCallback onToggle;
+  final bool locked; // display-only (e.g. Communication — can't cut the link)
 
   const SubsystemCard({
     super.key,
@@ -166,6 +167,7 @@ class SubsystemCard extends StatelessWidget {
     required this.icon,
     required this.isOn,
     required this.onToggle,
+    this.locked = false,
   });
 
   @override
@@ -198,7 +200,9 @@ class SubsystemCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isOn ? 'POWERED ON' : 'POWERED OFF',
+                  locked
+                      ? 'POWERED ON · LOCKED'
+                      : (isOn ? 'POWERED ON' : 'POWERED OFF'),
                   style: TextStyle(
                     color: color,
                     fontSize: 10,
@@ -209,6 +213,14 @@ class SubsystemCard extends StatelessWidget {
               ],
             ),
           ),
+          if (locked)
+            Tooltip(
+              message:
+                  'Communication power is locked — switching it off from the '
+                  'ground would cut the radio link.',
+              child: Icon(Icons.lock_outline, color: c.textMuted, size: 18),
+            )
+          else
           GestureDetector(
             onTap: onToggle,
             child: AnimatedContainer(
