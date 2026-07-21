@@ -81,17 +81,56 @@ class DashboardScreen extends StatelessWidget {
   // Layouts
   // ============================================================
 
+  // ---- Per-panel command actions ----
+  Widget _pingAction(BuildContext context, WebSocketService ws) {
+    final c = context.colors;
+    return _cmdRow([
+      if (ws.pingRttMs != null)
+        Text('${ws.pingRttMs}ms',
+            style: TextStyle(
+                color: c.success,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'monospace')),
+      _cmdBtn(context, Icons.wifi_tethering, 'PING', ws.sendPing),
+      _cmdBtn(context, Icons.cell_tower, 'BEACON', ws.sendBeacon,
+          color: c.warning),
+    ]);
+  }
+
+  Widget _gpsAction(BuildContext context, WebSocketService ws) =>
+      _cmdBtn(context, Icons.gps_fixed, 'GET GPS', ws.sendGetGps,
+          color: context.colors.success);
+
+  Widget _epsAction(BuildContext context, WebSocketService ws) =>
+      _cmdBtn(context, Icons.bolt, 'GET EPS', ws.sendGetEps);
+
+  Widget _healthAction(BuildContext context, WebSocketService ws) =>
+      _cmdBtn(context, Icons.radar, 'SCAN', ws.sendStatus,
+          color: context.colors.info);
+
+  Widget _imageAction(BuildContext context, WebSocketService ws) => _cmdRow([
+        _cmdBtn(context, Icons.camera, 'TAKE PIC', ws.sendTakePic,
+            color: context.colors.secondary),
+        _cmdBtn(context, Icons.photo_library, 'LIST', ws.sendListImage),
+      ]);
+
   /// Single-column layout for phones / narrow windows.
   Widget _narrowLayout(BuildContext context, WebSocketService ws) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _section(context, 'TELEMETRY', _telemetryGrid(context, ws)),
+        _section(context, 'TELEMETRY', _telemetryGrid(context, ws),
+            action: _pingAction(context, ws)),
         _section(context, 'SUBSYSTEM POWER', _subsystemPower(context, ws)),
-        _section(context, 'COMMAND CONSOLE', _commandGrid(context, ws)),
-        _section(context, 'IMAGE MANAGER', _imageManager(context, ws)),
-        _section(context, 'GPS DATA', _gpsCard(context, ws)),
-        _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
+        _section(context, 'DEVICE HEALTH', _healthPanel(context, ws),
+            action: _healthAction(context, ws)),
+        _section(context, 'IMAGE MANAGER', _imageManager(context, ws),
+            action: _imageAction(context, ws)),
+        _section(context, 'GPS DATA', _gpsCard(context, ws),
+            action: _gpsAction(context, ws)),
+        _section(context, 'EPS SUBSYSTEM', const EpsDashboard(),
+            action: _epsAction(context, ws)),
         if (ws.isDownloading && ws.downloadProgress != null)
           _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
         _section(context, 'EVENT LOG', _eventLog(context, ws)),
@@ -103,16 +142,21 @@ class DashboardScreen extends StatelessWidget {
   /// Two-column masonry layout for desktop / web.
   Widget _wideLayout(BuildContext context, WebSocketService ws) {
     final primary = <Widget>[
-      _section(context, 'TELEMETRY', _telemetryGrid(context, ws)),
-      _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
-      _section(context, 'COMMAND CONSOLE', _commandGrid(context, ws)),
+      _section(context, 'TELEMETRY', _telemetryGrid(context, ws),
+          action: _pingAction(context, ws)),
+      _section(context, 'EPS SUBSYSTEM', const EpsDashboard(),
+          action: _epsAction(context, ws)),
+      _section(context, 'IMAGE MANAGER', _imageManager(context, ws),
+          action: _imageAction(context, ws)),
       _section(context, 'EVENT LOG', _eventLog(context, ws)),
     ];
 
     final side = <Widget>[
       _section(context, 'SUBSYSTEM POWER', _subsystemPower(context, ws)),
-      _section(context, 'GPS DATA', _gpsCard(context, ws)),
-      _section(context, 'IMAGE MANAGER', _imageManager(context, ws)),
+      _section(context, 'DEVICE HEALTH', _healthPanel(context, ws),
+          action: _healthAction(context, ws)),
+      _section(context, 'GPS DATA', _gpsCard(context, ws),
+          action: _gpsAction(context, ws)),
       if (ws.isDownloading && ws.downloadProgress != null)
         _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
     ];
@@ -139,19 +183,75 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  /// Wraps a titled section with consistent spacing.
-  Widget _section(BuildContext context, String title, Widget child) {
+  /// Wraps a titled section with consistent spacing and an optional action
+  /// (e.g. the command button that drives this panel).
+  Widget _section(BuildContext context, String title, Widget child,
+      {Widget? action}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionTitle(context, title),
+          Row(
+            children: [
+              Expanded(child: _sectionTitle(context, title)),
+              if (action != null) action,
+            ],
+          ),
           const SizedBox(height: 12),
           child,
         ],
       ),
     );
+  }
+
+  /// Compact command button used in panel headers.
+  Widget _cmdBtn(BuildContext context, IconData icon, String label,
+      VoidCallback onTap,
+      {Color? color}) {
+    final c = context.colors;
+    final col = color ?? c.accent;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: col.withOpacity(0.5)),
+            color: col.withOpacity(0.08),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 13, color: col),
+              const SizedBox(width: 5),
+              Text(
+                label,
+                style: TextStyle(
+                  color: col,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Row of small command buttons (for headers that need more than one).
+  Widget _cmdRow(List<Widget> buttons) {
+    final children = <Widget>[];
+    for (var i = 0; i < buttons.length; i++) {
+      if (i > 0) children.add(const SizedBox(width: 6));
+      children.add(buttons[i]);
+    }
+    return Row(mainAxisSize: MainAxisSize.min, children: children);
   }
 
   // ---- Section Title ----
@@ -271,22 +371,6 @@ class DashboardScreen extends StatelessWidget {
 
 
   // ---- Command Grid ----
-  Widget _commandGrid(BuildContext context, WebSocketService ws) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: [
-        CommandButton(icon: Icons.wifi_tethering, label: 'PING', onPressed: ws.sendPing),
-        CommandButton(icon: Icons.monitor_heart, label: 'STATUS', onPressed: ws.sendStatus),
-        CommandButton(icon: Icons.cell_tower, label: 'BEACON', onPressed: ws.sendBeacon),
-        CommandButton(icon: Icons.camera, label: 'TAKE PIC', onPressed: ws.sendTakePic),
-        CommandButton(icon: Icons.gps_fixed, label: 'GET GPS', onPressed: ws.sendGetGps),
-        CommandButton(icon: Icons.bolt, label: 'GET EPS', onPressed: ws.sendGetEps),
-        CommandButton(icon: Icons.photo_library, label: 'LIST IMAGES', onPressed: ws.sendListImage),
-      ],
-    );
-  }
-
   // ---- Image Manager ----
   Widget _imageManager(BuildContext context, WebSocketService ws) {
     final c = context.colors;
@@ -390,6 +474,115 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  // ---- Device Health Panel ----
+  Widget _healthPanel(BuildContext context, WebSocketService ws) {
+    final c = context.colors;
+    if (ws.deviceHealth.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: c.border),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.radar, color: c.textMuted, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Press SCAN to check every EPS device on the I2C bus.',
+                style: TextStyle(color: c.textMuted, fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    final online = ws.deviceHealth.where((d) => d.online).length;
+    final allOk = online == ws.deviceHealth.length;
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: c.border),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+            child: Row(
+              children: [
+                Text(
+                  '$online / ${ws.deviceHealth.length} ONLINE',
+                  style: TextStyle(
+                    color: allOk ? c.success : c.warning,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(color: c.border, height: 1),
+          ...ws.deviceHealth.map((d) {
+            final dot = d.online ? c.success : c.error;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: c.border)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: dot,
+                      boxShadow: [
+                        BoxShadow(color: dot.withOpacity(0.5), blurRadius: 5),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      d.label,
+                      style: TextStyle(
+                        color: c.textPrimary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    d.addr,
+                    style: TextStyle(
+                      color: c.textMuted,
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    d.online ? 'ONLINE' : 'OFFLINE',
+                    style: TextStyle(
+                      color: dot,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
   // ---- GPS Card ----
   Widget _gpsCard(BuildContext context, WebSocketService ws) {
     final c = context.colors;
@@ -410,6 +603,53 @@ class DashboardScreen extends StatelessWidget {
               child: Text(
                 'No GPS fix yet. Press GET GPS to request a position.',
                 style: TextStyle(color: c.textMuted, fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    // GPS replied but has no fix yet — link is fine, just no signal.
+    if (gps.noSignal) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: c.warning.withOpacity(0.35)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: c.warning.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.gps_off, color: c.warning, size: 28),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'NO SIGNAL',
+                    style: TextStyle(
+                      color: c.warning,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'GPS replied over the link, but has no fix yet '
+                    '(${gps.satellites} satellites). Make sure the GPS is '
+                    'powered with a clear sky view.',
+                    style: TextStyle(color: c.textSecondary, fontSize: 12),
+                  ),
+                ],
               ),
             ),
           ],

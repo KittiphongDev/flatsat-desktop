@@ -34,6 +34,15 @@ class WebSocketService extends ChangeNotifier {
   double epsSpeedBps = 0; // receive speed, bytes/second
   DateTime? _epsProgressAt;
   int _epsLastBytes = 0;
+
+  // Device health (STATUS scan).
+  List<DeviceHealth> deviceHealth = [];
+  DateTime? lastHealthTime;
+
+  // Ping round-trip time.
+  int? pingRttMs;
+  DateTime? _pingSentAt;
+  bool _pingPending = false;
   List<ImageEntry> imageList = [];
   DownloadProgress? downloadProgress;
   bool isDownloading = false;
@@ -172,7 +181,24 @@ class WebSocketService extends ChangeNotifier {
         case 'ack':
           _addLog('ACK: ${data['data'] ?? 'OK'}');
           _applyPowerAck(data['data']);
-          _flash('Satellite acknowledged ✓');
+          // If a ping is outstanding, this ACK is its pong — record RTT.
+          if (_pingPending && _pingSentAt != null) {
+            pingRttMs = DateTime.now().difference(_pingSentAt!).inMilliseconds;
+            _pingPending = false;
+            _flash('Pong · ${pingRttMs}ms round-trip');
+          } else {
+            _flash('Satellite acknowledged ✓');
+          }
+          break;
+
+        case 'health':
+          deviceHealth = ((data['data'] as List?) ?? [])
+              .map((e) => DeviceHealth.fromJson(e))
+              .toList();
+          lastHealthTime = DateTime.now();
+          final online = deviceHealth.where((d) => d.online).length;
+          _addLog('HEALTH: $online/${deviceHealth.length} devices online');
+          _flash('Health scan: $online/${deviceHealth.length} online');
           break;
 
         case 'nack':
@@ -306,8 +332,19 @@ class WebSocketService extends ChangeNotifier {
   }
 
   void sendPing() {
+    _pingSentAt = DateTime.now();
+    _pingPending = true;
     _send({'cmd': 'ping'});
     _addLog('>> PING');
+    // Give up waiting for the pong after 5s.
+    Timer(const Duration(seconds: 5), () {
+      if (_pingPending) {
+        _pingPending = false;
+        pingRttMs = null;
+        _flash('Ping timed out — no response', error: true);
+        notifyListeners();
+      }
+    });
   }
 
   void sendStatus() {

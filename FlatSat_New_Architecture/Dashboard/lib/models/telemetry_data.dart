@@ -90,12 +90,14 @@ class GpsData {
   final double longitude;
   final double altitude;
   final int satellites;
+  final bool fixValid; // false = link OK but GPS has no signal/fix
 
   GpsData({
     this.latitude = 0,
     this.longitude = 0,
     this.altitude = 0,
     this.satellites = 0,
+    this.fixValid = false,
   });
 
   factory GpsData.fromJson(Map<String, dynamic> json) {
@@ -104,6 +106,27 @@ class GpsData {
       longitude: (json['longitude'] ?? 0).toDouble(),
       altitude: (json['altitude'] ?? 0).toDouble(),
       satellites: json['satellites'] ?? 0,
+      fixValid: json['fix_valid'] ?? false,
+    );
+  }
+
+  /// True when the GPS replied but has no usable fix yet.
+  bool get noSignal => !fixValid || satellites == 0;
+}
+
+/// One I2C device's health from the STATUS scan.
+class DeviceHealth {
+  final String addr;
+  final bool online;
+  final String label;
+
+  DeviceHealth({required this.addr, required this.online, required this.label});
+
+  factory DeviceHealth.fromJson(Map<String, dynamic> json) {
+    return DeviceHealth(
+      addr: json['addr'] ?? '',
+      online: json['online'] ?? false,
+      label: json['label'] ?? '',
     );
   }
 }

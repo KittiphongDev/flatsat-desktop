@@ -108,6 +108,7 @@ CMD_IMAGE_LIST   = 0x0D
 CMD_NACK         = 0x0E
 CMD_GET_EPS      = 0x0F
 CMD_EPS_DATA     = 0x10
+CMD_HEALTH_DATA  = 0x11
 
 # ====================================================================
 # APPLICATION STATE
@@ -143,6 +144,10 @@ download_state = {
 # EPS telemetry is split into several small radio packets (to fit the SX1278
 # FIFO). We reassemble the chunks here before parsing the full blob.
 eps_reassembly = {"total": 0, "chunks": {}}
+
+# Generic chunk reassembly buffers for other chunked responses (image list,
+# device health), keyed by a short name.
+misc_reassembly = {}
 
 # Serial port handle
 ser = None
@@ -283,33 +288,34 @@ def process_packet(raw_bytes: bytearray):
             lon = struct.unpack('<f', payload[4:8])[0]
             alt = struct.unpack('<f', payload[8:12])[0]
             sat_count = payload[12]
+            # Newer firmware appends a fix-valid byte; fall back to sat count.
+            fix_valid = bool(payload[13]) if payload_len >= 14 else (sat_count > 0)
             gps_data = {
                 "latitude": round(lat, 6),
                 "longitude": round(lon, 6),
                 "altitude": round(alt, 2),
                 "satellites": sat_count,
+                "fix_valid": fix_valid,
             }
-            log.info(f"GPS: Lat={lat:.6f} Lon={lon:.6f} Alt={alt:.1f}m Sats={sat_count}")
+            log.info(f"GPS: fix={fix_valid} Lat={lat:.6f} Lon={lon:.6f} "
+                     f"Alt={alt:.1f}m Sats={sat_count}")
             schedule_broadcast({"type": "gps", "data": gps_data})
 
     elif cmd_type == CMD_IMAGE_LIST:
-        # Parse file list: [nameLen][name][size(4bytes)] repeating
-        files = []
-        idx = 0
-        while idx < payload_len:
-            if idx >= len(payload):
-                break
-            fn_len = payload[idx]
-            idx += 1
-            if idx + fn_len + 4 > len(payload):
-                break
-            name = payload[idx:idx + fn_len].decode('ascii', errors='replace')
-            idx += fn_len
-            fsize = struct.unpack('>I', payload[idx:idx + 4])[0]
-            idx += 4
-            files.append({"name": name, "size": fsize})
-        log.info(f"IMAGE_LIST: {len(files)} files")
-        schedule_broadcast({"type": "image_list", "data": files})
+        # The image list is sent chunked (it can exceed one radio frame).
+        blob = reassemble_simple("image", payload, payload_len)
+        if blob is not None:
+            files = parse_image_list(blob)
+            log.info(f"IMAGE_LIST: {len(files)} files")
+            schedule_broadcast({"type": "image_list", "data": files})
+
+    elif cmd_type == CMD_HEALTH_DATA:
+        blob = reassemble_simple("health", payload, payload_len)
+        if blob is not None:
+            devices = parse_health(blob)
+            online = sum(1 for d in devices if d["online"])
+            log.info(f"HEALTH: {online}/{len(devices)} devices online")
+            schedule_broadcast({"type": "health", "data": devices})
 
     elif cmd_type == CMD_IMAGE_DATA:
         handle_image_chunk(payload, payload_len)
@@ -370,6 +376,77 @@ def parse_eps_payload(payload: bytes):
     except (struct.error, IndexError) as e:
         log.error(f"Failed to parse EPS payload: {e}")
         return None
+
+def reassemble_simple(key: str, payload: bytes, payload_len: int):
+    """Generic chunk reassembler for non-progress transfers (image list,
+    health). Chunk = [chunkIdx][totalChunks][data...]. Returns the full blob
+    once all chunks are in, else None. De-duplicates redundant re-sends."""
+    if payload_len < 2:
+        return None
+    chunk_idx = payload[0]
+    total = payload[1]
+    if total <= 0:
+        return None
+    data = bytes(payload[2:payload_len])
+
+    now = time.time()
+    buf = misc_reassembly.get(key)
+    if buf is None or buf.get("total") != total or now - buf.get("ts", 0) > 4.0:
+        buf = {"total": total, "chunks": {}, "ts": now}
+        misc_reassembly[key] = buf
+    buf["ts"] = now
+    buf["chunks"][chunk_idx] = data
+
+    if len(buf["chunks"]) >= total and all(i in buf["chunks"] for i in range(total)):
+        blob = b"".join(buf["chunks"][i] for i in range(total))
+        del misc_reassembly[key]
+        return blob
+    return None
+
+def parse_image_list(blob: bytes):
+    """Parse [nameLen][name][size(4B, big-endian)] repeating."""
+    files = []
+    idx = 0
+    n = len(blob)
+    while idx < n:
+        fn_len = blob[idx]
+        idx += 1
+        if fn_len == 0 or idx + fn_len + 4 > n:
+            break
+        name = blob[idx:idx + fn_len].decode('ascii', errors='replace')
+        idx += fn_len
+        fsize = struct.unpack('>I', blob[idx:idx + 4])[0]
+        idx += 4
+        files.append({"name": name, "size": fsize})
+    return files
+
+def parse_health(blob: bytes):
+    """Parse [count] then count x [addr][online]. Adds a friendly label."""
+    labels = {
+        0x40: "INA226 · Solar Cell 1", 0x41: "INA226 · Solar Cell 2",
+        0x42: "INA226 · Solar Cell 3", 0x43: "INA226 · Solar Cell 4",
+        0x47: "INA226 · Battery Charging", 0x48: "INA226 · Battery Discharging",
+        0x4A: "TMP102 · Battery 1 Temp", 0x4B: "TMP102 · Battery 2 Temp",
+        0x58: "ADM1177 · OBC Power", 0x59: "ADM1177 · Communication Power",
+        0x5A: "ADM1177 · Payload 1 Power", 0x5B: "ADM1177 · Payload 2 Power",
+    }
+    devices = []
+    if not blob:
+        return devices
+    count = blob[0]
+    idx = 1
+    for _ in range(count):
+        if idx + 2 > len(blob):
+            break
+        addr = blob[idx]
+        online = bool(blob[idx + 1])
+        idx += 2
+        devices.append({
+            "addr": f"0x{addr:02X}",
+            "online": online,
+            "label": labels.get(addr, f"Device 0x{addr:02X}"),
+        })
+    return devices
 
 def handle_eps_chunk(payload: bytes, payload_len: int):
     """Reassemble the chunked EPS telemetry and report transfer progress.

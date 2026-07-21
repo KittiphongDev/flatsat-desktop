@@ -10,6 +10,7 @@
 #include <Wire.h>
 #include "SdFat_Adafruit_Fork.h"
 #include <IWatchdog.h>
+#include <TinyGPS++.h>   // GPS NMEA parsing (same library as the FlatSat labs)
 
 // ====================================================================
 // HARDWARE PIN DEFINITIONS (STM32F429ZI - Nucleo-144)
@@ -37,10 +38,16 @@
 #define EPS_SDA PF0
 #define EPS_SCL PF1
 
+// --- GPS MODULE UART (matches Lab 5) ---
+#define GPS_RX PE0
+#define GPS_TX PE1
+
 // --- Hardware Instances ---
 SPIClass SD_SPI(SD_MOSI, SD_MISO, SD_SCK);
 SdFat sd;
 HardwareSerial CommsUART(PA1, PA0); // UART to COMMU module
+HardwareSerial GpsUART(GPS_RX, GPS_TX); // NMEA stream from the GPS module
+TinyGPSPlus gps;
 
 // ====================================================================
 // EPS SENSOR DRIVERS (INA226 / TMP102 / ADM1177 over dedicated I2C)
@@ -227,7 +234,8 @@ enum CommandByte {
   CMD_IMAGE_LIST   = 0x0D,
   CMD_NACK         = 0x0E,
   CMD_GET_EPS      = 0x0F, // GS -> OBC: request full EPS telemetry
-  CMD_EPS_DATA     = 0x10  // OBC -> GS: full EPS telemetry dump
+  CMD_EPS_DATA     = 0x10, // OBC -> GS: full EPS telemetry dump
+  CMD_HEALTH_DATA  = 0x11  // OBC -> GS: I2C device health scan result
 };
 
 // --- KISS Framing ---
@@ -375,38 +383,70 @@ void sendEPSData() {
     payload[idx++] = (c >> 8) & 0xFF;
   }
 
-  // The radio link caps at 64 bytes/frame, so split the EPS blob into small
-  // chunks framed as [chunkIdx][totalChunks][data...]. The PC bridge
-  // reassembles them and reports transfer progress. Each chunk is sent twice
-  // (two passes) so a single dropped frame doesn't stall the whole transfer;
-  // the bridge de-duplicates by chunk index.
-  uint8_t totalChunks = (idx + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE;
-  if (totalChunks == 0) totalChunks = 1;
-
-  const uint8_t EPS_TX_COPIES = 2; // send each chunk twice, back-to-back
-  for (uint8_t ci = 0; ci < totalChunks; ci++) {
-    uint16_t off = (uint16_t)ci * EPS_CHUNK_SIZE;
-    uint8_t len = (idx - off > EPS_CHUNK_SIZE) ? EPS_CHUNK_SIZE
-                                              : (uint8_t)(idx - off);
-    uint8_t part[EPS_CHUNK_SIZE + 2];
-    part[0] = ci;             // chunk index
-    part[1] = totalChunks;    // total chunks in this transfer
-    memcpy(&part[2], &payload[off], len);
-
-    for (uint8_t rep = 0; rep < EPS_TX_COPIES; rep++) {
-      sendPacket(CMD_EPS_DATA, part, len + 2);
-      delay(90);            // pace so the COMMS relay + 64-byte radio keep up
-      IWatchdog.reload();   // 10s watchdog — reload during the paced send
-    }
-  }
-
-  Serial.print("[EPS] Telemetry sent in ");
-  Serial.print(totalChunks);
-  Serial.print(" chunk(s) x");
-  Serial.print(EPS_TX_COPIES);
-  Serial.print(", ");
+  sendChunked(CMD_EPS_DATA, payload, idx);
+  Serial.print("[EPS] Telemetry sent, ");
   Serial.print(idx);
   Serial.println(" bytes");
+}
+
+// ====================================================================
+// GENERIC CHUNKED SENDER
+// The COMMS->GS radio carries at most 64 bytes/frame, so responses larger
+// than that are split into small frames: [chunkIdx][totalChunks][data...].
+// Each chunk is sent twice (back-to-back) so a single dropped frame doesn't
+// lose the transfer; the PC bridge de-duplicates by chunk index.
+// ====================================================================
+void sendChunked(uint8_t cmdType, const uint8_t *blob, uint16_t blobLen) {
+  uint8_t totalChunks = (blobLen + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE;
+  if (totalChunks == 0) totalChunks = 1;
+
+  const uint8_t COPIES = 2;
+  for (uint8_t ci = 0; ci < totalChunks; ci++) {
+    uint16_t off = (uint16_t)ci * EPS_CHUNK_SIZE;
+    uint8_t len = (blobLen - off > EPS_CHUNK_SIZE) ? EPS_CHUNK_SIZE
+                                                  : (uint8_t)(blobLen - off);
+    uint8_t part[EPS_CHUNK_SIZE + 2];
+    part[0] = ci;
+    part[1] = totalChunks;
+    memcpy(&part[2], &blob[off], len);
+
+    for (uint8_t rep = 0; rep < COPIES; rep++) {
+      sendPacket(cmdType, part, len + 2);
+      delay(90);
+      IWatchdog.reload();
+    }
+  }
+}
+
+// ====================================================================
+// DEVICE HEALTH SCAN (STATUS command)
+// Probes each known EPS sensor/controller on the EPS I2C bus and reports
+// which are online. Payload: [count] then count x [addr][online?1:0].
+// ====================================================================
+void sendDeviceHealth() {
+  // Known devices from the FlatSat EPS documentation.
+  static const uint8_t addrs[] = {
+    0x40, 0x41, 0x42, 0x43, 0x47, 0x48, // INA226 (solar x4, batt charge/discharge)
+    0x4A, 0x4B,                         // TMP102 (battery temps)
+    0x58, 0x59, 0x5A, 0x5B              // ADM1177 (power outputs)
+  };
+  const uint8_t n = sizeof(addrs);
+
+  uint8_t payload[1 + 2 * sizeof(addrs)];
+  uint8_t idx = 0;
+  payload[idx++] = n;
+  for (uint8_t i = 0; i < n; i++) {
+    EPS_SEN.beginTransmission(addrs[i]);
+    uint8_t online = (EPS_SEN.endTransmission() == 0) ? 1 : 0;
+    payload[idx++] = addrs[i];
+    payload[idx++] = online;
+    IWatchdog.reload();
+  }
+
+  sendChunked(CMD_HEALTH_DATA, payload, idx);
+  Serial.print("[HEALTH] Device scan sent, ");
+  Serial.print(n);
+  Serial.println(" devices");
 }
 
 // ====================================================================
@@ -493,10 +533,10 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
       Serial.println("[CMD] ACK received");
       break;
 
-    // --- STATUS (Force immediate beacon) ---
+    // --- STATUS (Scan I2C devices and report health) ---
     case CMD_STATUS:
-      sendBeacon();
-      Serial.println("[CMD] STATUS -> Beacon sent");
+      sendDeviceHealth();
+      Serial.println("[CMD] STATUS -> Device health sent");
       break;
 
     // --- GET EPS (Full EPS telemetry dump) ---
@@ -545,28 +585,37 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
     // --- GET GPS ---
     case CMD_GET_GPS: {
       Serial.println("[CMD] GET_GPS");
-      // TODO: Read actual GPS NMEA data from GPS UART
-      // Mock GPS data for now
+      // Read the real GPS module (parsed from the NMEA stream via TinyGPS++).
+      // When there is no fix yet, fixValid = 0 and satellites = 0 so the app
+      // can show "NO SIGNAL" even though the link itself is working fine.
+      float lat = 0.0f, lon = 0.0f, alt = 0.0f;
+      uint8_t satCount = 0;
+      uint8_t fixValid = 0;
+
+      if (gps.location.isValid()) {
+        lat = gps.location.lat();
+        lon = gps.location.lng();
+        fixValid = 1;
+      }
+      if (gps.altitude.isValid()) alt = gps.altitude.meters();
+      if (gps.satellites.isValid()) satCount = (uint8_t)gps.satellites.value();
+
       uint8_t gpsData[16];
-      // Latitude (float, 4 bytes) - mock: 13.7563 (Bangkok)
-      float lat = 13.7563f;
-      float lon = 100.5018f;
-      float alt = 150.0f;
-      uint8_t satCount = 8;
       memcpy(&gpsData[0], &lat, 4);
       memcpy(&gpsData[4], &lon, 4);
       memcpy(&gpsData[8], &alt, 4);
       gpsData[12] = satCount;
+      gpsData[13] = fixValid; // 0 = no signal/fix, 1 = valid fix
 
       // Send the reply a few times so a single dropped frame over the radio
-      // doesn't lose the whole response (beacons survive only because they
-      // repeat; solicited replies need the same redundancy).
+      // doesn't lose the whole response.
       for (uint8_t r = 0; r < 3; r++) {
-        sendPacket(CMD_GPS_DATA, gpsData, 13);
+        sendPacket(CMD_GPS_DATA, gpsData, 14);
         delay(80);
         IWatchdog.reload();
       }
-      Serial.println("[CMD] GPS data sent (x3)");
+      Serial.print("[CMD] GPS data sent (x3), fix=");
+      Serial.println(fixValid);
       break;
     }
 
@@ -649,7 +698,9 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
         root.close();
       }
 
-      sendPacket(CMD_IMAGE_LIST, listPayload, listIndex);
+      // The list can exceed one 64-byte radio frame, so send it chunked
+      // (works for 0 images too — the bridge reassembles an empty list).
+      sendChunked(CMD_IMAGE_LIST, listPayload, listIndex);
       Serial.print("[CMD] Listed images, payload size: ");
       Serial.println(listIndex);
       break;
@@ -823,6 +874,9 @@ void setup() {
   // UART to COMMU
   CommsUART.begin(115200);
 
+  // GPS module UART (NMEA @ 9600, standard for most GPS receivers)
+  GpsUART.begin(9600);
+
   // I2C Bus (general sensors)
   Wire.begin();
 
@@ -878,9 +932,14 @@ void loop() {
     lastBeaconTime = currentMillis;
   }
 
-  // 3. Process Incoming Commands from COMMU
+  // 3. Feed the GPS parser with any NMEA bytes from the module
+  while (GpsUART.available()) {
+    gps.encode(GpsUART.read());
+  }
+
+  // 4. Process Incoming Commands from COMMU
   processIncomingUART();
 
-  // 4. Service Watchdog
+  // 5. Service Watchdog
   IWatchdog.reload();
 }
