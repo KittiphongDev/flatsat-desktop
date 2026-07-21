@@ -18,7 +18,17 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     return Scaffold(
-      body: Consumer<WebSocketService>(
+      body: Stack(
+        children: [
+          _buildScroll(context, c),
+          const _CommandFeedback(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScroll(BuildContext context, AppColors c) {
+    return Consumer<WebSocketService>(
         builder: (context, ws, _) {
           return CustomScrollView(
             slivers: [
@@ -64,8 +74,7 @@ class DashboardScreen extends StatelessWidget {
             ],
           );
         },
-      ),
-    );
+      );
   }
 
   // ============================================================
@@ -83,8 +92,7 @@ class DashboardScreen extends StatelessWidget {
         _section(context, 'IMAGE MANAGER', _imageManager(context, ws)),
         if (ws.lastGps != null)
           _section(context, 'GPS DATA', _gpsCard(context, ws)),
-        if (ws.lastEps != null)
-          _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
+        _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
         if (ws.isDownloading && ws.downloadProgress != null)
           _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
         _section(context, 'EVENT LOG', _eventLog(context, ws)),
@@ -97,8 +105,7 @@ class DashboardScreen extends StatelessWidget {
   Widget _wideLayout(BuildContext context, WebSocketService ws) {
     final primary = <Widget>[
       _section(context, 'TELEMETRY', _telemetryGrid(context, ws)),
-      if (ws.lastEps != null)
-        _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
+      _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
       _section(context, 'COMMAND CONSOLE', _commandGrid(context, ws)),
       _section(context, 'EVENT LOG', _eventLog(context, ws)),
     ];
@@ -616,13 +623,18 @@ class _AppBarTitle extends StatelessWidget {
 
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: c.accent.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(10),
+        Image.network(
+          'https://flatsat.kidorbit.space/assets/nb_logo_w.png',
+          height: 30,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: c.accent.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.satellite_alt, color: c.accent, size: 22),
           ),
-          child: Icon(Icons.satellite_alt, color: c.accent, size: 22),
         ),
         const SizedBox(width: 12),
         Flexible(
@@ -681,5 +693,55 @@ class _AppBarTitle extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+/// Invisible listener that turns the service's command-feedback signal into
+/// floating SnackBar toasts, so every command visibly confirms.
+class _CommandFeedback extends StatefulWidget {
+  const _CommandFeedback();
+
+  @override
+  State<_CommandFeedback> createState() => _CommandFeedbackState();
+}
+
+class _CommandFeedbackState extends State<_CommandFeedback> {
+  int _lastSeq = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final ws = context.watch<WebSocketService>();
+    if (ws.feedbackSeq != _lastSeq) {
+      _lastSeq = ws.feedbackSeq;
+      final msg = ws.feedbackMessage;
+      final isErr = ws.feedbackIsError;
+      final c = context.colors;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isErr ? Icons.error_outline : Icons.check_circle_outline,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Flexible(child: Text(msg)),
+              ],
+            ),
+            duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
+            width: 320,
+            backgroundColor: isErr ? c.error : c.accent,
+          ),
+        );
+      });
+    }
+    return const SizedBox.shrink();
   }
 }

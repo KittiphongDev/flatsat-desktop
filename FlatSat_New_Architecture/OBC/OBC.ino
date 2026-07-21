@@ -241,7 +241,11 @@ enum CommandByte {
 #define SYNC2 0xBB
 
 // --- Image Transfer ---
-#define CHUNK_SIZE 48
+// Radio-safe chunk sizes. The SX1278 FSK FIFO is 64 bytes and DIO1 is not
+// wired, so every over-the-air frame must stay small. Frame overhead is
+// AX.25(16) + packet header/CRC(8) = 24 bytes, so keep payloads <= ~40.
+#define CHUNK_SIZE 32       // image download data per chunk
+#define EPS_CHUNK_SIZE 32   // EPS telemetry data per chunk
 #define WDT_TIMEOUT_US 10000000 // 10 seconds
 
 // ====================================================================
@@ -371,9 +375,31 @@ void sendEPSData() {
     payload[idx++] = (c >> 8) & 0xFF;
   }
 
-  sendPacket(CMD_EPS_DATA, payload, idx);
-  Serial.print("[EPS] Telemetry sent, payload bytes: ");
-  Serial.println(idx);
+  // Split into radio-safe chunks (SX1278 FSK 64-byte FIFO). Each RF frame is
+  // small, framed as [chunkIdx][totalChunks][data...]; the PC bridge
+  // reassembles them and reports transfer progress.
+  uint8_t totalChunks = (idx + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE;
+  if (totalChunks == 0) totalChunks = 1;
+
+  for (uint8_t ci = 0; ci < totalChunks; ci++) {
+    uint16_t off = (uint16_t)ci * EPS_CHUNK_SIZE;
+    uint8_t len = (idx - off > EPS_CHUNK_SIZE) ? EPS_CHUNK_SIZE
+                                              : (uint8_t)(idx - off);
+    uint8_t part[EPS_CHUNK_SIZE + 2];
+    part[0] = ci;             // chunk index
+    part[1] = totalChunks;    // total chunks in this transfer
+    memcpy(&part[2], &payload[off], len);
+    sendPacket(CMD_EPS_DATA, part, len + 2);
+
+    delay(90);            // pace so the COMMS relay + radio FIFO keep up
+    IWatchdog.reload();   // 10s watchdog — reload during the paced send
+  }
+
+  Serial.print("[EPS] Telemetry sent in ");
+  Serial.print(totalChunks);
+  Serial.print(" chunk(s), ");
+  Serial.print(idx);
+  Serial.println(" bytes");
 }
 
 // ====================================================================

@@ -11,6 +11,7 @@ class WebSocketService extends ChangeNotifier {
   WebSocketChannel? _channel;
   bool _isConnected = false;
   Timer? _reconnectTimer;
+  Timer? _epsTimeout;
   Process? _bridgeProcess;
 
   // ---- Reactive State ----
@@ -22,11 +23,30 @@ class WebSocketService extends ChangeNotifier {
   static const int epsHistoryCap = 60;
   final List<EpsData> epsHistory = [];
   int epsPacketCount = 0;
+  DateTime? lastEpsTime; // when the most recent EPS packet arrived
+
+  // EPS chunked-transfer progress.
+  bool epsReceiving = false;
+  int epsProgress = 0; // 0..100
+  int epsChunksReceived = 0;
+  int epsChunksTotal = 0;
   List<ImageEntry> imageList = [];
   DownloadProgress? downloadProgress;
   bool isDownloading = false;
   String? downloadCompleteFile;
   List<String> eventLog = [];
+
+  // ---- Ephemeral command feedback (drives SnackBar toasts) ----
+  int feedbackSeq = 0;
+  String feedbackMessage = '';
+  bool feedbackIsError = false;
+
+  void _flash(String msg, {bool error = false}) {
+    feedbackMessage = msg;
+    feedbackIsError = error;
+    feedbackSeq++;
+    notifyListeners();
+  }
 
   // ---- Serial / bridge status (drives the in-app connection helper) ----
   bool serialConnected = false;
@@ -148,10 +168,12 @@ class WebSocketService extends ChangeNotifier {
         case 'ack':
           _addLog('ACK: ${data['data'] ?? 'OK'}');
           _applyPowerAck(data['data']);
+          _flash('Satellite acknowledged ✓');
           break;
 
         case 'nack':
           _addLog('NACK: ${data['data'] ?? 'Failed'}');
+          _flash('Command failed on satellite', error: true);
           break;
 
         case 'gps':
@@ -162,18 +184,43 @@ class WebSocketService extends ChangeNotifier {
             'Alt=${lastGps!.altitude.toStringAsFixed(1)}m '
             'Sats=${lastGps!.satellites}',
           );
+          _flash('GPS position received');
           break;
 
         case 'eps':
           lastEps = EpsData.fromJson(data['data']);
           epsPacketCount++;
+          lastEpsTime = DateTime.now();
           epsHistory.add(lastEps!);
           if (epsHistory.length > epsHistoryCap) {
             epsHistory.removeRange(0, epsHistory.length - epsHistoryCap);
           }
+          epsReceiving = false;
+          epsProgress = 100;
+          _epsTimeout?.cancel();
           _addLog('EPS: ${lastEps!.ina226.length} INA226, '
               '${lastEps!.tmp102.length} TMP102, '
               '${lastEps!.adm1177.length} ADM1177');
+          _flash('EPS telemetry received');
+          break;
+
+        case 'eps_progress':
+          final d = data['data'] as Map<String, dynamic>;
+          epsChunksReceived = d['received'] ?? 0;
+          epsChunksTotal = d['total'] ?? 0;
+          epsProgress = d['percent'] ?? 0;
+          epsReceiving = epsProgress < 100;
+          // Extend the safety window while chunks keep arriving.
+          if (epsReceiving) {
+            _epsTimeout?.cancel();
+            _epsTimeout = Timer(const Duration(seconds: 8), () {
+              if (epsReceiving && epsProgress < 100) {
+                epsReceiving = false;
+                _flash('EPS transfer stalled — try GET EPS again', error: true);
+                notifyListeners();
+              }
+            });
+          }
           break;
 
         case 'image_list':
@@ -181,6 +228,7 @@ class WebSocketService extends ChangeNotifier {
               .map((e) => ImageEntry.fromJson(e))
               .toList();
           _addLog('Image list: ${imageList.length} files');
+          _flash('Images: ${imageList.length} file(s)');
           break;
 
         case 'download_started':
@@ -203,6 +251,7 @@ class WebSocketService extends ChangeNotifier {
           final elapsed = data['data']['elapsed'] ?? 0;
           _addLog('Download complete: $downloadCompleteFile '
               '(${size}B in ${elapsed}s)');
+          _flash('Download complete');
           break;
 
         case 'bridge_status':
@@ -268,6 +317,21 @@ class WebSocketService extends ChangeNotifier {
   void sendGetEps() {
     _send({'cmd': 'get_eps'});
     _addLog('>> GET_EPS');
+    // Begin a fresh transfer indicator; chunks will drive the percentage.
+    epsReceiving = true;
+    epsProgress = 0;
+    epsChunksReceived = 0;
+    epsChunksTotal = 0;
+    notifyListeners();
+    // Safety: clear the indicator if the transfer never completes.
+    _epsTimeout?.cancel();
+    _epsTimeout = Timer(const Duration(seconds: 8), () {
+      if (epsReceiving && epsProgress < 100) {
+        epsReceiving = false;
+        _flash('EPS transfer timed out — try GET EPS again', error: true);
+        notifyListeners();
+      }
+    });
   }
 
   void sendTogglePwr(int subsystem) {
@@ -369,6 +433,15 @@ class WebSocketService extends ChangeNotifier {
     if (eventLog.length > 200) {
       eventLog.removeRange(200, eventLog.length);
     }
+    // Any '>>' line is an outgoing command — surface a toast confirming it.
+    if (msg.startsWith('>>')) {
+      final label = msg.substring(2).trim();
+      if (_isConnected) {
+        _flash('$label sent');
+      } else {
+        _flash('Offline — "$label" not sent', error: true);
+      }
+    }
   }
 
   void clearLog() {
@@ -378,6 +451,7 @@ class WebSocketService extends ChangeNotifier {
 
   @override
   void dispose() {
+    _epsTimeout?.cancel();
     _bridgeProcess?.kill();
     _disconnect();
     super.dispose();

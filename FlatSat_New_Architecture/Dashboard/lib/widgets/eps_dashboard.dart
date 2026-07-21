@@ -10,49 +10,38 @@ import '../theme/app_theme.dart';
 class EpsDashboard extends StatelessWidget {
   const EpsDashboard({super.key});
 
-  // Channel names from the FlatSat EPS documentation.
+  // Channel names + I2C addresses from the FlatSat EPS documentation.
   static const List<String> inaNames = [
-    'Solar Input 1',
-    'Solar Input 2',
-    'Solar Input 3',
-    'Solar Input 4',
-    'Battery Charge',
-    'Battery Discharge',
+    'Solar Cell 1',
+    'Solar Cell 2',
+    'Solar Cell 3',
+    'Solar Cell 4',
+    'Battery Charging',
+    'Battery Discharging',
   ];
+  static const List<String> inaAddr = ['0x40', '0x41', '0x42', '0x43', '0x47', '0x48'];
+
   static const List<String> admNames = [
-    'OBC (locked)',
-    'Communication',
-    'Payload 1 / GPS',
-    'Payload 2 / PC104',
+    'OBC Power',
+    'Communication Power',
+    'Payload 1 Power',
+    'Payload 2 Power',
   ];
-  static const List<String> tmpNames = ['Battery 1', 'Battery 2'];
+  static const List<String> admAddr = ['0x58', '0x59', '0x5A', '0x5B'];
+
+  static const List<String> tmpNames = ['Battery 1 Temp', 'Battery 2 Temp'];
+  static const List<String> tmpAddr = ['0x4A', '0x4B'];
 
   static String _name(List<String> names, int i) =>
       (i >= 0 && i < names.length) ? names[i] : 'Channel $i';
+  static String _addr(List<String> addrs, int i) =>
+      (i >= 0 && i < addrs.length) ? addrs[i] : '--';
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     final ws = context.watch<WebSocketService>();
     final eps = ws.lastEps;
-
-    if (eps == null) {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: c.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: c.border),
-        ),
-        child: Center(
-          child: Text(
-            'No EPS data yet. Press GET EPS to read the power system.',
-            style: TextStyle(color: c.textMuted, fontSize: 13),
-          ),
-        ),
-      );
-    }
-
     final history = ws.epsHistory;
 
     return Container(
@@ -68,6 +57,14 @@ class EpsDashboard extends StatelessWidget {
           _statsStrip(context, ws, eps),
           const SizedBox(height: 18),
 
+          if (ws.epsReceiving) ...[
+            _transferBar(context, ws),
+            const SizedBox(height: 16),
+          ],
+
+          if (eps == null && !ws.epsReceiving)
+            _awaiting(context)
+          else if (eps != null) ...[
           // ---- INA226 ----
           _groupHeader(context, Icons.bolt, 'INA226 · Solar & Battery Monitors',
               '${eps.ina226.length} channels'),
@@ -78,9 +75,9 @@ class EpsDashboard extends StatelessWidget {
             children: [
               for (final r in eps.ina226)
                 _SensorCard(
-                  title: 'INA226',
+                  title: _name(inaNames, r.index),
+                  subtitle: 'INA226 · ${_addr(inaAddr, r.index)}',
                   chip: 'CH ${r.index}',
-                  name: _name(inaNames, r.index),
                   rows: [
                     _Metric('Bus Voltage', 'V', r.voltage.toStringAsFixed(3),
                         c.info),
@@ -131,9 +128,9 @@ class EpsDashboard extends StatelessWidget {
             children: [
               for (final r in eps.tmp102)
                 _SensorCard(
-                  title: 'TMP102',
+                  title: _name(tmpNames, r.index),
+                  subtitle: 'TMP102 · ${_addr(tmpAddr, r.index)}',
                   chip: 'CH ${r.index}',
-                  name: _name(tmpNames, r.index),
                   big: _Metric('Temperature', '°C',
                       r.temperature.toStringAsFixed(2), c.warning),
                 ),
@@ -161,9 +158,10 @@ class EpsDashboard extends StatelessWidget {
             children: [
               for (final r in eps.adm1177)
                 _SensorCard(
-                  title: 'ADM1177',
+                  title: _name(admNames, r.index),
+                  subtitle: 'ADM1177 · ${_addr(admAddr, r.index)}'
+                      '${r.index == 0 ? ' · locked' : ''}',
                   chip: 'CH ${r.index}',
-                  name: _name(admNames, r.index),
                   rows: [
                     _Metric('Voltage', 'V',
                         (r.voltageMv / 1000).toStringAsFixed(2), c.info),
@@ -181,12 +179,100 @@ class EpsDashboard extends StatelessWidget {
             value: (e, ch) =>
                 ch < e.adm1177.length ? e.adm1177[ch].voltageMv / 1000 : null,
           ),
+          ], // end else (eps != null)
         ],
       ),
     );
   }
 
-  Widget _statsStrip(BuildContext context, WebSocketService ws, EpsData eps) {
+  Widget _transferBar(BuildContext context, WebSocketService ws) {
+    final c = context.colors;
+    final pct = ws.epsProgress.clamp(0, 100);
+    final total = ws.epsChunksTotal;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: c.accent.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: c.accent.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(c.accent),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Receiving EPS telemetry…',
+                style: TextStyle(
+                    color: c.textPrimary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600),
+              ),
+              const Spacer(),
+              Text(
+                total > 0
+                    ? '$pct%  (${ws.epsChunksReceived}/$total)'
+                    : '$pct%',
+                style: TextStyle(
+                    color: c.accent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'monospace'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: pct / 100.0,
+              minHeight: 5,
+              backgroundColor: c.border,
+              valueColor: AlwaysStoppedAnimation(c.accent),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _awaiting(BuildContext context) {
+    final c = context.colors;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+      child: Column(
+        children: [
+          Icon(Icons.hourglass_empty, color: c.textMuted, size: 28),
+          const SizedBox(height: 10),
+          Text(
+            'No EPS data received yet',
+            style: TextStyle(
+                color: c.textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Press GET EPS. The panel fills in once the satellite responds.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: c.textMuted, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statsStrip(BuildContext context, WebSocketService ws, EpsData? eps) {
     final c = context.colors;
     Widget stat(String label, String value, Color color) => Row(
           mainAxisSize: MainAxisSize.min,
@@ -217,14 +303,36 @@ class EpsDashboard extends StatelessWidget {
         spacing: 20,
         runSpacing: 6,
         children: [
+          stat(
+            'UPDATED',
+            ws.lastEpsTime == null
+                ? '— no data'
+                : '${_fmtTime(ws.lastEpsTime!)} · ${_ageStr(ws.lastEpsTime!)}',
+            ws.lastEpsTime == null ? c.warning : c.success,
+          ),
           stat('PACKETS', '${ws.epsPacketCount}', c.accent),
           stat('SAMPLES', '${ws.epsHistory.length}', c.info),
-          stat('INA226', '${eps.ina226.length}', c.textSecondary),
-          stat('TMP102', '${eps.tmp102.length}', c.textSecondary),
-          stat('ADM1177', '${eps.adm1177.length}', c.textSecondary),
+          if (eps != null) stat('INA226', '${eps.ina226.length}', c.textSecondary),
+          if (eps != null) stat('TMP102', '${eps.tmp102.length}', c.textSecondary),
+          if (eps != null)
+            stat('ADM1177', '${eps.adm1177.length}', c.textSecondary),
         ],
       ),
     );
+  }
+
+  static String _two(int n) => n.toString().padLeft(2, '0');
+
+  static String _fmtTime(DateTime t) =>
+      '${_two(t.hour)}:${_two(t.minute)}:${_two(t.second)}';
+
+  static String _ageStr(DateTime t) {
+    final s = DateTime.now().difference(t).inSeconds;
+    if (s < 1) return 'just now';
+    if (s < 60) return '${s}s ago';
+    final m = s ~/ 60;
+    if (m < 60) return '${m}m ago';
+    return '${m ~/ 60}h ago';
   }
 
   Widget _groupHeader(
@@ -272,15 +380,15 @@ class _Metric {
 
 class _SensorCard extends StatelessWidget {
   final String title;
+  final String subtitle;
   final String chip;
-  final String name;
   final List<_Metric>? rows;
   final _Metric? big;
 
   const _SensorCard({
     required this.title,
+    required this.subtitle,
     required this.chip,
-    required this.name,
     this.rows,
     this.big,
   });
@@ -301,12 +409,16 @@ class _SensorCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(title,
-                  style: TextStyle(
-                      color: c.textPrimary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700)),
-              const Spacer(),
+              Expanded(
+                child: Text(title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: c.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -323,10 +435,11 @@ class _SensorCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 2),
-          Text(name,
+          Text(subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: c.textMuted, fontSize: 10)),
+              style: TextStyle(
+                  color: c.textMuted, fontSize: 10, fontFamily: 'monospace')),
           const SizedBox(height: 10),
           if (big != null)
             Center(

@@ -140,6 +140,10 @@ download_state = {
     "start_time": 0,
 }
 
+# EPS telemetry is split into several small radio packets (to fit the SX1278
+# FIFO). We reassemble the chunks here before parsing the full blob.
+eps_reassembly = {"total": 0, "chunks": {}}
+
 # Serial port handle
 ser = None
 serial_connected = False       # True while the GS serial port is open
@@ -311,12 +315,7 @@ def process_packet(raw_bytes: bytearray):
         handle_image_chunk(payload, payload_len)
 
     elif cmd_type == CMD_EPS_DATA:
-        eps = parse_eps_payload(payload)
-        if eps:
-            latest_telemetry["eps"] = eps
-            log.info(f"EPS: {len(eps['ina226'])} INA226, "
-                     f"{len(eps['tmp102'])} TMP102, {len(eps['adm1177'])} ADM1177")
-            schedule_broadcast({"type": "eps", "data": eps})
+        handle_eps_chunk(payload, payload_len)
 
     else:
         log.info(f"Unhandled CMD: 0x{cmd_type:02X}")
@@ -371,6 +370,48 @@ def parse_eps_payload(payload: bytes):
     except (struct.error, IndexError) as e:
         log.error(f"Failed to parse EPS payload: {e}")
         return None
+
+def handle_eps_chunk(payload: bytes, payload_len: int):
+    """Reassemble the chunked EPS telemetry and report transfer progress.
+    Each chunk payload = [chunk_idx][total_chunks][data...]."""
+    global eps_reassembly
+
+    if payload_len < 2:
+        return
+
+    chunk_idx = payload[0]
+    total = payload[1]
+    data = bytes(payload[2:payload_len])
+
+    if total <= 0:
+        return
+
+    # A chunk 0 (or a changed total) marks the start of a fresh transfer.
+    if chunk_idx == 0 or eps_reassembly.get("total", 0) != total:
+        eps_reassembly = {"total": total, "chunks": {}}
+
+    eps_reassembly["chunks"][chunk_idx] = data
+    received = len(eps_reassembly["chunks"])
+    percent = int(received * 100 / total)
+
+    log.info(f"EPS chunk {chunk_idx + 1}/{total} ({len(data)} bytes) - {percent}%")
+    schedule_broadcast({
+        "type": "eps_progress",
+        "data": {"received": received, "total": total, "percent": percent},
+    })
+
+    # Complete once every chunk index 0..total-1 is present.
+    if received >= total and all(i in eps_reassembly["chunks"] for i in range(total)):
+        blob = b"".join(eps_reassembly["chunks"][i] for i in range(total))
+        eps = parse_eps_payload(blob)
+        eps_reassembly = {"total": 0, "chunks": {}}
+        if eps:
+            latest_telemetry["eps"] = eps
+            log.info(f"EPS complete: {len(eps['ina226'])} INA226, "
+                     f"{len(eps['tmp102'])} TMP102, {len(eps['adm1177'])} ADM1177")
+            schedule_broadcast({"type": "eps", "data": eps})
+        else:
+            log.error("EPS reassembly parsed empty/invalid")
 
 # ====================================================================
 # IMAGE DOWNLOAD STATE MACHINE
