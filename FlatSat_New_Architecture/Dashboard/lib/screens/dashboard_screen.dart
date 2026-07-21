@@ -90,8 +90,7 @@ class DashboardScreen extends StatelessWidget {
         _section(context, 'SUBSYSTEM POWER', _subsystemPower(context, ws)),
         _section(context, 'COMMAND CONSOLE', _commandGrid(context, ws)),
         _section(context, 'IMAGE MANAGER', _imageManager(context, ws)),
-        if (ws.lastGps != null)
-          _section(context, 'GPS DATA', _gpsCard(context, ws)),
+        _section(context, 'GPS DATA', _gpsCard(context, ws)),
         _section(context, 'EPS SUBSYSTEM', const EpsDashboard()),
         if (ws.isDownloading && ws.downloadProgress != null)
           _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
@@ -112,8 +111,7 @@ class DashboardScreen extends StatelessWidget {
 
     final side = <Widget>[
       _section(context, 'SUBSYSTEM POWER', _subsystemPower(context, ws)),
-      if (ws.lastGps != null)
-        _section(context, 'GPS DATA', _gpsCard(context, ws)),
+      _section(context, 'GPS DATA', _gpsCard(context, ws)),
       _section(context, 'IMAGE MANAGER', _imageManager(context, ws)),
       if (ws.isDownloading && ws.downloadProgress != null)
         _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
@@ -395,7 +393,29 @@ class DashboardScreen extends StatelessWidget {
   // ---- GPS Card ----
   Widget _gpsCard(BuildContext context, WebSocketService ws) {
     final c = context.colors;
-    final gps = ws.lastGps!;
+    final gps = ws.lastGps;
+    if (gps == null) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: c.border),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.location_searching, color: c.textMuted, size: 22),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                'No GPS fix yet. Press GET GPS to request a position.',
+                style: TextStyle(color: c.textMuted, fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(

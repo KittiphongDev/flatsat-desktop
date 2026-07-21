@@ -386,9 +386,14 @@ def handle_eps_chunk(payload: bytes, payload_len: int):
     if total <= 0:
         return
 
-    # A chunk 0 (or a changed total) marks the start of a fresh transfer.
-    if chunk_idx == 0 or eps_reassembly.get("total", 0) != total:
-        eps_reassembly = {"total": total, "chunks": {}}
+    # Start a fresh transfer only when the chunk count changes or the previous
+    # transfer went stale. Redundant re-sends of the same transfer (including a
+    # repeated chunk 0) must NOT reset progress, so we do not reset on index 0.
+    now = time.time()
+    if eps_reassembly.get("total", 0) != total or \
+       now - eps_reassembly.get("ts", 0) > 4.0:
+        eps_reassembly = {"total": total, "chunks": {}, "ts": now}
+    eps_reassembly["ts"] = now
 
     eps_reassembly["chunks"][chunk_idx] = data
     received = len(eps_reassembly["chunks"])

@@ -377,10 +377,13 @@ void sendEPSData() {
 
   // The radio link caps at 64 bytes/frame, so split the EPS blob into small
   // chunks framed as [chunkIdx][totalChunks][data...]. The PC bridge
-  // reassembles them and reports transfer progress.
+  // reassembles them and reports transfer progress. Each chunk is sent twice
+  // (two passes) so a single dropped frame doesn't stall the whole transfer;
+  // the bridge de-duplicates by chunk index.
   uint8_t totalChunks = (idx + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE;
   if (totalChunks == 0) totalChunks = 1;
 
+  const uint8_t EPS_TX_COPIES = 2; // send each chunk twice, back-to-back
   for (uint8_t ci = 0; ci < totalChunks; ci++) {
     uint16_t off = (uint16_t)ci * EPS_CHUNK_SIZE;
     uint8_t len = (idx - off > EPS_CHUNK_SIZE) ? EPS_CHUNK_SIZE
@@ -389,15 +392,19 @@ void sendEPSData() {
     part[0] = ci;             // chunk index
     part[1] = totalChunks;    // total chunks in this transfer
     memcpy(&part[2], &payload[off], len);
-    sendPacket(CMD_EPS_DATA, part, len + 2);
 
-    delay(120);           // pace so the COMMS relay + 64-byte radio keep up
-    IWatchdog.reload();   // 10s watchdog — reload during the paced send
+    for (uint8_t rep = 0; rep < EPS_TX_COPIES; rep++) {
+      sendPacket(CMD_EPS_DATA, part, len + 2);
+      delay(90);            // pace so the COMMS relay + 64-byte radio keep up
+      IWatchdog.reload();   // 10s watchdog — reload during the paced send
+    }
   }
 
   Serial.print("[EPS] Telemetry sent in ");
   Serial.print(totalChunks);
-  Serial.print(" chunk(s), ");
+  Serial.print(" chunk(s) x");
+  Serial.print(EPS_TX_COPIES);
+  Serial.print(", ");
   Serial.print(idx);
   Serial.println(" bytes");
 }
@@ -551,8 +558,15 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
       memcpy(&gpsData[8], &alt, 4);
       gpsData[12] = satCount;
 
-      sendPacket(CMD_GPS_DATA, gpsData, 13);
-      Serial.println("[CMD] GPS data sent");
+      // Send the reply a few times so a single dropped frame over the radio
+      // doesn't lose the whole response (beacons survive only because they
+      // repeat; solicited replies need the same redundancy).
+      for (uint8_t r = 0; r < 3; r++) {
+        sendPacket(CMD_GPS_DATA, gpsData, 13);
+        delay(80);
+        IWatchdog.reload();
+      }
+      Serial.println("[CMD] GPS data sent (x3)");
       break;
     }
 
