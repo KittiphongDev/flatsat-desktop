@@ -20,6 +20,10 @@ const double kEdgePadding = 28;
 /// two-line brand block isn't cramped against the window chrome.
 const double kHeaderHeight = 76;
 
+/// OBC board temperature (°C) above which the reading is flagged as a fault.
+/// Adjust to match the actual board's rating.
+const double kObcTempLimitC = 60;
+
 /// Height of the minimize/maximize/close hit area. Kept well below
 /// [kHeaderHeight] so the hover highlight reads as a button, not a full-height
 /// column of color.
@@ -152,11 +156,8 @@ class DashboardScreen extends StatelessWidget {
     return _cmdRow([
       if (ws.pingRttMs != null)
         Text('${ws.pingRttMs}ms',
-            style: TextStyle(
-                color: c.success,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'monospace')),
+            style: monoStyle(
+                color: c.success, fontSize: 11, fontWeight: FontWeight.w700)),
       _cmdBtn(context, Icons.wifi_tethering, 'PING', ws.sendPing),
       _cmdBtn(context, Icons.cell_tower, 'BEACON', ws.sendBeacon),
     ]);
@@ -341,14 +342,17 @@ class DashboardScreen extends StatelessWidget {
               icon: Icons.thermostat,
               title: 'TEMPERATURE',
               value: '${ws.telemetry.temperature}°C',
-              accentColor: c.warning,
+              // Neutral while in range; only goes red when it actually needs
+              // attention, instead of being permanently orange.
+              accentColor:
+                  ws.telemetry.temperature > kObcTempLimitC ? c.error : null,
               subtitle: 'OBC Board',
             ),
             TelemetryCard(
               icon: Icons.signal_cellular_alt,
               title: 'SIGNAL RSSI',
               value: '${ws.telemetry.rssi.toStringAsFixed(1)} dBm',
-              accentColor: c.secondary,
+              // A plain reading — no state to signal, so no color.
               subtitle: 'SNR: ${ws.telemetry.snr.toStringAsFixed(1)} dB',
             ),
             TelemetryCard(
@@ -409,7 +413,7 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: c.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(kRadiusCard),
           border: Border.all(color: c.border),
         ),
         child: Center(
@@ -424,7 +428,7 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.border),
       ),
       child: Column(
@@ -436,7 +440,7 @@ class DashboardScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.image, color: c.secondary, size: 20),
+                Icon(Icons.image, color: c.textSecondary, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -512,7 +516,7 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: c.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(kRadiusCard),
           border: Border.all(color: c.border),
         ),
         child: Row(
@@ -534,7 +538,7 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.border),
       ),
       child: Column(
@@ -571,9 +575,6 @@ class DashboardScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: dot,
-                      boxShadow: [
-                        BoxShadow(color: dot.withOpacity(0.5), blurRadius: 5),
-                      ],
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -589,11 +590,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   Text(
                     d.addr,
-                    style: TextStyle(
-                      color: c.textMuted,
-                      fontSize: 11,
-                      fontFamily: 'monospace',
-                    ),
+                    style: monoStyle(color: c.textMuted, fontSize: 11),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -622,7 +619,7 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: c.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(kRadiusCard),
           border: Border.all(color: c.border),
         ),
         child: Row(
@@ -645,7 +642,7 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: c.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(kRadiusCard),
           border: Border.all(color: c.warning.withOpacity(0.35)),
         ),
         child: Row(
@@ -654,7 +651,7 @@ class DashboardScreen extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: c.warning.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(kRadiusControl),
               ),
               child: Icon(Icons.gps_off, color: c.warning, size: 28),
             ),
@@ -690,7 +687,7 @@ class DashboardScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.success.withOpacity(0.25)),
       ),
       child: Row(
@@ -699,7 +696,7 @@ class DashboardScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: c.success.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(kRadiusControl),
             ),
             child: Icon(Icons.gps_fixed, color: c.success, size: 28),
           ),
@@ -711,9 +708,9 @@ class DashboardScreen extends StatelessWidget {
                 Text(
                   '${gps.latitude.toStringAsFixed(6)}°N, '
                   '${gps.longitude.toStringAsFixed(6)}°E',
-                  style: TextStyle(
+                  style: monoStyle(
                     color: c.textPrimary,
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -721,7 +718,11 @@ class DashboardScreen extends StatelessWidget {
                 Text(
                   'Alt: ${gps.altitude.toStringAsFixed(1)}m  •  '
                   'Satellites: ${gps.satellites}',
-                  style: TextStyle(color: c.textSecondary, fontSize: 13),
+                  style: monoStyle(
+                    color: c.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ],
             ),
@@ -739,7 +740,7 @@ class DashboardScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.accent.withOpacity(0.25)),
       ),
       child: Column(
@@ -774,7 +775,8 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Chunk #${dl.chunk}  •  ${dl.bytesReceived} bytes received',
-            style: TextStyle(color: c.textMuted, fontSize: 12),
+            style: monoStyle(
+                color: c.textMuted, fontSize: 11, fontWeight: FontWeight.w400),
           ),
         ],
       ),
@@ -792,7 +794,7 @@ class DashboardScreen extends StatelessWidget {
       height: 250,
       decoration: BoxDecoration(
         color: c.surfaceAlt,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.border),
       ),
       child: Column(
@@ -849,10 +851,10 @@ class DashboardScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 2),
                   child: SelectableText(
                     line,
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 11,
+                    style: monoStyle(
                       color: lineColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
                       height: 1.5,
                     ),
                   ),
@@ -886,7 +888,7 @@ class _AppBarBrand extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: c.accent.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(kRadiusControl),
             ),
             child: Icon(Icons.satellite_alt, color: c.accent, size: 22),
           ),
@@ -1002,14 +1004,11 @@ class _HeaderStatus extends StatelessWidget {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: 8,
-            height: 8,
+            width: 7,
+            height: 7,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
-              boxShadow: [
-                BoxShadow(color: color.withOpacity(0.6), blurRadius: 6),
-              ],
             ),
           ),
           if (!compact) ...[

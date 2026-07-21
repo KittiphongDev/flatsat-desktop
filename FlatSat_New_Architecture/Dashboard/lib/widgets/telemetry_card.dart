@@ -23,23 +23,20 @@ class TelemetryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final accent = accentColor ?? c.accent;
+    // accentColor is a *state* signal, not decoration. When a card has no
+    // meaningful state (a plain reading like temperature or RSSI) it stays
+    // neutral, so the only colored cards on screen are the ones saying
+    // something.
+    final hasState = accentColor != null;
+    final iconColor = accentColor ?? c.textSecondary;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: accent.withOpacity(0.25),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: accent.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(kRadiusCard),
+        // Hairline neutral border, no colored glow.
+        border: Border.all(color: c.border, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,15 +44,8 @@ class TelemetryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: accent.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: accent, size: 20),
-              ),
-              const SizedBox(width: 12),
+              Icon(icon, color: iconColor, size: 16),
+              const SizedBox(width: 9),
               Expanded(
                 child: Text(
                   title,
@@ -63,39 +53,39 @@ class TelemetryCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: c.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.5,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.8,
                   ),
                 ),
               ),
               if (trailing != null) trailing!,
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
             child: Text(
               value,
               maxLines: 1,
-              style: TextStyle(
-                color: c.textPrimary,
-                fontSize: 26,
+              style: monoStyle(
+                color: hasState ? accentColor! : c.textPrimary,
+                fontSize: 23,
                 fontWeight: FontWeight.w700,
-                letterSpacing: -0.5,
               ),
             ),
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               subtitle!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: monoStyle(
                 color: c.textMuted,
-                fontSize: 12,
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -123,19 +113,14 @@ class StatusIndicator extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Flat dot — the old neon bloom was the most "generated" detail here.
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: 8,
-          height: 8,
+          width: 7,
+          height: 7,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: color,
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.6),
-                blurRadius: 6,
-              ),
-            ],
           ),
         ),
         const SizedBox(width: 6),
@@ -178,7 +163,7 @@ class SubsystemCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(
           color: isOn ? c.success.withOpacity(0.35) : c.border,
         ),
@@ -228,7 +213,7 @@ class SubsystemCard extends StatelessWidget {
               width: 44,
               height: 24,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(kRadiusCard),
                 color: isOn
                     ? c.success.withOpacity(0.3)
                     : c.textMuted.withOpacity(0.25),
@@ -304,12 +289,12 @@ class _CommandButtonBodyState extends State<_CommandButtonBody> {
         color: Colors.transparent,
         child: InkWell(
           onTap: widget.onPressed,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(kRadiusControl),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 130),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(kRadiusControl),
               color: active ? c.accent.withOpacity(0.10) : c.surface,
               border: Border.all(
                 color: active ? c.accent.withOpacity(0.55) : c.border,

@@ -5,6 +5,10 @@ import '../services/websocket_service.dart';
 import '../models/telemetry_data.dart';
 import '../theme/app_theme.dart';
 
+/// Battery temperature (°C) above which the reading is flagged as a fault.
+/// Adjust to match the actual cell's rating.
+const double kBatteryTempLimitC = 45;
+
 /// A rich EPS dashboard: per-channel sensor cards grouped by device, plus live
 /// line charts, all driven by the current app theme.
 class EpsDashboard extends StatelessWidget {
@@ -48,7 +52,7 @@ class EpsDashboard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.border),
       ),
       child: Column(
@@ -79,11 +83,13 @@ class EpsDashboard extends StatelessWidget {
                   subtitle: 'INA226 · ${_addr(inaAddr, r.index)}',
                   chip: 'CH ${r.index}',
                   rows: [
+                    // Plain readings — neutral. Color is reserved for state.
                     _Metric('Bus Voltage', 'V', r.voltage.toStringAsFixed(3),
-                        c.info),
+                        c.textPrimary),
                     _Metric('Current', 'A', r.current.toStringAsFixed(3),
-                        c.success),
-                    _Metric('Power', 'W', r.power.toStringAsFixed(2), c.accent),
+                        c.textPrimary),
+                    _Metric(
+                        'Power', 'W', r.power.toStringAsFixed(2), c.textPrimary),
                   ],
                 ),
             ],
@@ -131,8 +137,13 @@ class EpsDashboard extends StatelessWidget {
                   title: _name(tmpNames, r.index),
                   subtitle: 'TMP102 · ${_addr(tmpAddr, r.index)}',
                   chip: 'CH ${r.index}',
-                  big: _Metric('Temperature', '°C',
-                      r.temperature.toStringAsFixed(2), c.warning),
+                  big: _Metric(
+                      'Temperature',
+                      '°C',
+                      r.temperature.toStringAsFixed(2),
+                      r.temperature > kBatteryTempLimitC
+                          ? c.error
+                          : c.textPrimary),
                 ),
             ],
           ),
@@ -164,8 +175,8 @@ class EpsDashboard extends StatelessWidget {
                   chip: 'CH ${r.index}',
                   rows: [
                     _Metric('Voltage', 'V',
-                        (r.voltageMv / 1000).toStringAsFixed(2), c.info),
-                    _Metric('Current', 'mA', '${r.currentMa}', c.success),
+                        (r.voltageMv / 1000).toStringAsFixed(2), c.textPrimary),
+                    _Metric('Current', 'mA', '${r.currentMa}', c.textPrimary),
                   ],
                 ),
             ],
@@ -193,7 +204,7 @@ class EpsDashboard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: c.accent.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.accent.withOpacity(0.3)),
       ),
       child: Column(
@@ -222,11 +233,8 @@ class EpsDashboard extends StatelessWidget {
                 total > 0
                     ? '$pct%  (${ws.epsChunksReceived}/$total)'
                     : '$pct%',
-                style: TextStyle(
-                    color: c.accent,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'monospace'),
+                style: monoStyle(
+                    color: c.accent, fontSize: 12, fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -247,18 +255,18 @@ class EpsDashboard extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 _fmtSpeed(ws.epsSpeedBps),
-                style: TextStyle(
+                style: monoStyle(
                     color: c.textSecondary,
                     fontSize: 10,
-                    fontFamily: 'monospace'),
+                    fontWeight: FontWeight.w400),
               ),
               const Spacer(),
               Text(
                 '${ws.epsBytes} B received',
-                style: TextStyle(
+                style: monoStyle(
                     color: c.textMuted,
                     fontSize: 10,
-                    fontFamily: 'monospace'),
+                    fontWeight: FontWeight.w400),
               ),
             ],
           ),
@@ -312,11 +320,8 @@ class EpsDashboard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     letterSpacing: 1)),
             Text(value,
-                style: TextStyle(
-                    color: color,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'monospace')),
+                style: monoStyle(
+                    color: color, fontSize: 12, fontWeight: FontWeight.w700)),
           ],
         );
 
@@ -324,7 +329,7 @@ class EpsDashboard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: c.scaffold,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.border),
       ),
       child: Wrap(
@@ -338,8 +343,8 @@ class EpsDashboard extends StatelessWidget {
                 : '${_fmtTime(ws.lastEpsTime!)} · ${_ageStr(ws.lastEpsTime!)}',
             ws.lastEpsTime == null ? c.warning : c.success,
           ),
-          stat('PACKETS', '${ws.epsPacketCount}', c.accent),
-          stat('SAMPLES', '${ws.epsHistory.length}', c.info),
+          stat('PACKETS', '${ws.epsPacketCount}', c.textSecondary),
+          stat('SAMPLES', '${ws.epsHistory.length}', c.textSecondary),
           if (eps != null) stat('INA226', '${eps.ina226.length}', c.textSecondary),
           if (eps != null) stat('TMP102', '${eps.tmp102.length}', c.textSecondary),
           if (eps != null)
@@ -394,9 +399,9 @@ class EpsDashboard extends StatelessWidget {
   }
 }
 
-/// Colors used to distinguish chart channels.
-List<Color> _chartColors(AppColors c) =>
-    [c.accent, c.info, c.success, c.warning, c.secondary, c.pink];
+// Chart series colors live in app_theme.dart (chartSeriesColors) — they are
+// data encoding rather than UI chrome, so they're the one place multiple hues
+// are intentional.
 
 class _Metric {
   final String label;
@@ -429,7 +434,7 @@ class _SensorCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: c.scaffold,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.border),
       ),
       child: Column(
@@ -466,19 +471,20 @@ class _SensorCard extends StatelessWidget {
           Text(subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: c.textMuted, fontSize: 10, fontFamily: 'monospace')),
+              style: monoStyle(
+                  color: c.textMuted,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400)),
           const SizedBox(height: 10),
           if (big != null)
             Center(
               child: Column(
                 children: [
                   Text('${big!.value} ${big!.unit}',
-                      style: TextStyle(
+                      style: monoStyle(
                           color: big!.color,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'monospace')),
+                          fontSize: 21,
+                          fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
                   Text(big!.label,
                       style: TextStyle(color: c.textMuted, fontSize: 10)),
@@ -497,11 +503,10 @@ class _SensorCard extends StatelessWidget {
                         style: TextStyle(color: c.textMuted, fontSize: 9)),
                     const Spacer(),
                     Text(m.value,
-                        style: TextStyle(
+                        style: monoStyle(
                             color: m.color,
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'monospace')),
+                            fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
@@ -529,7 +534,7 @@ class _ChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final colors = _chartColors(c);
+    final colors = chartSeriesColors(Theme.of(context).brightness);
 
     final bars = <LineChartBarData>[];
     double? minY, maxY;
@@ -565,7 +570,7 @@ class _ChartCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: c.scaffold,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: c.border),
       ),
       child: Column(

@@ -69,7 +69,7 @@ class ConnectionBanner extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: color.withOpacity(0.35)),
       ),
       child: Column(
@@ -149,7 +149,7 @@ class _LiveBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(kRadiusCard),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
@@ -195,7 +195,7 @@ class _PortPicker extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(kRadiusControl),
         border: Border.all(color: c.border),
       ),
       child: Row(
@@ -279,11 +279,11 @@ class _ReconnectButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: ws.reconnect,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(kRadiusControl),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(kRadiusControl),
             color: color.withOpacity(0.15),
             border: Border.all(color: color.withOpacity(0.5)),
           ),
