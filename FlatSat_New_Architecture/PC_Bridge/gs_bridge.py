@@ -73,7 +73,10 @@ def autodetect_serial_port():
             return 1
         return 2
 
-    devices = sorted((p.device for p in ports), key=rank)
+    # Filter out Bluetooth ports as opening them can hang indefinitely on Windows
+    valid_ports = [p for p in ports if "bluetooth" not in (p.description or "").lower()]
+    
+    devices = sorted((p.device for p in valid_ports), key=lambda dev: rank(dev))
     if not devices:
         return None
     # A name-based guess is not enough: OBC/COMMU *debug* consoles also show up
@@ -902,13 +905,16 @@ def serial_reader_loop():
 # ====================================================================
 # ASYNC BROADCAST HELPER
 # ====================================================================
+import queue
+broadcast_q = queue.Queue()
+
 def schedule_broadcast(data: dict):
-    """Thread-safe: schedule a broadcast on the asyncio event loop."""
-    if main_loop and connected_clients:
-        asyncio.run_coroutine_threadsafe(broadcast(data), main_loop)
+    """Thread-safe: schedule a broadcast via queue."""
+    broadcast_q.put(data)
 
 async def broadcast(data: dict):
     """Send a JSON message to all connected WebSocket clients."""
+    global connected_clients
     if connected_clients:
         message = json.dumps(data, default=str)
         disconnected = set()
@@ -917,7 +923,7 @@ async def broadcast(data: dict):
                 await client.send(message)
             except websockets.exceptions.ConnectionClosed:
                 disconnected.add(client)
-        connected_clients -= disconnected
+        connected_clients.difference_update(disconnected)
 
 # ====================================================================
 # WEBSOCKET HANDLER
@@ -1040,6 +1046,13 @@ async def ws_handler(websocket):
 # ====================================================================
 # MAIN
 # ====================================================================
+async def broadcast_worker():
+    while True:
+        while not broadcast_q.empty():
+            data = broadcast_q.get()
+            await broadcast(data)
+        await asyncio.sleep(0.05)
+
 async def main():
     global main_loop
     main_loop = asyncio.get_running_loop()
@@ -1050,6 +1063,9 @@ async def main():
 
     # Create downloads directory
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
+    # Start worker
+    asyncio.create_task(broadcast_worker())
 
     # Start WebSocket server
     log.info(f"WebSocket Server starting on ws://{WS_HOST}:{WS_PORT}")
