@@ -1,1214 +1,258 @@
-[12:45:40] INFO: WebSocket Server starting on ws://localhost:8080
-[12:45:40] INFO: server listening on 127.0.0.1:8080
-[12:45:40] INFO: Bridge is running. Waiting for connections...
-[12:45:40] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:45:43] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:45:46] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:45:49] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:45:52] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:45:55] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:45:58] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:01] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:04] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:07] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:10] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:11] INFO: connection open
-[12:46:11] INFO: Dashboard connected (1 clients)
-[12:46:13] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:16] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:19] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:22] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:25] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:28] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:31] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:34] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:37] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:40] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:43] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:46] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:49] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:52] INFO: WS CMD: toggle_pwr
-[12:46:52] INFO: WS CMD: toggle_pwr
-[12:46:52] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:53] INFO: WS CMD: toggle_pwr
-[12:46:54] INFO: WS CMD: toggle_pwr
-[12:46:55] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:46:55] INFO: WS CMD: toggle_pwr
-[12:46:56] INFO: WS CMD: toggle_pwr
-[12:46:58] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:00] INFO: WS CMD: list_ports
-[12:47:01] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:04] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:07] ERROR: Cannot open /dev/ttyS31: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:10] INFO: WS CMD: set_port
-[12:47:10] INFO: Serial port override set to: /dev/ttyS9
-[12:47:10] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:13] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:16] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:19] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:22] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:25] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:28] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:31] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:34] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:37] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:40] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:43] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:46] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:49] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:52] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:55] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:47:58] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:01] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:04] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:07] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:10] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:13] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:16] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:19] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:22] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:25] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:28] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:31] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:34] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:37] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:40] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:43] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:46] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:49] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:52] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:55] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:48:58] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:01] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:04] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:07] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:10] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:13] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:16] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:19] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:22] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:25] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:28] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:31] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:34] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:37] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:40] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:43] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:46] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:49] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:52] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:55] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:49:58] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:01] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:04] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:07] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:10] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:13] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:16] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:19] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:22] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:25] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:28] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:31] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:34] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:37] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:40] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:43] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:46] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:49] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:52] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:55] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:50:58] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:01] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:04] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:07] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:10] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:13] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:16] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:19] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:22] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:25] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:28] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:31] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:34] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:37] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:40] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:43] INFO: WS CMD: reconnect
-[12:51:43] INFO: Reconnect requested by app
-[12:51:43] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:44] INFO: WS CMD: reconnect
-[12:51:44] INFO: Reconnect requested by app
-[12:51:44] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:44] INFO: WS CMD: reconnect
-[12:51:44] INFO: Reconnect requested by app
-[12:51:44] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:45] INFO: WS CMD: reconnect
-[12:51:45] INFO: Reconnect requested by app
-[12:51:45] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:45] INFO: WS CMD: list_ports
-[12:51:48] ERROR: Cannot open /dev/ttyS9: Could not configure port: (5, 'Input/output error'). Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0', '/dev/ttyACM0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[12:51:48] INFO: WS CMD: set_port
-[12:51:48] INFO: Serial port override set to: /dev/ttyACM0
-[12:51:48] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[12:51:51] INFO: WS CMD: reconnect
-[12:51:51] INFO: Reconnect requested by app
-[12:51:51] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[12:52:12] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:52:13] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:52:14] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:52:15] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:52:16] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:52:17] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:52:18] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:52:19] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-44.0dBm
-[12:52:27] INFO: WS CMD: reconnect
-[12:52:27] INFO: Reconnect requested by app
-[12:52:27] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[12:52:28] INFO: WS CMD: list_ports
-[12:52:30] INFO: WS CMD: set_port
-[12:52:30] INFO: Serial port override set to: /dev/ttyACM0
-[12:52:30] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[12:52:34] WARNING: Link LOST (timeout)
-[12:52:43] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-45.5dBm
-[12:52:53] INFO: RX <- CMD 0x03 payload_len=8
-[12:52:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-35.5dBm
-[12:53:05] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-45.0dBm
-[12:53:06] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-48.5dBm
-[12:53:08] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.5dBm
-[12:53:08] INFO: WS CMD: toggle_pwr
-[12:53:08] INFO: TX -> CMD 0x06 payload=01
-[12:53:08] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:08] INFO: ACK received: 0100
-[12:53:09] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.5dBm
-[12:53:10] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:53:11] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:12] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:12] INFO: WS CMD: toggle_pwr
-[12:53:12] INFO: TX -> CMD 0x06 payload=02
-[12:53:12] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:12] INFO: ACK received: 0200
-[12:53:13] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:13] INFO: WS CMD: toggle_pwr
-[12:53:13] INFO: TX -> CMD 0x06 payload=01
-[12:53:13] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:13] INFO: ACK received: 0101
-[12:53:14] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.5dBm
-[12:53:15] INFO: WS CMD: toggle_pwr
-[12:53:15] INFO: TX -> CMD 0x06 payload=01
-[12:53:15] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:15] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:15] INFO: ACK received: 0100
-[12:53:15] INFO: WS CMD: toggle_pwr
-[12:53:15] INFO: TX -> CMD 0x06 payload=02
-[12:53:16] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:16] INFO: ACK received: 0201
-[12:53:16] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:16] INFO: WS CMD: toggle_pwr
-[12:53:16] INFO: TX -> CMD 0x06 payload=02
-[12:53:16] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:16] INFO: ACK received: 0200
-[12:53:17] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.5dBm
-[12:53:18] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:19] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:20] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:20] INFO: WS CMD: reconnect
-[12:53:20] INFO: Reconnect requested by app
-[12:53:20] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[12:53:20] INFO: WS CMD: reconnect
-[12:53:20] INFO: Reconnect requested by app
-[12:53:20] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[12:53:21] INFO: WS CMD: reconnect
-[12:53:21] INFO: Reconnect requested by app
-[12:53:21] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[12:53:21] INFO: WS CMD: list_ports
-[12:53:21] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:22] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:23] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:24] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:25] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:26] INFO: Dashboard disconnected (0 clients)
-[12:53:26] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:27] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:28] INFO: connection open
-[12:53:28] INFO: Dashboard connected (1 clients)
-[12:53:28] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:29] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-44.0dBm
-[12:53:33] INFO: WS CMD: toggle_pwr
-[12:53:33] INFO: TX -> CMD 0x06 payload=01
-[12:53:33] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:33] INFO: ACK received: 0101
-[12:53:33] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-44.0dBm
-[12:53:34] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-44.0dBm
-[12:53:35] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-44.0dBm
-[12:53:36] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-44.0dBm
-[12:53:36] INFO: WS CMD: toggle_pwr
-[12:53:36] INFO: TX -> CMD 0x06 payload=02
-[12:53:36] INFO: RX <- CMD 0x02 payload_len=2
-[12:53:36] INFO: ACK received: 0201
-[12:53:37] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-44.0dBm
-[12:53:38] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:39] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:40] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:41] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:42] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:43] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:44] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:45] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:46] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:47] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:48] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:49] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:53:50] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-43.0dBm
-[12:53:51] INFO: RX <- CMD 0x03 payload_len=8
-[12:53:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:00] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:10] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:20] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:30] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:36] INFO: WS CMD: list_ports
-[12:54:40] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:41] INFO: WS CMD: toggle_pwr
-[12:54:41] INFO: TX -> CMD 0x06 payload=01
-[12:54:41] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:41] INFO: ACK received: 0100
-[12:54:41] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:42] INFO: WS CMD: toggle_pwr
-[12:54:42] INFO: TX -> CMD 0x06 payload=01
-[12:54:42] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:42] INFO: ACK received: 0101
-[12:54:42] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:43] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:44] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:45] INFO: WS CMD: toggle_pwr
-[12:54:45] INFO: TX -> CMD 0x06 payload=01
-[12:54:45] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:46] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:54:47] INFO: WS CMD: toggle_pwr
-[12:54:47] INFO: TX -> CMD 0x06 payload=02
-[12:54:47] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:47] INFO: ACK received: 0200
-[12:54:47] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:54:48] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:54:48] INFO: WS CMD: toggle_pwr
-[12:54:48] INFO: TX -> CMD 0x06 payload=02
-[12:54:48] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:48] INFO: ACK received: 0201
-[12:54:49] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:50] INFO: WS CMD: toggle_pwr
-[12:54:50] INFO: TX -> CMD 0x06 payload=01
-[12:54:50] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:50] INFO: ACK received: 0100
-[12:54:50] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:51] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:54:52] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:53] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:54:53] INFO: WS CMD: toggle_pwr
-[12:54:53] INFO: TX -> CMD 0x06 payload=01
-[12:54:53] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:53] INFO: ACK received: 0101
-[12:54:54] INFO: WS CMD: toggle_pwr
-[12:54:54] INFO: TX -> CMD 0x06 payload=01
-[12:54:54] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:54] INFO: ACK received: 0100
-[12:54:54] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:54:55] INFO: WS CMD: toggle_pwr
-[12:54:55] INFO: TX -> CMD 0x06 payload=01
-[12:54:55] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:55] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:55] INFO: ACK received: 0101
-[12:54:56] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:54:56] INFO: WS CMD: toggle_pwr
-[12:54:56] INFO: TX -> CMD 0x06 payload=01
-[12:54:56] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:56] INFO: ACK received: 0100
-[12:54:57] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:54:57] INFO: WS CMD: toggle_pwr
-[12:54:57] INFO: TX -> CMD 0x06 payload=01
-[12:54:57] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:57] INFO: ACK received: 0101
-[12:54:58] INFO: WS CMD: toggle_pwr
-[12:54:58] INFO: TX -> CMD 0x06 payload=01
-[12:54:58] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:58] INFO: ACK received: 0100
-[12:54:58] INFO: WS CMD: toggle_pwr
-[12:54:58] INFO: TX -> CMD 0x06 payload=01
-[12:54:58] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:58] INFO: ACK received: 0101
-[12:54:58] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:54:58] INFO: WS CMD: toggle_pwr
-[12:54:58] INFO: TX -> CMD 0x06 payload=01
-[12:54:59] INFO: RX <- CMD 0x02 payload_len=2
-[12:54:59] INFO: ACK received: 0100
-[12:54:59] INFO: RX <- CMD 0x03 payload_len=8
-[12:54:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:55:00] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:01] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:02] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:02] INFO: WS CMD: toggle_pwr
-[12:55:02] INFO: TX -> CMD 0x06 payload=02
-[12:55:02] INFO: RX <- CMD 0x02 payload_len=2
-[12:55:02] INFO: ACK received: 0200
-[12:55:03] INFO: WS CMD: toggle_pwr
-[12:55:03] INFO: TX -> CMD 0x06 payload=02
-[12:55:03] INFO: RX <- CMD 0x02 payload_len=2
-[12:55:03] INFO: ACK received: 0201
-[12:55:03] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:04] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:55:04] INFO: WS CMD: toggle_pwr
-[12:55:04] INFO: TX -> CMD 0x06 payload=01
-[12:55:04] INFO: RX <- CMD 0x02 payload_len=2
-[12:55:04] INFO: ACK received: 0101
-[12:55:05] INFO: WS CMD: toggle_pwr
-[12:55:05] INFO: TX -> CMD 0x06 payload=01
-[12:55:05] INFO: RX <- CMD 0x02 payload_len=2
-[12:55:05] INFO: ACK received: 0100
-[12:55:05] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:06] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:07] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:09] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:10] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:55:11] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:12] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:13] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:14] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:15] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[12:55:16] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:17] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:18] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:19] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:28] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:55:38] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:55:48] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:55:58] INFO: RX <- CMD 0x03 payload_len=8
-[12:55:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:56:08] INFO: RX <- CMD 0x03 payload_len=8
-[12:56:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[12:56:17] INFO: RX <- CMD 0x03 payload_len=8
-[12:56:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:56:27] INFO: RX <- CMD 0x03 payload_len=8
-[12:56:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:56:37] INFO: RX <- CMD 0x03 payload_len=8
-[12:56:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:56:47] INFO: RX <- CMD 0x03 payload_len=8
-[12:56:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:56:57] INFO: RX <- CMD 0x03 payload_len=8
-[12:56:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:57:07] INFO: RX <- CMD 0x03 payload_len=8
-[12:57:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:57:16] INFO: RX <- CMD 0x03 payload_len=8
-[12:57:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:57:26] INFO: RX <- CMD 0x03 payload_len=8
-[12:57:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[12:57:36] INFO: RX <- CMD 0x03 payload_len=8
-[12:57:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:57:46] INFO: RX <- CMD 0x03 payload_len=8
-[12:57:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[12:57:56] INFO: RX <- CMD 0x03 payload_len=8
-[12:57:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:58:06] INFO: RX <- CMD 0x03 payload_len=8
-[12:58:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[12:58:15] INFO: RX <- CMD 0x03 payload_len=8
-[12:58:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-39.5dBm
-[12:58:25] INFO: RX <- CMD 0x03 payload_len=8
-[12:58:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:58:35] INFO: RX <- CMD 0x03 payload_len=8
-[12:58:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:58:45] INFO: RX <- CMD 0x03 payload_len=8
-[12:58:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:58:55] INFO: RX <- CMD 0x03 payload_len=8
-[12:58:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[12:59:04] INFO: RX <- CMD 0x03 payload_len=8
-[12:59:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:59:14] INFO: RX <- CMD 0x03 payload_len=8
-[12:59:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:59:24] INFO: RX <- CMD 0x03 payload_len=8
-[12:59:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:59:34] INFO: RX <- CMD 0x03 payload_len=8
-[12:59:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:59:44] INFO: RX <- CMD 0x03 payload_len=8
-[12:59:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[12:59:54] INFO: RX <- CMD 0x03 payload_len=8
-[12:59:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:00:03] INFO: RX <- CMD 0x03 payload_len=8
-[13:00:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:00:13] INFO: RX <- CMD 0x03 payload_len=8
-[13:00:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:00:23] INFO: RX <- CMD 0x03 payload_len=8
-[13:00:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:00:33] INFO: RX <- CMD 0x03 payload_len=8
-[13:00:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:00:43] INFO: RX <- CMD 0x03 payload_len=8
-[13:00:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:00:52] INFO: RX <- CMD 0x03 payload_len=8
-[13:00:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:01:02] INFO: RX <- CMD 0x03 payload_len=8
-[13:01:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:01:12] INFO: RX <- CMD 0x03 payload_len=8
-[13:01:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:01:22] INFO: RX <- CMD 0x03 payload_len=8
-[13:01:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:01:32] INFO: RX <- CMD 0x03 payload_len=8
-[13:01:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:01:41] INFO: RX <- CMD 0x03 payload_len=8
-[13:01:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:01:51] INFO: RX <- CMD 0x03 payload_len=8
-[13:01:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:02:01] INFO: RX <- CMD 0x03 payload_len=8
-[13:02:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:02:11] INFO: RX <- CMD 0x03 payload_len=8
-[13:02:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:02:21] INFO: RX <- CMD 0x03 payload_len=8
-[13:02:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:02:31] INFO: RX <- CMD 0x03 payload_len=8
-[13:02:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:02:40] INFO: RX <- CMD 0x03 payload_len=8
-[13:02:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:02:50] INFO: RX <- CMD 0x03 payload_len=8
-[13:02:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:03:00] INFO: RX <- CMD 0x03 payload_len=8
-[13:03:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:03:10] INFO: RX <- CMD 0x03 payload_len=8
-[13:03:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:03:20] INFO: RX <- CMD 0x03 payload_len=8
-[13:03:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:03:35] WARNING: Link LOST (timeout)
-[13:03:39] INFO: RX <- CMD 0x03 payload_len=8
-[13:03:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:03:49] INFO: RX <- CMD 0x03 payload_len=8
-[13:03:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:03:59] INFO: RX <- CMD 0x03 payload_len=8
-[13:03:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:04:09] INFO: RX <- CMD 0x03 payload_len=8
-[13:04:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:04:19] INFO: RX <- CMD 0x03 payload_len=8
-[13:04:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:04:28] INFO: RX <- CMD 0x03 payload_len=8
-[13:04:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:04:38] INFO: RX <- CMD 0x03 payload_len=8
-[13:04:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:04:48] INFO: RX <- CMD 0x03 payload_len=8
-[13:04:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:04:58] INFO: RX <- CMD 0x03 payload_len=8
-[13:04:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:05:08] INFO: RX <- CMD 0x03 payload_len=8
-[13:05:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:05:17] INFO: RX <- CMD 0x03 payload_len=8
-[13:05:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:05:27] INFO: RX <- CMD 0x03 payload_len=8
-[13:05:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:05:37] INFO: RX <- CMD 0x03 payload_len=8
-[13:05:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:05:47] INFO: RX <- CMD 0x03 payload_len=8
-[13:05:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:05:57] INFO: RX <- CMD 0x03 payload_len=8
-[13:05:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:06:06] INFO: RX <- CMD 0x03 payload_len=8
-[13:06:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:06:16] INFO: RX <- CMD 0x03 payload_len=8
-[13:06:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:06:26] INFO: RX <- CMD 0x03 payload_len=8
-[13:06:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:06:36] INFO: RX <- CMD 0x03 payload_len=8
-[13:06:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:06:46] INFO: RX <- CMD 0x03 payload_len=8
-[13:06:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:06:56] INFO: RX <- CMD 0x03 payload_len=8
-[13:06:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:07:05] INFO: RX <- CMD 0x03 payload_len=8
-[13:07:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:07:15] INFO: RX <- CMD 0x03 payload_len=8
-[13:07:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:07:25] INFO: RX <- CMD 0x03 payload_len=8
-[13:07:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:07:35] INFO: RX <- CMD 0x03 payload_len=8
-[13:07:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:07:45] INFO: RX <- CMD 0x03 payload_len=8
-[13:07:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:07:54] INFO: RX <- CMD 0x03 payload_len=8
-[13:07:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:08:04] INFO: RX <- CMD 0x03 payload_len=8
-[13:08:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:08:14] INFO: RX <- CMD 0x03 payload_len=8
-[13:08:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:08:24] INFO: RX <- CMD 0x03 payload_len=8
-[13:08:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:08:34] INFO: RX <- CMD 0x03 payload_len=8
-[13:08:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:08:44] INFO: RX <- CMD 0x03 payload_len=8
-[13:08:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:08:53] INFO: RX <- CMD 0x03 payload_len=8
-[13:08:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:09:03] INFO: RX <- CMD 0x03 payload_len=8
-[13:09:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:09:13] INFO: RX <- CMD 0x03 payload_len=8
-[13:09:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:09:23] INFO: RX <- CMD 0x03 payload_len=8
-[13:09:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:09:33] INFO: RX <- CMD 0x03 payload_len=8
-[13:09:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:09:42] INFO: RX <- CMD 0x03 payload_len=8
-[13:09:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:09:52] INFO: RX <- CMD 0x03 payload_len=8
-[13:09:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:10:02] INFO: RX <- CMD 0x03 payload_len=8
-[13:10:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:10:12] INFO: RX <- CMD 0x03 payload_len=8
-[13:10:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:10:22] INFO: RX <- CMD 0x03 payload_len=8
-[13:10:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:10:32] INFO: RX <- CMD 0x03 payload_len=8
-[13:10:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:10:41] INFO: RX <- CMD 0x03 payload_len=8
-[13:10:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:10:51] INFO: RX <- CMD 0x03 payload_len=8
-[13:10:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:11:01] INFO: RX <- CMD 0x03 payload_len=8
-[13:11:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:11:11] INFO: RX <- CMD 0x03 payload_len=8
-[13:11:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:11:21] INFO: RX <- CMD 0x03 payload_len=8
-[13:11:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:11:30] INFO: RX <- CMD 0x03 payload_len=8
-[13:11:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:11:40] INFO: RX <- CMD 0x03 payload_len=8
-[13:11:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:11:50] INFO: RX <- CMD 0x03 payload_len=8
-[13:11:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:12:00] INFO: RX <- CMD 0x03 payload_len=8
-[13:12:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:12:10] INFO: RX <- CMD 0x03 payload_len=8
-[13:12:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:12:20] INFO: RX <- CMD 0x03 payload_len=8
-[13:12:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:12:29] INFO: RX <- CMD 0x03 payload_len=8
-[13:12:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:12:39] INFO: RX <- CMD 0x03 payload_len=8
-[13:12:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:12:49] INFO: RX <- CMD 0x03 payload_len=8
-[13:12:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:12:59] INFO: RX <- CMD 0x03 payload_len=8
-[13:12:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:13:09] INFO: RX <- CMD 0x03 payload_len=8
-[13:13:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:13:18] INFO: RX <- CMD 0x03 payload_len=8
-[13:13:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:13:28] INFO: RX <- CMD 0x03 payload_len=8
-[13:13:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:13:38] INFO: RX <- CMD 0x03 payload_len=8
-[13:13:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:13:48] INFO: RX <- CMD 0x03 payload_len=8
-[13:13:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:13:58] INFO: RX <- CMD 0x03 payload_len=8
-[13:13:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:14:08] INFO: RX <- CMD 0x03 payload_len=8
-[13:14:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:14:17] INFO: RX <- CMD 0x03 payload_len=8
-[13:14:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:14:27] INFO: RX <- CMD 0x03 payload_len=8
-[13:14:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:14:37] INFO: RX <- CMD 0x03 payload_len=8
-[13:14:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:14:47] INFO: RX <- CMD 0x03 payload_len=8
-[13:14:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:14:57] INFO: RX <- CMD 0x03 payload_len=8
-[13:14:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:15:07] INFO: RX <- CMD 0x03 payload_len=8
-[13:15:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:15:16] INFO: RX <- CMD 0x03 payload_len=8
-[13:15:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:15:26] INFO: RX <- CMD 0x03 payload_len=8
-[13:15:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:15:36] INFO: RX <- CMD 0x03 payload_len=8
-[13:15:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:15:46] INFO: RX <- CMD 0x03 payload_len=8
-[13:15:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:15:56] INFO: RX <- CMD 0x03 payload_len=8
-[13:15:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:16:05] INFO: RX <- CMD 0x03 payload_len=8
-[13:16:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:16:15] INFO: RX <- CMD 0x03 payload_len=8
-[13:16:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:16:25] INFO: RX <- CMD 0x03 payload_len=8
-[13:16:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:16:35] INFO: RX <- CMD 0x03 payload_len=8
-[13:16:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:16:45] INFO: RX <- CMD 0x03 payload_len=8
-[13:16:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:16:55] INFO: RX <- CMD 0x03 payload_len=8
-[13:16:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:17:04] INFO: RX <- CMD 0x03 payload_len=8
-[13:17:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:17:14] INFO: RX <- CMD 0x03 payload_len=8
-[13:17:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:17:24] INFO: RX <- CMD 0x03 payload_len=8
-[13:17:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:17:34] INFO: RX <- CMD 0x03 payload_len=8
-[13:17:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:17:44] INFO: RX <- CMD 0x03 payload_len=8
-[13:17:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:17:53] INFO: RX <- CMD 0x03 payload_len=8
-[13:17:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:18:03] INFO: RX <- CMD 0x03 payload_len=8
-[13:18:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:18:13] INFO: RX <- CMD 0x03 payload_len=8
-[13:18:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:18:23] INFO: RX <- CMD 0x03 payload_len=8
-[13:18:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:18:33] INFO: RX <- CMD 0x03 payload_len=8
-[13:18:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:18:43] INFO: RX <- CMD 0x03 payload_len=8
-[13:18:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:18:52] INFO: RX <- CMD 0x03 payload_len=8
-[13:18:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:19:02] INFO: RX <- CMD 0x03 payload_len=8
-[13:19:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:19:12] INFO: RX <- CMD 0x03 payload_len=8
-[13:19:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:19:22] INFO: RX <- CMD 0x03 payload_len=8
-[13:19:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:19:32] INFO: RX <- CMD 0x03 payload_len=8
-[13:19:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:19:41] INFO: RX <- CMD 0x03 payload_len=8
-[13:19:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:19:51] INFO: RX <- CMD 0x03 payload_len=8
-[13:19:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[13:20:01] INFO: RX <- CMD 0x03 payload_len=8
-[13:20:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:20:11] INFO: RX <- CMD 0x03 payload_len=8
-[13:20:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:20:21] INFO: RX <- CMD 0x03 payload_len=8
-[13:20:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:20:31] INFO: RX <- CMD 0x03 payload_len=8
-[13:20:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:20:40] INFO: RX <- CMD 0x03 payload_len=8
-[13:20:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:20:50] INFO: RX <- CMD 0x03 payload_len=8
-[13:20:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:21:00] INFO: RX <- CMD 0x03 payload_len=8
-[13:21:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:21:10] INFO: RX <- CMD 0x03 payload_len=8
-[13:21:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:21:20] INFO: RX <- CMD 0x03 payload_len=8
-[13:21:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:21:29] INFO: RX <- CMD 0x03 payload_len=8
-[13:21:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:21:39] INFO: RX <- CMD 0x03 payload_len=8
-[13:21:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:21:49] INFO: RX <- CMD 0x03 payload_len=8
-[13:21:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:22:04] WARNING: Link LOST (timeout)
-[13:22:09] INFO: RX <- CMD 0x03 payload_len=8
-[13:22:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:22:19] INFO: RX <- CMD 0x03 payload_len=8
-[13:22:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:22:28] INFO: RX <- CMD 0x03 payload_len=8
-[13:22:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:22:38] INFO: RX <- CMD 0x03 payload_len=8
-[13:22:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:22:48] INFO: RX <- CMD 0x03 payload_len=8
-[13:22:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:22:58] INFO: RX <- CMD 0x03 payload_len=8
-[13:22:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:23:08] INFO: RX <- CMD 0x03 payload_len=8
-[13:23:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:23:17] INFO: RX <- CMD 0x03 payload_len=8
-[13:23:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:23:27] INFO: RX <- CMD 0x03 payload_len=8
-[13:23:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:23:37] INFO: RX <- CMD 0x03 payload_len=8
-[13:23:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:23:47] INFO: RX <- CMD 0x03 payload_len=8
-[13:23:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:23:57] INFO: RX <- CMD 0x03 payload_len=8
-[13:23:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:24:06] INFO: RX <- CMD 0x03 payload_len=8
-[13:24:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:24:16] INFO: RX <- CMD 0x03 payload_len=8
-[13:24:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:24:26] INFO: RX <- CMD 0x03 payload_len=8
-[13:24:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:24:36] INFO: RX <- CMD 0x03 payload_len=8
-[13:24:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:24:46] INFO: RX <- CMD 0x03 payload_len=8
-[13:24:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:24:56] INFO: RX <- CMD 0x03 payload_len=8
-[13:24:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:25:05] INFO: RX <- CMD 0x03 payload_len=8
-[13:25:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:25:15] INFO: RX <- CMD 0x03 payload_len=8
-[13:25:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:25:25] INFO: RX <- CMD 0x03 payload_len=8
-[13:25:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:25:35] INFO: RX <- CMD 0x03 payload_len=8
-[13:25:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:25:45] INFO: RX <- CMD 0x03 payload_len=8
-[13:25:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:25:54] INFO: RX <- CMD 0x03 payload_len=8
-[13:25:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:26:04] INFO: RX <- CMD 0x03 payload_len=8
-[13:26:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:26:14] INFO: RX <- CMD 0x03 payload_len=8
-[13:26:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:26:24] INFO: RX <- CMD 0x03 payload_len=8
-[13:26:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:26:34] INFO: RX <- CMD 0x03 payload_len=8
-[13:26:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:26:43] INFO: RX <- CMD 0x03 payload_len=8
-[13:26:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:26:53] INFO: RX <- CMD 0x03 payload_len=8
-[13:26:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:27:03] INFO: RX <- CMD 0x03 payload_len=8
-[13:27:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:27:13] INFO: RX <- CMD 0x03 payload_len=8
-[13:27:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:27:23] INFO: RX <- CMD 0x03 payload_len=8
-[13:27:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:27:33] INFO: RX <- CMD 0x03 payload_len=8
-[13:27:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:27:42] INFO: RX <- CMD 0x03 payload_len=8
-[13:27:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:27:52] INFO: RX <- CMD 0x03 payload_len=8
-[13:27:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:28:02] INFO: RX <- CMD 0x03 payload_len=8
-[13:28:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:28:12] INFO: RX <- CMD 0x03 payload_len=8
-[13:28:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:28:22] INFO: RX <- CMD 0x03 payload_len=8
-[13:28:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[13:28:31] INFO: RX <- CMD 0x03 payload_len=8
-[13:28:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:28:41] INFO: RX <- CMD 0x03 payload_len=8
-[13:28:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:28:51] INFO: RX <- CMD 0x03 payload_len=8
-[13:28:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:29:01] INFO: RX <- CMD 0x03 payload_len=8
-[13:29:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:29:11] INFO: RX <- CMD 0x03 payload_len=8
-[13:29:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:29:21] INFO: RX <- CMD 0x03 payload_len=8
-[13:29:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:29:30] INFO: RX <- CMD 0x03 payload_len=8
-[13:29:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:29:40] INFO: RX <- CMD 0x03 payload_len=8
-[13:29:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:29:50] INFO: RX <- CMD 0x03 payload_len=8
-[13:29:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:30:00] INFO: RX <- CMD 0x03 payload_len=8
-[13:30:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:30:15] WARNING: Link LOST (timeout)
-[13:30:19] INFO: RX <- CMD 0x03 payload_len=8
-[13:30:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[13:30:29] INFO: RX <- CMD 0x03 payload_len=8
-[13:30:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:30:39] INFO: RX <- CMD 0x03 payload_len=8
-[13:30:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:30:49] INFO: RX <- CMD 0x03 payload_len=8
-[13:30:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:30:59] INFO: RX <- CMD 0x03 payload_len=8
-[13:30:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:31:09] INFO: RX <- CMD 0x03 payload_len=8
-[13:31:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:31:18] INFO: RX <- CMD 0x03 payload_len=8
-[13:31:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:31:28] INFO: RX <- CMD 0x03 payload_len=8
-[13:31:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:31:38] INFO: RX <- CMD 0x03 payload_len=8
-[13:31:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:31:48] INFO: RX <- CMD 0x03 payload_len=8
-[13:31:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:31:58] INFO: RX <- CMD 0x03 payload_len=8
-[13:31:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:32:07] INFO: RX <- CMD 0x03 payload_len=8
-[13:32:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:32:17] INFO: RX <- CMD 0x03 payload_len=8
-[13:32:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:32:27] INFO: RX <- CMD 0x03 payload_len=8
-[13:32:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:32:37] INFO: RX <- CMD 0x03 payload_len=8
-[13:32:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:32:47] INFO: RX <- CMD 0x03 payload_len=8
-[13:32:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:32:57] INFO: RX <- CMD 0x03 payload_len=8
-[13:32:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:33:06] INFO: RX <- CMD 0x03 payload_len=8
-[13:33:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:33:16] INFO: RX <- CMD 0x03 payload_len=8
-[13:33:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:33:26] INFO: RX <- CMD 0x03 payload_len=8
-[13:33:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:33:36] INFO: RX <- CMD 0x03 payload_len=8
-[13:33:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:33:46] INFO: RX <- CMD 0x03 payload_len=8
-[13:33:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:33:55] INFO: RX <- CMD 0x03 payload_len=8
-[13:33:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:34:05] INFO: RX <- CMD 0x03 payload_len=8
-[13:34:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:34:15] INFO: RX <- CMD 0x03 payload_len=8
-[13:34:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:34:25] INFO: RX <- CMD 0x03 payload_len=8
-[13:34:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:34:35] INFO: RX <- CMD 0x03 payload_len=8
-[13:34:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:34:45] INFO: RX <- CMD 0x03 payload_len=8
-[13:34:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:34:54] INFO: RX <- CMD 0x03 payload_len=8
-[13:34:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:35:04] INFO: RX <- CMD 0x03 payload_len=8
-[13:35:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:35:14] INFO: RX <- CMD 0x03 payload_len=8
-[13:35:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:35:24] INFO: RX <- CMD 0x03 payload_len=8
-[13:35:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:35:39] WARNING: Link LOST (timeout)
-[13:35:43] INFO: RX <- CMD 0x03 payload_len=8
-[13:35:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:35:53] INFO: RX <- CMD 0x03 payload_len=8
-[13:35:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:36:03] INFO: RX <- CMD 0x03 payload_len=8
-[13:36:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:36:13] INFO: RX <- CMD 0x03 payload_len=8
-[13:36:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:36:23] INFO: RX <- CMD 0x03 payload_len=8
-[13:36:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:36:33] INFO: RX <- CMD 0x03 payload_len=8
-[13:36:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:36:42] INFO: RX <- CMD 0x03 payload_len=8
-[13:36:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:36:52] INFO: RX <- CMD 0x03 payload_len=8
-[13:36:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:37:02] INFO: RX <- CMD 0x03 payload_len=8
-[13:37:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:37:12] INFO: RX <- CMD 0x03 payload_len=8
-[13:37:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:37:22] INFO: RX <- CMD 0x03 payload_len=8
-[13:37:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:37:31] INFO: RX <- CMD 0x03 payload_len=8
-[13:37:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:37:41] INFO: RX <- CMD 0x03 payload_len=8
-[13:37:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:37:51] INFO: RX <- CMD 0x03 payload_len=8
-[13:37:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:38:01] INFO: RX <- CMD 0x03 payload_len=8
-[13:38:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:38:11] INFO: RX <- CMD 0x03 payload_len=8
-[13:38:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:38:21] INFO: RX <- CMD 0x03 payload_len=8
-[13:38:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[13:38:30] INFO: RX <- CMD 0x03 payload_len=8
-[13:38:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:38:45] WARNING: Link LOST (timeout)
-[13:38:50] INFO: RX <- CMD 0x03 payload_len=8
-[13:38:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:39:00] INFO: RX <- CMD 0x03 payload_len=8
-[13:39:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:39:10] INFO: RX <- CMD 0x03 payload_len=8
-[13:39:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:39:19] INFO: RX <- CMD 0x03 payload_len=8
-[13:39:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:39:29] INFO: RX <- CMD 0x03 payload_len=8
-[13:39:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:39:39] INFO: RX <- CMD 0x03 payload_len=8
-[13:39:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.5dBm
-[13:39:49] INFO: RX <- CMD 0x03 payload_len=8
-[13:39:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:39:59] INFO: RX <- CMD 0x03 payload_len=8
-[13:39:59] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:40:09] INFO: RX <- CMD 0x03 payload_len=8
-[13:40:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:40:18] INFO: RX <- CMD 0x03 payload_len=8
-[13:40:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:40:28] INFO: RX <- CMD 0x03 payload_len=8
-[13:40:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:40:38] INFO: RX <- CMD 0x03 payload_len=8
-[13:40:38] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:40:48] INFO: RX <- CMD 0x03 payload_len=8
-[13:40:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:40:58] INFO: RX <- CMD 0x03 payload_len=8
-[13:40:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:41:07] INFO: RX <- CMD 0x03 payload_len=8
-[13:41:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:41:17] INFO: RX <- CMD 0x03 payload_len=8
-[13:41:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:41:27] INFO: RX <- CMD 0x03 payload_len=8
-[13:41:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:41:37] INFO: RX <- CMD 0x03 payload_len=8
-[13:41:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:41:47] INFO: RX <- CMD 0x03 payload_len=8
-[13:41:47] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:41:56] INFO: RX <- CMD 0x03 payload_len=8
-[13:41:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:42:06] INFO: RX <- CMD 0x03 payload_len=8
-[13:42:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:42:16] INFO: RX <- CMD 0x03 payload_len=8
-[13:42:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:42:26] INFO: RX <- CMD 0x03 payload_len=8
-[13:42:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:42:36] INFO: RX <- CMD 0x03 payload_len=8
-[13:42:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:42:46] INFO: RX <- CMD 0x03 payload_len=8
-[13:42:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:42:55] INFO: RX <- CMD 0x03 payload_len=8
-[13:42:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:43:05] INFO: RX <- CMD 0x03 payload_len=8
-[13:43:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:43:15] INFO: RX <- CMD 0x03 payload_len=8
-[13:43:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:43:25] INFO: RX <- CMD 0x03 payload_len=8
-[13:43:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-42.0dBm
-[13:43:35] INFO: RX <- CMD 0x03 payload_len=8
-[13:43:35] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:43:44] INFO: RX <- CMD 0x03 payload_len=8
-[13:43:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:43:54] INFO: RX <- CMD 0x03 payload_len=8
-[13:43:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:44:04] INFO: RX <- CMD 0x03 payload_len=8
-[13:44:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:44:14] INFO: RX <- CMD 0x03 payload_len=8
-[13:44:14] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:44:24] INFO: RX <- CMD 0x03 payload_len=8
-[13:44:24] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:44:34] INFO: RX <- CMD 0x03 payload_len=8
-[13:44:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:44:43] INFO: RX <- CMD 0x03 payload_len=8
-[13:44:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:44:53] INFO: RX <- CMD 0x03 payload_len=8
-[13:44:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:45:03] INFO: RX <- CMD 0x03 payload_len=8
-[13:45:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:45:13] INFO: RX <- CMD 0x03 payload_len=8
-[13:45:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:45:23] INFO: RX <- CMD 0x03 payload_len=8
-[13:45:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:45:32] INFO: RX <- CMD 0x03 payload_len=8
-[13:45:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:45:42] INFO: RX <- CMD 0x03 payload_len=8
-[13:45:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:45:52] INFO: RX <- CMD 0x03 payload_len=8
-[13:45:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:46:02] INFO: RX <- CMD 0x03 payload_len=8
-[13:46:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:46:12] INFO: RX <- CMD 0x03 payload_len=8
-[13:46:12] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:46:21] INFO: RX <- CMD 0x03 payload_len=8
-[13:46:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.5dBm
-[13:46:31] INFO: RX <- CMD 0x03 payload_len=8
-[13:46:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:46:41] INFO: RX <- CMD 0x03 payload_len=8
-[13:46:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:46:51] INFO: RX <- CMD 0x03 payload_len=8
-[13:46:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-35.0dBm
-[13:47:01] INFO: RX <- CMD 0x03 payload_len=8
-[13:47:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:47:11] INFO: RX <- CMD 0x03 payload_len=8
-[13:47:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:47:20] INFO: RX <- CMD 0x03 payload_len=8
-[13:47:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-39.0dBm
-[13:47:30] INFO: RX <- CMD 0x03 payload_len=8
-[13:47:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:47:40] INFO: RX <- CMD 0x03 payload_len=8
-[13:47:40] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-39.5dBm
-[13:47:50] INFO: RX <- CMD 0x03 payload_len=8
-[13:47:50] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:48:00] INFO: RX <- CMD 0x03 payload_len=8
-[13:48:00] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:48:09] INFO: RX <- CMD 0x03 payload_len=8
-[13:48:09] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-39.5dBm
-[13:48:19] INFO: RX <- CMD 0x03 payload_len=8
-[13:48:19] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:48:29] INFO: RX <- CMD 0x03 payload_len=8
-[13:48:29] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[13:48:39] INFO: RX <- CMD 0x03 payload_len=8
-[13:48:39] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:48:49] INFO: RX <- CMD 0x03 payload_len=8
-[13:48:49] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[13:48:58] INFO: RX <- CMD 0x03 payload_len=8
-[13:48:58] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[13:49:08] INFO: RX <- CMD 0x03 payload_len=8
-[13:49:08] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[13:49:18] INFO: RX <- CMD 0x03 payload_len=8
-[13:49:18] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:49:28] INFO: RX <- CMD 0x03 payload_len=8
-[13:49:28] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:49:43] WARNING: Link LOST (timeout)
-[13:49:48] INFO: RX <- CMD 0x03 payload_len=8
-[13:49:48] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-41.0dBm
-[13:49:57] INFO: RX <- CMD 0x03 payload_len=8
-[13:49:57] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[13:50:07] INFO: RX <- CMD 0x03 payload_len=8
-[13:50:07] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:50:17] INFO: RX <- CMD 0x03 payload_len=8
-[13:50:17] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[13:50:27] INFO: RX <- CMD 0x03 payload_len=8
-[13:50:27] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:50:37] INFO: RX <- CMD 0x03 payload_len=8
-[13:50:37] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.5dBm
-[13:50:46] INFO: RX <- CMD 0x03 payload_len=8
-[13:50:46] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-40.0dBm
-[13:50:56] INFO: RX <- CMD 0x03 payload_len=8
-[13:50:56] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-39.5dBm
-[13:51:06] INFO: RX <- CMD 0x03 payload_len=8
-[13:51:06] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:51:16] INFO: RX <- CMD 0x03 payload_len=8
-[13:51:16] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:51:26] INFO: RX <- CMD 0x03 payload_len=8
-[13:51:26] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:51:36] INFO: RX <- CMD 0x03 payload_len=8
-[13:51:36] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:51:45] INFO: RX <- CMD 0x03 payload_len=8
-[13:51:45] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-37.0dBm
-[13:51:55] INFO: RX <- CMD 0x03 payload_len=8
-[13:51:55] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:52:05] INFO: RX <- CMD 0x03 payload_len=8
-[13:52:05] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-37.5dBm
-[13:52:15] INFO: RX <- CMD 0x03 payload_len=8
-[13:52:15] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-38.0dBm
-[13:52:25] INFO: RX <- CMD 0x03 payload_len=8
-[13:52:25] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-38.0dBm
-[13:52:34] INFO: RX <- CMD 0x03 payload_len=8
-[13:52:34] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-37.0dBm
-[13:52:44] INFO: RX <- CMD 0x03 payload_len=8
-[13:52:44] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:52:54] INFO: RX <- CMD 0x03 payload_len=8
-[13:52:54] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-38.0dBm
-[13:53:04] INFO: RX <- CMD 0x03 payload_len=8
-[13:53:04] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:53:19] WARNING: Link LOST (timeout)
-[13:53:23] INFO: RX <- CMD 0x03 payload_len=8
-[13:53:23] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:53:33] INFO: RX <- CMD 0x03 payload_len=8
-[13:53:33] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:53:43] INFO: RX <- CMD 0x03 payload_len=8
-[13:53:43] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:53:53] INFO: RX <- CMD 0x03 payload_len=8
-[13:53:53] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-38.0dBm
-[13:54:03] INFO: RX <- CMD 0x03 payload_len=8
-[13:54:03] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-38.0dBm
-[13:54:13] INFO: RX <- CMD 0x03 payload_len=8
-[13:54:13] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-38.0dBm
-[13:54:22] INFO: RX <- CMD 0x03 payload_len=8
-[13:54:22] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-37.5dBm
-[13:54:32] INFO: RX <- CMD 0x03 payload_len=8
-[13:54:32] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:54:42] INFO: RX <- CMD 0x03 payload_len=8
-[13:54:42] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:54:52] INFO: RX <- CMD 0x03 payload_len=8
-[13:54:52] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-37.0dBm
-[13:55:02] INFO: RX <- CMD 0x03 payload_len=8
-[13:55:02] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:55:11] INFO: RX <- CMD 0x03 payload_len=8
-[13:55:11] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:55:21] INFO: RX <- CMD 0x03 payload_len=8
-[13:55:21] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:55:31] INFO: RX <- CMD 0x03 payload_len=8
-[13:55:31] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.0dBm
-[13:55:41] INFO: RX <- CMD 0x03 payload_len=8
-[13:55:41] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.0dBm
-[13:55:51] INFO: RX <- CMD 0x03 payload_len=8
-[13:55:51] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:56:01] INFO: RX <- CMD 0x03 payload_len=8
-[13:56:01] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.5dBm
-[13:56:10] INFO: RX <- CMD 0x03 payload_len=8
-[13:56:10] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-36.0dBm
-[13:56:20] INFO: RX <- CMD 0x03 payload_len=8
-[13:56:20] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-35.5dBm
-[13:56:30] INFO: RX <- CMD 0x03 payload_len=8
-[13:56:30] INFO: BEACON: Bat=80% Temp=25C V=12 Errors=0x00 RSSI=-37.0dBm
+[14:53:30] INFO: WebSocket Server starting on ws://localhost:8080
+[14:53:30] INFO: server listening on 127.0.0.1:8080
+[14:53:30] INFO: Bridge is running. Waiting for connections...
+[14:53:30] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:34] WARNING: Packet too short: 2 bytes
+[14:53:36] INFO: connection open
+[14:53:36] INFO: Dashboard connected (1 clients)
+[14:53:39] INFO: WS CMD: get_eps
+[14:53:39] INFO: TX -> CMD 0x0F payload=none
+[14:53:39] INFO: Collect eps: requested (cmd 0x0F)
+[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
+[14:53:39] INFO: Collect eps: 1/3
+[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
+[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
+[14:53:39] INFO: Collect eps: 2/3
+[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
+[14:53:39] INFO: RX <- CMD 0x10 payload_len=13
+[14:53:39] INFO: Collect eps: 3/3
+[14:53:39] INFO: EPS complete: 6 INA226, 2 TMP102, 4 ADM1177
+[14:53:40] INFO: RX <- CMD 0x10 payload_len=13
+[14:53:40] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:40] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:41] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:41] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:42] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:42] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:43] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:43] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:43] INFO: WS CMD: status
+[14:53:43] INFO: TX -> CMD 0x0A payload=none
+[14:53:43] INFO: Collect health: requested (cmd 0x0A)
+[14:53:43] INFO: RX <- CMD 0x11 payload_len=27
+[14:53:43] INFO: Collect health: 1/1
+[14:53:43] INFO: HEALTH complete: 12/12 online
+[14:53:43] INFO: RX <- CMD 0x11 payload_len=27
+[14:53:44] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:44] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:44] INFO: WS CMD: get_gps
+[14:53:44] INFO: TX -> CMD 0x05 payload=none
+[14:53:44] INFO: RX <- CMD 0x0C payload_len=14
+[14:53:44] INFO: GPS: fix=False Lat=0.000000 Lon=0.000000 Alt=0.0m Sats=0
+[14:53:44] INFO: RX <- CMD 0x0C payload_len=14
+[14:53:44] INFO: RX <- CMD 0x0C payload_len=14
+[14:53:45] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:45] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:46] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:46] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:46] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:46] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:47] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:47] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:48] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:48] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:49] INFO: WS CMD: list_image
+[14:53:49] INFO: TX -> CMD 0x07 payload=none
+[14:53:49] INFO: Collect image: requested (cmd 0x07)
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: Collect image: 1/6
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: Collect image: 2/6
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: Collect image: 3/6
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: Collect image: 4/6
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:49] INFO: Collect image: 5/6
+[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:50] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:50] INFO: Collect image: 6/6
+[14:53:50] INFO: IMAGE_LIST complete: 15 files
+[14:53:50] INFO: RX <- CMD 0x0D payload_len=34
+[14:53:50] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:50] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:51] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:51] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:53:52] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:52] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:53] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:53] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:54] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:54] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:55] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:55] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
+[14:53:56] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:56] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:57] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:57] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:58] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:58] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:53:59] INFO: RX <- CMD 0x03 payload_len=8
+[14:53:59] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:54:00] INFO: RX <- CMD 0x03 payload_len=8
+[14:54:00] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:54:01] INFO: RX <- CMD 0x03 payload_len=8
+[14:54:01] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:54:02] INFO: RX <- CMD 0x03 payload_len=8
+[14:54:02] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
+[14:54:02] INFO: RX <- CMD 0x03 payload_len=8
+[14:54:02] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
+[14:54:09] INFO: Dashboard disconnected (0 clients)

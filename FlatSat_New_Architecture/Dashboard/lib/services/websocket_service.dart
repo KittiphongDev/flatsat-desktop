@@ -38,6 +38,13 @@ class WebSocketService extends ChangeNotifier {
   List<DeviceHealth> deviceHealth = [];
   DateTime? lastHealthTime;
 
+  // Generic transfer progress (drives the % loaders) for health + image list.
+  final TransferState healthXfer = TransferState();
+  final TransferState imageXfer = TransferState();
+
+  // GPS is a single-frame request; just a spinner while we wait for the reply.
+  bool gpsRequesting = false;
+
   // Camera payload power (production build only, ADM-independent PD4 line).
   // Not carried in the beacon, so this is tracked from the toggle ACK echo.
   // Defaults to false (off); in a prototype build the camera is always powered
@@ -180,9 +187,36 @@ class WebSocketService extends ChangeNotifier {
               .map((e) => DeviceHealth.fromJson(e))
               .toList();
           lastHealthTime = DateTime.now();
+          healthXfer.markDone();
           final online = deviceHealth.where((d) => d.online).length;
           _addLog('HEALTH: $online/${deviceHealth.length} devices online');
           _flash('Health scan: $online/${deviceHealth.length} online');
+          break;
+
+        case 'health_progress':
+          healthXfer.applyProgress(data['data'] as Map<String, dynamic>);
+          break;
+
+        case 'health_failed':
+          healthXfer.markFailed();
+          _addLog('Health scan failed: ${data['data']}');
+          _flash('Health scan failed — try again', error: true);
+          break;
+
+        case 'image_progress':
+          imageXfer.applyProgress(data['data'] as Map<String, dynamic>);
+          break;
+
+        case 'image_failed':
+          imageXfer.markFailed();
+          _addLog('Image list failed: ${data['data']}');
+          _flash('Image list failed — try again', error: true);
+          break;
+
+        case 'gps_failed':
+          gpsRequesting = false;
+          _addLog('GPS failed: ${data['data']}');
+          _flash('No GPS reply — try again', error: true);
           break;
 
         case 'nack':
@@ -191,6 +225,7 @@ class WebSocketService extends ChangeNotifier {
           break;
 
         case 'gps':
+          gpsRequesting = false;
           lastGps = GpsData.fromJson(data['data']);
           _addLog(
             'GPS: ${lastGps!.latitude.toStringAsFixed(6)}, '
@@ -241,7 +276,7 @@ class WebSocketService extends ChangeNotifier {
           // Extend the safety window while chunks keep arriving.
           if (epsReceiving) {
             _epsTimeout?.cancel();
-            _epsTimeout = Timer(const Duration(seconds: 8), () {
+            _epsTimeout = Timer(const Duration(seconds: 16), () {
               if (epsReceiving && epsProgress < 100) {
                 epsReceiving = false;
                 _flash('EPS transfer stalled — try GET EPS again', error: true);
@@ -268,6 +303,7 @@ class WebSocketService extends ChangeNotifier {
           imageList = (data['data'] as List)
               .map((e) => ImageEntry.fromJson(e))
               .toList();
+          imageXfer.markDone();
           _addLog('Image list: ${imageList.length} files');
           _flash('Images: ${imageList.length} file(s)');
           break;
@@ -360,6 +396,8 @@ class WebSocketService extends ChangeNotifier {
   void sendStatus() {
     _send({'cmd': 'status'});
     _addLog('>> STATUS');
+    healthXfer.begin();
+    notifyListeners();
   }
 
   void sendBeacon() {
@@ -403,6 +441,8 @@ class WebSocketService extends ChangeNotifier {
   void sendGetGps() {
     _send({'cmd': 'get_gps'});
     _addLog('>> GET_GPS');
+    gpsRequesting = true;
+    notifyListeners();
   }
 
   void sendGetEps() {
@@ -420,7 +460,7 @@ class WebSocketService extends ChangeNotifier {
     notifyListeners();
     // Safety: clear the indicator if the transfer never completes.
     _epsTimeout?.cancel();
-    _epsTimeout = Timer(const Duration(seconds: 8), () {
+    _epsTimeout = Timer(const Duration(seconds: 16), () {
       if (epsReceiving && epsProgress < 100) {
         epsReceiving = false;
         _flash('EPS transfer timed out — try GET EPS again', error: true);
@@ -478,6 +518,8 @@ class WebSocketService extends ChangeNotifier {
   void sendListImage() {
     _send({'cmd': 'list_image'});
     _addLog('>> LIST_IMAGE');
+    imageXfer.begin();
+    notifyListeners();
   }
 
   void sendRemoveImage(String filename) {
@@ -553,6 +595,41 @@ class WebSocketService extends ChangeNotifier {
     _downloadTimeout?.cancel();
     _disconnect();
     super.dispose();
+  }
+}
+
+/// Progress of a chunked transfer (EPS / health / image list), used to drive
+/// the in-panel percentage loaders.
+class TransferState {
+  bool active = false;
+  int percent = 0;
+  int received = 0;
+  int total = 0;
+  int bytes = 0;
+
+  void begin() {
+    active = true;
+    percent = 0;
+    received = 0;
+    total = 0;
+    bytes = 0;
+  }
+
+  void applyProgress(Map<String, dynamic> d) {
+    received = d['received'] ?? 0;
+    total = d['total'] ?? 0;
+    percent = d['percent'] ?? 0;
+    bytes = d['bytes'] ?? bytes;
+    active = percent < 100;
+  }
+
+  void markDone() {
+    active = false;
+    percent = 100;
+  }
+
+  void markFailed() {
+    active = false;
   }
 }
 

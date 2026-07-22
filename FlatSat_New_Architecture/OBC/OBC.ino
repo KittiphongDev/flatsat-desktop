@@ -460,10 +460,14 @@ void sendEPSData() {
     payload[idx++] = (c >> 8) & 0xFF;
   }
 
-  sendChunked(CMD_EPS_DATA, payload, idx);
-  Serial.print("[EPS] Telemetry sent, ");
-  Serial.print(idx);
-  Serial.println(" bytes");
+  if (enqueueChunked(CMD_EPS_DATA, payload, idx)) {
+    Serial.print("[EPS] Telemetry queued, ");
+    Serial.print(idx);
+    Serial.println(" bytes");
+  } else {
+    sendPacket(CMD_NACK, nullptr, 0);   // queue full -> dashboard shows "busy"
+    Serial.println("[EPS] TX queue full - NACK");
+  }
 }
 
 // ====================================================================
@@ -485,23 +489,79 @@ void pacedDelay(uint16_t ms) {
   }
 }
 
-void sendChunked(uint8_t cmdType, const uint8_t *blob, uint16_t blobLen) {
-  uint8_t totalChunks = (blobLen + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE;
-  if (totalChunks == 0) totalChunks = 1;
+// ---- TX JOB QUEUE ------------------------------------------------
+// Chunked responses (EPS / health / image list) are queued and serviced ONE
+// AT A TIME from loop(), non-blocking. This guarantees ordering (a job runs
+// to completion before the next starts), never drops a command that arrives
+// mid-transfer (it queues; NACK only when the queue is truly full), and lets
+// loop() keep listening to the uplink between chunks.
+struct ChunkJob {
+  uint8_t  cmdType;
+  uint8_t  blob[220];
+  uint16_t blobLen;
+};
+#define JOB_QUEUE_SIZE 4
+ChunkJob jobQueue[JOB_QUEUE_SIZE];
+uint8_t jobHead = 0, jobTail = 0;     // head = job being / next to be serviced
 
-  const uint8_t COPIES = 2;
-  for (uint8_t ci = 0; ci < totalChunks; ci++) {
-    uint16_t off = (uint16_t)ci * EPS_CHUNK_SIZE;
-    uint8_t len = (blobLen - off > EPS_CHUNK_SIZE) ? EPS_CHUNK_SIZE
-                                                  : (uint8_t)(blobLen - off);
-    uint8_t part[EPS_CHUNK_SIZE + 2];
-    part[0] = ci;
-    part[1] = totalChunks;
-    memcpy(&part[2], &blob[off], len);
+// Active-transfer state machine
+bool          txActive = false;
+uint8_t       txChunk = 0, txTotal = 1, txCopy = 0;
+unsigned long txNextAt = 0;
+#define TX_COPIES        2
+#define TX_CHUNK_GAP_MS  90
 
-    for (uint8_t rep = 0; rep < COPIES; rep++) {
-      sendPacket(cmdType, part, len + 2);
-      pacedDelay(90); // feeds GPS + watchdog during the send
+// Beacon arbitration: hold beacons off while a transfer is running/pending and
+// for a short window after any command activity, so the half-duplex radio link
+// isn't stomped by a beacon mid-conversation.
+unsigned long lastActivityTime = 0;
+#define BEACON_HOLDOFF_MS 2000
+
+bool txBusy() { return txActive || jobHead != jobTail; }
+
+bool enqueueChunked(uint8_t cmdType, const uint8_t *blob, uint16_t blobLen) {
+  if (blobLen > sizeof(jobQueue[0].blob)) blobLen = sizeof(jobQueue[0].blob);
+  uint8_t next = (uint8_t)((jobTail + 1) % JOB_QUEUE_SIZE);
+  if (next == jobHead) return false;  // full -> caller NACKs ("busy")
+  jobQueue[jobTail].cmdType = cmdType;
+  memcpy(jobQueue[jobTail].blob, blob, blobLen);
+  jobQueue[jobTail].blobLen = blobLen;
+  jobTail = next;
+  return true;
+}
+
+// Called every loop() pass. Emits at most one chunk copy per call, paced by
+// TX_CHUNK_GAP_MS — byte-for-byte the same stream as the old blocking sender.
+void serviceChunkedTx() {
+  if (!txActive) {
+    if (jobHead == jobTail) return;   // nothing pending
+    ChunkJob &j = jobQueue[jobHead];
+    txTotal = (uint8_t)((j.blobLen + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE);
+    if (txTotal == 0) txTotal = 1;
+    txChunk = 0;
+    txCopy = 0;
+    txActive = true;
+    txNextAt = millis();              // first chunk goes out immediately
+  }
+  if ((int32_t)(millis() - txNextAt) < 0) return;
+
+  ChunkJob &j = jobQueue[jobHead];
+  uint16_t off = (uint16_t)txChunk * EPS_CHUNK_SIZE;
+  uint8_t len = (j.blobLen - off > EPS_CHUNK_SIZE) ? EPS_CHUNK_SIZE
+                                                   : (uint8_t)(j.blobLen - off);
+  uint8_t part[EPS_CHUNK_SIZE + 2];
+  part[0] = txChunk;
+  part[1] = txTotal;
+  memcpy(&part[2], &j.blob[off], len);
+  sendPacket(j.cmdType, part, len + 2);
+  txNextAt = millis() + TX_CHUNK_GAP_MS;
+  lastActivityTime = millis();
+
+  if (++txCopy >= TX_COPIES) {        // both copies of this chunk sent
+    txCopy = 0;
+    if (++txChunk >= txTotal) {       // job complete -> pop, next job follows
+      txActive = false;
+      jobHead = (uint8_t)((jobHead + 1) % JOB_QUEUE_SIZE);
     }
   }
 }
@@ -531,10 +591,14 @@ void sendDeviceHealth() {
     IWatchdog.reload();
   }
 
-  sendChunked(CMD_HEALTH_DATA, payload, idx);
-  Serial.print("[HEALTH] Device scan sent, ");
-  Serial.print(n);
-  Serial.println(" devices");
+  if (enqueueChunked(CMD_HEALTH_DATA, payload, idx)) {
+    Serial.print("[HEALTH] Device scan queued, ");
+    Serial.print(n);
+    Serial.println(" devices");
+  } else {
+    sendPacket(CMD_NACK, nullptr, 0);
+    Serial.println("[HEALTH] TX queue full - NACK");
+  }
 }
 
 // ====================================================================
@@ -713,6 +777,7 @@ bool captureAndSaveImage() {
 void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
   Serial.print("[RX] CMD 0x");
   Serial.println(cmdType, HEX);
+  lastActivityTime = millis();  // hold beacons off while we're in a conversation
 
   switch (cmdType) {
 
@@ -897,9 +962,13 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
 
       // The list can exceed one 64-byte radio frame, so send it chunked
       // (works for 0 images too — the bridge reassembles an empty list).
-      sendChunked(CMD_IMAGE_LIST, listPayload, listIndex);
-      Serial.print("[CMD] Listed images, payload size: ");
-      Serial.println(listIndex);
+      if (enqueueChunked(CMD_IMAGE_LIST, listPayload, listIndex)) {
+        Serial.print("[CMD] Image list queued, payload size: ");
+        Serial.println(listIndex);
+      } else {
+        sendPacket(CMD_NACK, nullptr, 0);
+        Serial.println("[CMD] TX queue full - NACK");
+      }
       break;
     }
 
@@ -1152,8 +1221,13 @@ void loop() {
     beaconInterval = 1000;  // Link active -> fast beacon
   }
 
-  // 2. Beacon Transmission
-  if (currentMillis - lastBeaconTime >= beaconInterval) {
+  // 2. Beacon Transmission — but NEVER while a chunked transfer is running or
+  // queued, nor right after command activity: the radio link is half-duplex,
+  // so a beacon mid-conversation collides with responses and re-requests.
+  // The beacon simply waits; it is sent as soon as the link goes quiet.
+  if (currentMillis - lastBeaconTime >= beaconInterval &&
+      !txBusy() &&
+      currentMillis - lastActivityTime >= BEACON_HOLDOFF_MS) {
     sendBeacon();
     lastBeaconTime = currentMillis;
   }
@@ -1165,6 +1239,9 @@ void loop() {
 
   // 4. Process Incoming Commands from COMMU
   processIncomingUART();
+
+  // 4b. Drive the chunked-TX job queue (one chunk per pass, 90 ms pacing).
+  serviceChunkedTx();
 
   // 5. Service Watchdog
   IWatchdog.reload();

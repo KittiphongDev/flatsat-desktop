@@ -8,30 +8,38 @@ def chunk(idx, total, data):
     return bytes([idx, total]) + data
 
 
-def test_no_phantom_restart():
-    """c0 c0 c1 c1 c2 c2 -> exactly one completion, no phantom restart (D2)."""
-    gb._reassembly.clear()
+def test_collector_completes_with_dupes():
+    """c0 c0 c1 c1 c2 c2 -> exactly one completion, no phantom restart."""
+    gb._collectors.clear()
+    gb.schedule_broadcast = lambda *a, **k: None  # silence progress broadcasts
+    gb.start_collect('eps', 0x0F)
     frames = [(0, 3, b'AAA'), (0, 3, b'AAA'), (1, 3, b'BBB'),
               (1, 3, b'BBB'), (2, 3, b'CCC'), (2, 3, b'CCC')]
     completes = []
     for i, t, d in frames:
         p = chunk(i, t, d)
-        r = gb.reassemble('eps', p, len(p))
+        r = gb.collect_chunk('eps', p, len(p))
         if r is not None:
             completes.append(r)
     assert len(completes) == 1, f"expected 1 completion, got {len(completes)}"
     assert completes[0] == b'AAABBBCCC', completes[0]
-    print("Test1 OK: single completion, no phantom restart")
+    print("Test1 OK: collector completes once, dupes swallowed")
 
 
-def test_dup_health():
-    """Single-chunk health sent twice -> one completion (D3)."""
-    gb._reassembly.clear()
-    p = chunk(0, 1, b'\x01\x40\x01')
-    r1 = gb.reassemble('health', p, len(p))
-    r2 = gb.reassemble('health', p, len(p))
-    assert r1 == b'\x01\x40\x01' and r2 is None, (r1, r2)
-    print("Test2 OK: duplicate single-chunk swallowed")
+def test_collector_merges_across_retry():
+    """A lost chunk on attempt 1 is filled by attempt 2 (re-request merge)."""
+    gb._collectors.clear()
+    gb.schedule_broadcast = lambda *a, **k: None
+    gb.start_collect('eps', 0x0F)
+    # Attempt 1: chunk 1 lost.
+    for i, d in [(0, b'AAA'), (2, b'CCC')]:
+        p = chunk(i, 3, d)
+        assert gb.collect_chunk('eps', p, len(p)) is None
+    # Attempt 2 (after a re-request): the missing chunk arrives.
+    p = chunk(1, 3, b'BBB')
+    blob = gb.collect_chunk('eps', p, len(p))
+    assert blob == b'AAABBBCCC', blob
+    print("Test2 OK: collector merges chunks across retries")
 
 
 def test_crc_vector():
@@ -55,8 +63,8 @@ def test_parse_health():
 
 
 if __name__ == "__main__":
-    test_no_phantom_restart()
-    test_dup_health()
+    test_collector_completes_with_dupes()
+    test_collector_merges_across_retry()
     test_crc_vector()
     test_frame_budget()
     test_parse_health()

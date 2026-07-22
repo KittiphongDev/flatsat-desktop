@@ -74,7 +74,50 @@ def autodetect_serial_port():
         return 2
 
     devices = sorted((p.device for p in ports), key=rank)
-    return devices[0] if devices else None
+    if not devices:
+        return None
+    # A name-based guess is not enough: OBC/COMMU *debug* consoles also show up
+    # as ttyACM*, and the GS KISS link may be a USB-UART adapter (ttyUSB*).
+    # Probe each candidate for real KISS traffic and pick the first that talks.
+    if len(devices) > 1:
+        proven = probe_ports_for_kiss(devices)
+        if proven:
+            return proven
+        log.warning("No port produced KISS data during probing — "
+                    f"falling back to {devices[0]}. If that is a debug console, "
+                    "pick the GS port manually in the dashboard's port selector.")
+    return devices[0]
+
+
+def _looks_like_kiss(buf: bytes) -> bool:
+    """True if buf contains a KISS frame with our AA BB sync inside."""
+    return b'\xc0' in buf and b'\xaa\xbb' in buf
+
+
+def probe_ports_for_kiss(devices, listen_s=3.0):
+    """Open each port, send a PING and listen briefly for a valid KISS frame.
+    Two passes: a quick one, then a long one covering the 10 s beacon interval."""
+    for pass_listen in (listen_s, 11.0):
+        for dev in devices:
+            try:
+                with serial.Serial(dev, BAUD_RATE, timeout=0.2) as s:
+                    s.reset_input_buffer()
+                    try:
+                        s.write(build_packet(CMD_PING))
+                    except Exception:
+                        pass
+                    deadline = time.time() + pass_listen
+                    buf = bytearray()
+                    while time.time() < deadline:
+                        buf += s.read(256)
+                        if _looks_like_kiss(bytes(buf)):
+                            log.info(f"Probe: KISS traffic detected on {dev}")
+                            return dev
+                    log.info(f"Probe: no KISS data on {dev} "
+                             f"({len(buf)} bytes seen — likely a debug console)")
+            except Exception as e:
+                log.info(f"Probe: cannot open {dev}: {e}")
+    return None
 WS_HOST = 'localhost'
 WS_PORT = 8080
 DOWNLOAD_DIR = './downloads'
@@ -180,6 +223,9 @@ ser = None
 serial_connected = False       # True while the GS serial port is open
 current_port = None            # Port name currently in use / attempted
 requested_port = None          # User-selected port override (from the app)
+detected_port = None           # Cached auto-detect (probing is slow — do it once)
+_port_open_time = 0.0          # When the current port was opened
+_no_rx_hint_sent = False       # Warned once about a silent (wrong) port
 reconnect_event = threading.Event()  # Set to force a serial reconnect
 
 # Event loop reference for cross-thread broadcasting
@@ -314,6 +360,7 @@ def process_packet(raw_bytes: bytearray):
         schedule_broadcast({"type": "nack", "data": "Command failed"})
 
     elif cmd_type == CMD_GPS_DATA:
+        _gps_pending["active"] = False  # got a reply — stop retrying
         if _is_duplicate(cmd_type, payload):
             return  # 2nd/3rd copy of a 3x GPS send — link already marked active
         if payload_len >= 13:
@@ -335,26 +382,35 @@ def process_packet(raw_bytes: bytearray):
             schedule_broadcast({"type": "gps", "data": gps_data})
 
     elif cmd_type == CMD_IMAGE_LIST:
-        # The image list is sent chunked (it can exceed one radio frame).
-        blob = reassemble("image", payload, payload_len)
+        blob = collect_chunk("image", payload, payload_len)
         if blob is not None:
             files = parse_image_list(blob)
-            log.info(f"IMAGE_LIST: {len(files)} files")
+            log.info(f"IMAGE_LIST complete: {len(files)} files")
             schedule_broadcast({"type": "image_list", "data": files})
 
     elif cmd_type == CMD_HEALTH_DATA:
-        blob = reassemble("health", payload, payload_len)
+        blob = collect_chunk("health", payload, payload_len)
         if blob is not None:
             devices = parse_health(blob)
             online = sum(1 for d in devices if d["online"])
-            log.info(f"HEALTH: {online}/{len(devices)} devices online")
+            log.info(f"HEALTH complete: {online}/{len(devices)} online")
             schedule_broadcast({"type": "health", "data": devices})
 
     elif cmd_type == CMD_IMAGE_DATA:
         handle_image_chunk(payload, payload_len)
 
     elif cmd_type == CMD_EPS_DATA:
-        handle_eps_chunk(payload, payload_len)
+        blob = collect_chunk("eps", payload, payload_len)
+        if blob is not None:
+            eps = parse_eps_payload(blob)
+            if eps:
+                latest_telemetry["eps"] = eps
+                log.info(f"EPS complete: {len(eps['ina226'])} INA226, "
+                         f"{len(eps['tmp102'])} TMP102, {len(eps['adm1177'])} ADM1177")
+                schedule_broadcast({"type": "eps", "data": eps})
+            else:
+                schedule_broadcast({"type": "eps_failed",
+                                    "data": "EPS data invalid — try again"})
 
     else:
         log.info(f"Unhandled CMD: 0x{cmd_type:02X}")
@@ -410,42 +466,101 @@ def parse_eps_payload(payload: bytes):
         log.error(f"Failed to parse EPS payload: {e}")
         return None
 
-def reassemble(key: str, payload: bytes, payload_len: int, on_progress=None):
-    """One duplicate-aware chunk reassembler for every chunked response.
-    Chunk = [chunkIdx][totalChunks][data...]. Returns the full blob exactly
-    once (on the frame that completes it); None otherwise. Redundant re-sends
-    (COPIES=2) and the post-completion echo are swallowed via a tombstone."""
-    if payload_len < 2:
+# ====================================================================
+# RELIABLE PULL COLLECTORS (EPS / health / image list)
+# Push responses (send-all-chunks-twice) are not reliable on a lossy half-
+# duplex link: if both copies of any chunk are lost, the transfer is stuck
+# forever. Instead we COLLECT chunks and, whenever the stream stalls with a
+# gap, RE-REQUEST the whole command — new chunks fill the gaps until complete.
+# This mirrors the (reliable) image-download re-request loop, and gives a live
+# percentage for every chunked response.
+# ====================================================================
+COLLECT_RETRY_S = 1.3       # no new chunk within this -> re-request the command
+COLLECT_MAX_RETRIES = 8
+COLLECT_KEEP_DONE_S = 3.0   # keep a finished collector to swallow late echoes
+
+_collectors = {}            # key -> state dict
+
+def start_collect(key: str, cmd: int):
+    """Begin (or restart) collecting a chunked response for `key`."""
+    _collectors[key] = {
+        "cmd": cmd, "chunks": {}, "total": None,
+        "retries": 0, "last": time.time(), "done": False,
+    }
+    send_command(cmd)
+    log.info(f"Collect {key}: requested (cmd 0x{cmd:02X})")
+
+def collect_chunk(key: str, payload: bytes, payload_len: int):
+    """Feed one chunk [idx][total][data]. Returns the blob once complete."""
+    st = _collectors.get(key)
+    if st is None or st["done"] or payload_len < 2:
         return None
-    chunk_idx, total = payload[0], payload[1]
+    idx, total = payload[0], payload[1]
     if total == 0:
         return None
-    data = bytes(payload[2:payload_len])
-    now = time.time()
-    buf = _reassembly.get(key)
-
-    # Drop the tail of an already-delivered transfer (kills the phantom restart).
-    if buf and buf["done"]:
-        if now - buf["ts"] <= DUPLICATE_GUARD_S:
-            buf["ts"] = now
-            return None
-        buf = None
-
-    if buf is None or buf["total"] != total or now - buf["ts"] > REASSEMBLY_STALE_S:
-        buf = {"total": total, "chunks": {}, "ts": now, "done": False}
-        _reassembly[key] = buf
-
-    is_new = chunk_idx not in buf["chunks"]
-    buf["chunks"][chunk_idx] = data
-    buf["ts"] = now
-    if on_progress and is_new:
-        on_progress(len(buf["chunks"]), total,
-                    sum(len(v) for v in buf["chunks"].values()))
-
-    if all(i in buf["chunks"] for i in range(total)):
-        buf["done"] = True  # tombstone, reaped by the watchdog
-        return b"".join(buf["chunks"][i] for i in range(total))
+    st["total"] = total
+    is_new = idx not in st["chunks"]
+    st["chunks"][idx] = bytes(payload[2:payload_len])
+    st["last"] = time.time()
+    if is_new:
+        received = len(st["chunks"])
+        got = sum(len(v) for v in st["chunks"].values())
+        schedule_broadcast({
+            "type": f"{key}_progress",
+            "data": {"received": received, "total": total,
+                     "percent": int(received * 100 / total), "bytes": got},
+        })
+        log.info(f"Collect {key}: {received}/{total}")
+    if all(i in st["chunks"] for i in range(total)):
+        st["done"] = True
+        st["last"] = time.time()
+        return b"".join(st["chunks"][i] for i in range(total))
     return None
+
+def service_collectors():
+    """Re-request stalled collectors; report failure after too many retries."""
+    now = time.time()
+    for key, st in list(_collectors.items()):
+        if st["done"]:
+            if now - st["last"] > COLLECT_KEEP_DONE_S:
+                del _collectors[key]
+            continue
+        if now - st["last"] > COLLECT_RETRY_S:
+            if st["retries"] >= COLLECT_MAX_RETRIES:
+                total = st["total"] or 0
+                missing = [i for i in range(total) if i not in st["chunks"]]
+                del _collectors[key]
+                schedule_broadcast({"type": f"{key}_failed",
+                                    "data": f"Lost data (missing {missing}) — try again"})
+                log.error(f"Collect {key}: gave up after {COLLECT_MAX_RETRIES} retries")
+            else:
+                st["retries"] += 1
+                st["last"] = now
+                send_command(st["cmd"])
+                log.info(f"Collect {key}: re-request (retry {st['retries']})")
+
+# GPS is a single small frame (not chunked); make it reliable with the same
+# re-request idea so a lost reply is retried instead of silently dropped.
+_gps_pending = {"active": False, "retries": 0, "last": 0.0}
+GPS_RETRY_S = 1.5
+GPS_MAX_RETRIES = 5
+
+def start_gps():
+    _gps_pending.update({"active": True, "retries": 0, "last": time.time()})
+    send_command(CMD_GET_GPS)
+
+def service_gps():
+    if not _gps_pending["active"]:
+        return
+    now = time.time()
+    if now - _gps_pending["last"] > GPS_RETRY_S:
+        if _gps_pending["retries"] >= GPS_MAX_RETRIES:
+            _gps_pending["active"] = False
+            schedule_broadcast({"type": "gps_failed", "data": "No GPS reply — try again"})
+        else:
+            _gps_pending["retries"] += 1
+            _gps_pending["last"] = now
+            send_command(CMD_GET_GPS)
 
 def parse_image_list(blob: bytes):
     """Parse [nameLen][name][size(4B, big-endian)] repeating."""
@@ -492,35 +607,6 @@ def parse_health(blob: bytes):
             "label": labels.get(addr, f"Device 0x{addr:02X}"),
         })
     return devices
-
-def _eps_progress(received, total, bytes_so_far):
-    percent = int(received * 100 / total) if total else 0
-    log.info(f"EPS chunk {received}/{total} - {percent}%")
-    schedule_broadcast({
-        "type": "eps_progress",
-        "data": {
-            "received": received,
-            "total": total,
-            "percent": percent,
-            "bytes": bytes_so_far,
-        },
-    })
-
-def handle_eps_chunk(payload: bytes, payload_len: int):
-    """Reassemble the chunked EPS telemetry, reporting progress as chunks land."""
-    blob = reassemble("eps", payload, payload_len, on_progress=_eps_progress)
-    if blob is None:
-        return
-    eps = parse_eps_payload(blob)
-    if eps:
-        latest_telemetry["eps"] = eps
-        log.info(f"EPS complete: {len(eps['ina226'])} INA226, "
-                 f"{len(eps['tmp102'])} TMP102, {len(eps['adm1177'])} ADM1177")
-        schedule_broadcast({"type": "eps", "data": eps})
-    else:
-        log.error("EPS reassembly parsed empty/invalid")
-        schedule_broadcast({"type": "eps_failed",
-                            "data": "EPS data was invalid — press GET EPS again"})
 
 # ====================================================================
 # IMAGE DOWNLOAD STATE MACHINE
@@ -670,18 +756,27 @@ def build_bridge_status(error=None):
 
 def _open_serial():
     """Attempt to open the serial port. Returns True on success."""
-    global ser, serial_connected, current_port
-    port = requested_port or autodetect_serial_port() or SERIAL_PORT
+    global ser, serial_connected, current_port, detected_port
+    global _port_open_time, _no_rx_hint_sent
+    if requested_port:
+        port = requested_port
+    else:
+        if detected_port is None:
+            detected_port = autodetect_serial_port()
+        port = detected_port or SERIAL_PORT
     current_port = port
     try:
         ser = serial.Serial(port, BAUD_RATE, timeout=0.1)
         serial_connected = True
+        _port_open_time = time.time()
+        _no_rx_hint_sent = False
         log.info(f"Serial port {port} opened at {BAUD_RATE} baud")
         schedule_broadcast(build_bridge_status())
         return True
     except Exception as e:
         serial_connected = False
         ser = None
+        detected_port = None   # re-run detection next attempt (port may have moved)
         available = [p.device for p in list_ports.comports()]
         log.error(
             f"Cannot open {port}: {e}. "
@@ -693,7 +788,7 @@ def _open_serial():
         return False
 
 def serial_reader_loop():
-    global ser, serial_connected
+    global ser, serial_connected, _no_rx_hint_sent
 
     in_frame = False
     escape_next = False
@@ -751,6 +846,21 @@ def serial_reader_loop():
             else:
                 time.sleep(0.01)  # Avoid busy-wait
 
+            # Wrong-port hint: the port is open but NO valid packet has EVER
+            # arrived (the OBC beacons every 1-10 s, so a healthy chain always
+            # produces data). Most likely we're on a debug console, not the GS.
+            if (serial_connected and not _no_rx_hint_sent
+                    and latest_telemetry["last_packet_time"] == 0
+                    and time.time() - _port_open_time > 20):
+                _no_rx_hint_sent = True
+                msg = (f"No KISS data on {current_port} after 20 s — this is "
+                       "probably a debug console, not the Ground Station. "
+                       "Pick the GS port in the dashboard's port selector "
+                       "(the GS KISS link is on PC10/PC11 — usually a "
+                       "USB-serial adapter, e.g. ttyUSB0).")
+                log.warning(msg)
+                schedule_broadcast(build_bridge_status(error=msg))
+
             # Check link timeout
             if latest_telemetry["last_packet_time"] > 0:
                 if time.time() - latest_telemetry["last_packet_time"] > LINK_TIMEOUT_S:
@@ -759,22 +869,10 @@ def serial_reader_loop():
                         log.warning("Link LOST (timeout)")
                         schedule_broadcast({"type": "telemetry", "data": latest_telemetry})
 
-            # Reassembly watchdog: reap completed tombstones and abandon stalled
-            # transfers (report EPS loss so the dashboard clears its bar).
-            _now = time.time()
-            for _k, _b in list(_reassembly.items()):
-                if _b["done"] and _now - _b["ts"] > DUPLICATE_GUARD_S:
-                    del _reassembly[_k]
-                elif not _b["done"] and _now - _b["ts"] > REASSEMBLY_STALE_S:
-                    missing = [i for i in range(_b["total"]) if i not in _b["chunks"]]
-                    del _reassembly[_k]
-                    if _k == "eps":
-                        schedule_broadcast({
-                            "type": "eps_failed",
-                            "data": f"Lost chunk(s) {missing} — press GET EPS again",
-                        })
-
-            # Drive any in-progress image download (timeouts + retries).
+            # Re-request stalled chunked responses (EPS / health / image list),
+            # GPS, and drive any in-progress image download.
+            service_collectors()
+            service_gps()
             service_download()
 
         except serial.SerialException as e:
@@ -841,9 +939,10 @@ async def ws_handler(websocket):
 
                 elif cmd == "set_port":
                     # App picked a specific serial port -> switch to it.
-                    global requested_port
+                    global requested_port, detected_port
                     new_port = (data.get("port") or "").strip()
                     requested_port = new_port or None
+                    detected_port = None  # force fresh detection if AUTO
                     log.info(f"Serial port override set to: {requested_port or 'AUTO'}")
                     reconnect_event.set()
                     await websocket.send(json.dumps(build_bridge_status()))
@@ -851,6 +950,7 @@ async def ws_handler(websocket):
                 elif cmd == "reconnect":
                     # Force a fresh serial reconnect (re-runs auto-detect).
                     log.info("Reconnect requested by app")
+                    globals()["detected_port"] = None  # re-probe from scratch
                     reconnect_event.set()
                     await websocket.send(json.dumps(build_bridge_status()))
 
@@ -862,7 +962,7 @@ async def ws_handler(websocket):
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
-                        send_command(CMD_STATUS)
+                        start_collect("health", CMD_STATUS)
 
                 elif cmd == "beacon":
                     send_command(CMD_BEACON)
@@ -871,14 +971,14 @@ async def ws_handler(websocket):
                     send_command(CMD_TAKE_PIC)
 
                 elif cmd == "get_gps":
-                    send_command(CMD_GET_GPS)
+                    start_gps()
 
                 elif cmd == "get_eps":
                     if download_state["active"]:
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
-                        send_command(CMD_GET_EPS)
+                        start_collect("eps", CMD_GET_EPS)
 
                 elif cmd == "toggle_pwr":
                     subsystem = data.get("subsystem", 0)
@@ -889,7 +989,7 @@ async def ws_handler(websocket):
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
-                        send_command(CMD_LIST_IMAGE)
+                        start_collect("image", CMD_LIST_IMAGE)
 
                 elif cmd == "remove_image":
                     filename = data.get("filename", "")

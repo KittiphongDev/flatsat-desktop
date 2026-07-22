@@ -192,9 +192,9 @@ class DashboardScreen extends StatelessWidget {
         _section(context, 'TELEMETRY', _telemetryGrid(context, ws),
             action: _pingAction(context, ws)),
         _section(context, 'SUBSYSTEM POWER', _subsystemPower(context, ws)),
-        _section(context, 'DEVICE HEALTH', _healthPanel(context, ws),
+        _section(context, 'DEVICE HEALTH', _withXfer(context, ws.healthXfer, 'Scanning devices…', _healthPanel(context, ws)),
             action: _healthAction(context, ws)),
-        _section(context, 'IMAGE MANAGER', _imageManager(context, ws),
+        _section(context, 'IMAGE MANAGER', _withXfer(context, ws.imageXfer, 'Loading image list…', _imageManager(context, ws)),
             action: _imageAction(context, ws)),
         _section(context, 'GPS DATA', _gpsCard(context, ws),
             action: _gpsAction(context, ws)),
@@ -215,14 +215,14 @@ class DashboardScreen extends StatelessWidget {
           action: _pingAction(context, ws)),
       _section(context, 'EPS SUBSYSTEM', const EpsDashboard(),
           action: _epsAction(context, ws)),
-      _section(context, 'IMAGE MANAGER', _imageManager(context, ws),
+      _section(context, 'IMAGE MANAGER', _withXfer(context, ws.imageXfer, 'Loading image list…', _imageManager(context, ws)),
           action: _imageAction(context, ws)),
       _section(context, 'EVENT LOG', _eventLog(context, ws)),
     ];
 
     final side = <Widget>[
       _section(context, 'SUBSYSTEM POWER', _subsystemPower(context, ws)),
-      _section(context, 'DEVICE HEALTH', _healthPanel(context, ws),
+      _section(context, 'DEVICE HEALTH', _withXfer(context, ws.healthXfer, 'Scanning devices…', _healthPanel(context, ws)),
           action: _healthAction(context, ws)),
       _section(context, 'GPS DATA', _gpsCard(context, ws),
           action: _gpsAction(context, ws)),
@@ -290,6 +290,73 @@ class DashboardScreen extends StatelessWidget {
       children.add(buttons[i]);
     }
     return Row(mainAxisSize: MainAxisSize.min, children: children);
+  }
+
+  /// Percentage loader shown at the top of a panel while a transfer runs.
+  Widget _xferBar(BuildContext context, TransferState x, String label) {
+    final c = context.colors;
+    final pct = x.percent.clamp(0, 100);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: c.accent.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: c.accent.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(c.accent),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(label,
+                  style: TextStyle(
+                      color: c.textPrimary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600)),
+              const Spacer(),
+              Text(
+                x.total > 0 ? '$pct%  (${x.received}/${x.total})' : '$pct%',
+                style: TextStyle(
+                    color: c.accent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'monospace'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: x.total > 0 ? pct / 100.0 : null,
+              minHeight: 5,
+              backgroundColor: c.border,
+              valueColor: AlwaysStoppedAnimation(c.accent),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Prepend a transfer loader above a panel's content while it's collecting.
+  Widget _withXfer(BuildContext context, TransferState x, String label,
+      Widget child) {
+    if (!x.active) return child;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [_xferBar(context, x, label), child],
+    );
   }
 
   // ---- Section Title ----
@@ -634,6 +701,35 @@ class DashboardScreen extends StatelessWidget {
   // ---- GPS Card ----
   Widget _gpsCard(BuildContext context, WebSocketService ws) {
     final c = context.colors;
+    if (ws.gpsRequesting) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: c.accent.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(c.accent),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                'Requesting GPS position…',
+                style: TextStyle(color: c.textSecondary, fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     final gps = ws.lastGps;
     if (gps == null) {
       return Container(
