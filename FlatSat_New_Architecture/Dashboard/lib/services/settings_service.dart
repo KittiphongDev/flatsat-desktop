@@ -26,13 +26,23 @@ extension CameraModeLabel on CameraMode {
 class SettingsService extends ChangeNotifier {
   static const _kCameraMode = 'camera_mode';
   static const _kAutoPower = 'camera_auto_power_on_capture';
+  static const _kShowEventLog = 'show_event_log';
+  static const _kShowBridgeLog = 'show_bridge_log';
 
   CameraMode _cameraMode = CameraMode.prototype;
   bool _autoPowerOnCapture = false;
+  bool _showEventLog = true;
+  bool _showBridgeLog = true;
   bool _loaded = false;
 
   CameraMode get cameraMode => _cameraMode;
   bool get isProduction => _cameraMode == CameraMode.production;
+
+  /// Show the EVENT LOG terminal panel (app-level commands & responses).
+  bool get showEventLog => _showEventLog;
+
+  /// Show the BRIDGE TRAFFIC terminal panel (raw serial TX/RX frames).
+  bool get showBridgeLog => _showBridgeLog;
 
   /// Only meaningful in production; in prototype the camera is always on.
   bool get autoPowerOnCapture => isProduction && _autoPowerOnCapture;
@@ -47,6 +57,8 @@ class SettingsService extends ChangeNotifier {
           ? CameraMode.production
           : CameraMode.prototype;
       _autoPowerOnCapture = prefs.getBool(_kAutoPower) ?? false;
+      _showEventLog = prefs.getBool(_kShowEventLog) ?? true;
+      _showBridgeLog = prefs.getBool(_kShowBridgeLog) ?? true;
     } catch (_) {
       // First run / no store yet — keep defaults.
     }
@@ -62,6 +74,26 @@ class SettingsService extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(
           _kCameraMode, mode == CameraMode.production ? 'production' : 'prototype');
+    } catch (_) {}
+  }
+
+  Future<void> setShowEventLog(bool value) async {
+    if (_showEventLog == value) return;
+    _showEventLog = value;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kShowEventLog, value);
+    } catch (_) {}
+  }
+
+  Future<void> setShowBridgeLog(bool value) async {
+    if (_showBridgeLog == value) return;
+    _showBridgeLog = value;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kShowBridgeLog, value);
     } catch (_) {}
   }
 

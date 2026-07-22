@@ -98,6 +98,45 @@ class SettingsDialog extends StatelessWidget {
                 ),
               ),
 
+              // ---- Terminal panels ----
+              const SizedBox(height: 20),
+              _sectionLabel(context, 'PANELS'),
+              const SizedBox(height: 6),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                activeColor: c.accent,
+                value: settings.showEventLog,
+                onChanged: (v) => settings.setShowEventLog(v),
+                title: Text(
+                  'Event log terminal',
+                  style: TextStyle(
+                      color: c.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  'Commands you send and high-level responses.',
+                  style: TextStyle(color: c.textMuted, fontSize: 11.5),
+                ),
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                activeColor: c.accent,
+                value: settings.showBridgeLog,
+                onChanged: (v) => settings.setShowBridgeLog(v),
+                title: Text(
+                  'Bridge traffic terminal',
+                  style: TextStyle(
+                      color: c.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  'Raw serial frames the bridge sends/receives (hex + RSSI).',
+                  style: TextStyle(color: c.textMuted, fontSize: 11.5),
+                ),
+              ),
+
               // ---- Auto power (production only) ----
               const SizedBox(height: 20),
               _sectionLabel(context, 'CAPTURE'),

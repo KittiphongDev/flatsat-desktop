@@ -186,6 +186,7 @@ class DashboardScreen extends StatelessWidget {
 
   /// Single-column layout for phones / narrow windows.
   Widget _narrowLayout(BuildContext context, WebSocketService ws) {
+    final settings = context.watch<SettingsService>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -202,7 +203,10 @@ class DashboardScreen extends StatelessWidget {
             action: _epsAction(context, ws)),
         if (ws.isDownloading && ws.downloadProgress != null)
           _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
-        _section(context, 'EVENT LOG', _eventLog(context, ws)),
+        if (settings.showEventLog)
+          _section(context, 'EVENT LOG', _eventLog(context, ws)),
+        if (settings.showBridgeLog)
+          _section(context, 'BRIDGE TRAFFIC', _bridgeLog(context, ws)),
         const SizedBox(height: 20),
       ],
     );
@@ -210,6 +214,7 @@ class DashboardScreen extends StatelessWidget {
 
   /// Two-column masonry layout for desktop / web.
   Widget _wideLayout(BuildContext context, WebSocketService ws) {
+    final settings = context.watch<SettingsService>();
     final primary = <Widget>[
       _section(context, 'TELEMETRY', _telemetryGrid(context, ws),
           action: _pingAction(context, ws)),
@@ -217,7 +222,8 @@ class DashboardScreen extends StatelessWidget {
           action: _epsAction(context, ws)),
       _section(context, 'IMAGE MANAGER', _withXfer(context, ws.imageXfer, 'Loading image list…', _imageManager(context, ws)),
           action: _imageAction(context, ws)),
-      _section(context, 'EVENT LOG', _eventLog(context, ws)),
+      if (settings.showEventLog)
+        _section(context, 'EVENT LOG', _eventLog(context, ws)),
     ];
 
     final side = <Widget>[
@@ -228,6 +234,8 @@ class DashboardScreen extends StatelessWidget {
           action: _gpsAction(context, ws)),
       if (ws.isDownloading && ws.downloadProgress != null)
         _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
+      if (settings.showBridgeLog)
+        _section(context, 'BRIDGE TRAFFIC', _bridgeLog(context, ws)),
     ];
 
     return Row(
@@ -916,8 +924,23 @@ class DashboardScreen extends StatelessWidget {
     return '${s ~/ 60}m ${s % 60}s';
   }
 
-  // ---- Event Log ----
-  Widget _eventLog(BuildContext context, WebSocketService ws) {
+  // ---- Terminals ----
+  Widget _eventLog(BuildContext context, WebSocketService ws) => _terminal(
+      context,
+      title: 'Terminal',
+      lines: ws.eventLog,
+      onClear: ws.clearLog);
+
+  Widget _bridgeLog(BuildContext context, WebSocketService ws) => _terminal(
+      context,
+      title: 'Bridge serial TX/RX',
+      lines: ws.bridgeLog,
+      onClear: ws.clearBridgeLog);
+
+  Widget _terminal(BuildContext context,
+      {required String title,
+      required List<String> lines,
+      required VoidCallback onClear}) {
     final c = context.colors;
     // Terminal keeps a dark surface in both themes for readability;
     // derive muted text tints from white for consistent contrast.
@@ -938,9 +961,9 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.terminal, color: onDarkMuted, size: 16),
                 const SizedBox(width: 8),
-                const Text(
-                  'Terminal',
-                  style: TextStyle(
+                Text(
+                  title,
+                  style: const TextStyle(
                     color: onDarkMuted,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -949,7 +972,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const Spacer(),
                 GestureDetector(
-                  onTap: ws.clearLog,
+                  onTap: onClear,
                   child: const Text(
                     'CLEAR',
                     style: TextStyle(
@@ -967,9 +990,9 @@ class DashboardScreen extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
-              itemCount: ws.eventLog.length,
+              itemCount: lines.length,
               itemBuilder: (context, index) {
-                final line = ws.eventLog[index];
+                final line = lines[index];
                 Color lineColor = const Color(0x99FFFFFF);
                 if (line.contains('ERROR') || line.contains('NACK')) {
                   lineColor = c.error;

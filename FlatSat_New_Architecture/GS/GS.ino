@@ -53,31 +53,43 @@ void setFlag(void) {
 // AX.25 UI FRAME ENCAPSULATION
 // ====================================================================
 
-// For uplink: GS -> COMMU, destination is FLTSAT, source is GROUND
-size_t wrapAX25(const uint8_t *payload, size_t payloadLen, uint8_t *ax25Buf) {
+// ---- NETWORK IDENTITY --------------------------------------------
+// MUST be identical in GS.ino and COMMU.ino, and UNIQUE per team.
+// Several FlatSats on the same frequency with the same callsigns will
+// receive each other's beacons and collide with each other's transfers.
+// Pick your own frequency (e.g. 433.0 / 433.5 / 434.0 ...) and callsigns
+// (exactly 6 characters each).
+#define RF_FREQ_MHZ 433.0
+#define SAT_CALL "FLTSAT"
+#define GND_CALL "GROUND"
+
+// Build the fixed 16-byte AX.25 UI header for a dest/src pair.
+void buildAX25Header(const char *dest, const char *src, uint8_t *buf) {
   size_t idx = 0;
-
-  // Destination: "FLTSAT"
-  const char* dest = "FLTSAT";
-  for (int i = 0; i < 6; i++) ax25Buf[idx++] = (dest[i] << 1);
-  ax25Buf[idx++] = (0 << 1); // SSID 0
-
-  // Source: "GROUND"
-  const char* src = "GROUND";
-  for (int i = 0; i < 6; i++) ax25Buf[idx++] = (src[i] << 1);
-  ax25Buf[idx++] = (0 << 1) | 0x01; // SSID 0, Last Address Bit
-
-  ax25Buf[idx++] = 0x03; // Control: UI frame
-  ax25Buf[idx++] = 0xF0; // PID: No layer 3 protocol
-
-  memcpy(&ax25Buf[idx], payload, payloadLen);
-  return idx + payloadLen;
+  for (int i = 0; i < 6; i++) buf[idx++] = (dest[i] << 1);
+  buf[idx++] = (0 << 1);            // dest SSID 0
+  for (int i = 0; i < 6; i++) buf[idx++] = (src[i] << 1);
+  buf[idx++] = (0 << 1) | 0x01;     // src SSID 0, last-address bit
+  buf[idx++] = 0x03;                // Control: UI frame
+  buf[idx++] = 0xF0;                // PID: no layer 3
 }
 
-// Extract application payload from AX.25 frame
+// For uplink: GS -> COMMU, destination is the satellite, source is ground
+size_t wrapAX25(const uint8_t *payload, size_t payloadLen, uint8_t *ax25Buf) {
+  buildAX25Header(SAT_CALL, GND_CALL, ax25Buf);
+  memcpy(&ax25Buf[16], payload, payloadLen);
+  return 16 + payloadLen;
+}
+
+// Extract application payload from AX.25 frame.
+// REJECTS frames whose header isn't exactly "our satellite -> our ground",
+// so another team's FlatSat on the same frequency is ignored.
 size_t unwrapAX25(const uint8_t *ax25Buf, size_t rxLen, uint8_t *payload) {
   const size_t AX25_HEADER_LEN = 16;
   if (rxLen < AX25_HEADER_LEN) return 0;
+  uint8_t expected[16];
+  buildAX25Header(GND_CALL, SAT_CALL, expected); // downlink: sat -> ground
+  if (memcmp(ax25Buf, expected, AX25_HEADER_LEN) != 0) return 0; // foreign frame
   size_t payloadLen = rxLen - AX25_HEADER_LEN;
   memcpy(payload, &ax25Buf[AX25_HEADER_LEN], payloadLen);
   return payloadLen;

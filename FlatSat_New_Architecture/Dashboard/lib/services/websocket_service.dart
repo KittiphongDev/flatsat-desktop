@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/telemetry_data.dart';
+// Desktop builds get the real launcher (dart:io); web gets a no-op stub.
+import 'bridge_launcher_stub.dart'
+    if (dart.library.io) 'bridge_launcher.dart';
 
 /// Central WebSocket service that manages the connection to gs_bridge.py
 /// and exposes reactive state to the UI via ChangeNotifier.
@@ -61,6 +64,9 @@ class WebSocketService extends ChangeNotifier {
   String? downloadCompleteFile;
   List<String> eventLog = [];
 
+  /// Raw serial traffic mirrored from the bridge (TX/RX frames + link errors).
+  List<String> bridgeLog = [];
+
   // ---- Ephemeral command feedback (drives SnackBar toasts) ----
   int feedbackSeq = 0;
   String feedbackMessage = '';
@@ -99,8 +105,9 @@ class WebSocketService extends ChangeNotifier {
   String get wsUrl => _wsUrl;
 
   WebSocketService() {
-    // The launcher scripts (run_mission_control.*) own the bridge's lifecycle —
-    // they start it before the app and stop it on close. The app only connects.
+    // Connect first: if a bridge is already running (launcher script, previous
+    // session) we just use it. Only when the connection FAILS does connect()
+    // spawn our own bridge process — so two bridges never fight for port 8080.
     connect();
   }
 
@@ -135,8 +142,13 @@ class WebSocketService extends ChangeNotifier {
         },
       );
     } catch (e) {
-      _addLog('Connection failed (is the Python bridge running?)');
       _isConnected = false;
+      // No bridge answered — start one ourselves (desktop only; throttled;
+      // no-op if our child process is already running or on the web build).
+      if (!BridgeLauncher.running) {
+        _addLog('Bridge not reachable — starting it…');
+        await BridgeLauncher.start(_addLog);
+      }
       notifyListeners();
       _scheduleReconnect();
     }
@@ -356,6 +368,10 @@ class WebSocketService extends ChangeNotifier {
           } else if (!serialConnected && wasConnected) {
             _addLog('Serial disconnected');
           }
+          break;
+
+        case 'bridge_log':
+          _addBridgeLog('${data['data']}');
           break;
 
         case 'error':
@@ -589,11 +605,25 @@ class WebSocketService extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _addBridgeLog(String msg) {
+    final timestamp = DateTime.now().toIso8601String().substring(11, 19);
+    bridgeLog.insert(0, '[$timestamp] $msg');
+    if (bridgeLog.length > 300) {
+      bridgeLog.removeRange(300, bridgeLog.length);
+    }
+  }
+
+  void clearBridgeLog() {
+    bridgeLog.clear();
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _epsTimeout?.cancel();
     _downloadTimeout?.cancel();
     _disconnect();
+    BridgeLauncher.stop(); // stop the bridge we spawned (no-op otherwise)
     super.dispose();
   }
 }

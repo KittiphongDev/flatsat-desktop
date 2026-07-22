@@ -1,258 +1,79 @@
-[14:53:30] INFO: WebSocket Server starting on ws://localhost:8080
-[14:53:30] INFO: server listening on 127.0.0.1:8080
-[14:53:30] INFO: Bridge is running. Waiting for connections...
-[14:53:30] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-44.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-45.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:30] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:30] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:34] WARNING: Packet too short: 2 bytes
-[14:53:36] INFO: connection open
-[14:53:36] INFO: Dashboard connected (1 clients)
-[14:53:39] INFO: WS CMD: get_eps
-[14:53:39] INFO: TX -> CMD 0x0F payload=none
-[14:53:39] INFO: Collect eps: requested (cmd 0x0F)
-[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
-[14:53:39] INFO: Collect eps: 1/3
-[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
-[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
-[14:53:39] INFO: Collect eps: 2/3
-[14:53:39] INFO: RX <- CMD 0x10 payload_len=34
-[14:53:39] INFO: RX <- CMD 0x10 payload_len=13
-[14:53:39] INFO: Collect eps: 3/3
-[14:53:39] INFO: EPS complete: 6 INA226, 2 TMP102, 4 ADM1177
-[14:53:40] INFO: RX <- CMD 0x10 payload_len=13
-[14:53:40] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:40] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:41] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:41] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:42] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:42] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:43] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:43] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:43] INFO: WS CMD: status
-[14:53:43] INFO: TX -> CMD 0x0A payload=none
-[14:53:43] INFO: Collect health: requested (cmd 0x0A)
-[14:53:43] INFO: RX <- CMD 0x11 payload_len=27
-[14:53:43] INFO: Collect health: 1/1
-[14:53:43] INFO: HEALTH complete: 12/12 online
-[14:53:43] INFO: RX <- CMD 0x11 payload_len=27
-[14:53:44] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:44] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:44] INFO: WS CMD: get_gps
-[14:53:44] INFO: TX -> CMD 0x05 payload=none
-[14:53:44] INFO: RX <- CMD 0x0C payload_len=14
-[14:53:44] INFO: GPS: fix=False Lat=0.000000 Lon=0.000000 Alt=0.0m Sats=0
-[14:53:44] INFO: RX <- CMD 0x0C payload_len=14
-[14:53:44] INFO: RX <- CMD 0x0C payload_len=14
-[14:53:45] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:45] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:46] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:46] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:46] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:46] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:47] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:47] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:48] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:48] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:49] INFO: WS CMD: list_image
-[14:53:49] INFO: TX -> CMD 0x07 payload=none
-[14:53:49] INFO: Collect image: requested (cmd 0x07)
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: Collect image: 1/6
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: Collect image: 2/6
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: Collect image: 3/6
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: Collect image: 4/6
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:49] INFO: Collect image: 5/6
-[14:53:49] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:50] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:50] INFO: Collect image: 6/6
-[14:53:50] INFO: IMAGE_LIST complete: 15 files
-[14:53:50] INFO: RX <- CMD 0x0D payload_len=34
-[14:53:50] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:50] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:51] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:51] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:53:52] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:52] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:53] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:53] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:54] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:54] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:55] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:55] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.5dBm
-[14:53:56] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:56] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:57] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:57] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:58] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:58] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:53:59] INFO: RX <- CMD 0x03 payload_len=8
-[14:53:59] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:54:00] INFO: RX <- CMD 0x03 payload_len=8
-[14:54:00] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:54:01] INFO: RX <- CMD 0x03 payload_len=8
-[14:54:01] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:54:02] INFO: RX <- CMD 0x03 payload_len=8
-[14:54:02] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-42.5dBm
-[14:54:02] INFO: RX <- CMD 0x03 payload_len=8
-[14:54:02] INFO: BEACON: Bat=94% Temp=27C V=4 Errors=0x10 RSSI=-43.0dBm
-[14:54:09] INFO: Dashboard disconnected (0 clients)
+[15:51:42] INFO: WebSocket Server starting on ws://localhost:8080
+[15:51:42] INFO: server listening on 127.0.0.1:8080
+[15:51:42] INFO: Bridge is running. Waiting for connections...
+[15:51:42] INFO: Probe: KISS traffic detected on /dev/ttyACM1
+[15:51:42] INFO: Serial port /dev/ttyACM1 opened at 115200 baud
+[15:51:44] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:44] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-44.5dBm
+[15:51:45] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:45] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-46.5dBm
+[15:51:46] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:46] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-46.5dBm
+[15:51:47] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:47] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-47.0dBm
+[15:51:48] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:48] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-46.5dBm
+[15:51:48] INFO: connection open
+[15:51:48] INFO: Dashboard connected (1 clients)
+[15:51:48] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:48] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-47.0dBm
+[15:51:49] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:49] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-47.0dBm
+[15:51:50] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:50] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-47.0dBm
+[15:51:51] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:51] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-47.0dBm
+[15:51:52] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:52] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-48.0dBm
+[15:51:53] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:53] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-47.0dBm
+[15:51:54] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:54] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-46.5dBm
+[15:51:55] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:55] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-45.5dBm
+[15:51:56] INFO: RX <- CMD 0x03 payload_len=8
+[15:51:56] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-46.0dBm
+[15:52:06] INFO: RX <- CMD 0x03 payload_len=8
+[15:52:06] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-44.0dBm
+[15:52:16] INFO: RX <- CMD 0x03 payload_len=8
+[15:52:16] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-44.0dBm
+[15:52:26] INFO: RX <- CMD 0x03 payload_len=8
+[15:52:26] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-44.0dBm
+[15:52:36] INFO: RX <- CMD 0x03 payload_len=8
+[15:52:36] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-43.5dBm
+[15:52:45] INFO: RX <- CMD 0x03 payload_len=8
+[15:52:45] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-45.5dBm
+[15:52:55] INFO: RX <- CMD 0x03 payload_len=8
+[15:52:55] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-45.5dBm
+[15:53:03] INFO: WS CMD: status
+[15:53:03] INFO: TX -> CMD 0x0A payload=none
+[15:53:03] INFO: Collect health: requested (cmd 0x0A)
+[15:53:03] INFO: RX <- CMD 0x11 payload_len=27
+[15:53:03] INFO: Collect health: 1/1
+[15:53:03] INFO: HEALTH complete: 12/12 online
+[15:53:03] INFO: RX <- CMD 0x11 payload_len=27
+[15:53:05] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:05] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-43.5dBm
+[15:53:06] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:06] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-43.5dBm
+[15:53:07] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:07] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-43.5dBm
+[15:53:08] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:08] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-42.5dBm
+[15:53:09] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:09] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-44.0dBm
+[15:53:10] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:10] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-43.5dBm
+[15:53:11] INFO: WS CMD: toggle_pwr
+[15:53:11] INFO: TX -> CMD 0x06 payload=01
+[15:53:11] INFO: RX <- CMD 0x02 payload_len=2
+[15:53:11] INFO: ACK received: 0100
+[15:53:11] INFO: WS CMD: toggle_pwr
+[15:53:11] INFO: TX -> CMD 0x06 payload=01
+[15:53:11] INFO: RX <- CMD 0x02 payload_len=2
+[15:53:11] INFO: ACK received: 0101
+[15:53:13] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:13] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-44.0dBm
+[15:53:14] INFO: Dashboard disconnected (0 clients)
+[15:53:14] INFO: RX <- CMD 0x03 payload_len=8
+[15:53:14] INFO: BEACON: Bat=95% Temp=26C V=4 Errors=0x10 RSSI=-43.5dBm

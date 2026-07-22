@@ -266,6 +266,10 @@ def build_packet(cmd_type: int, payload: bytes = b'') -> bytes:
 # thread (chunk re-requests), so the actual write must be serialized.
 _serial_write_lock = threading.Lock()
 
+def bridge_log(line: str):
+    """Mirror a serial-traffic line to the dashboard's bridge terminal."""
+    schedule_broadcast({"type": "bridge_log", "data": line})
+
 def send_command(cmd_type: int, payload: bytes = b''):
     """Send a command to the GS over serial (thread-safe)."""
     if ser and ser.is_open:
@@ -273,6 +277,8 @@ def send_command(cmd_type: int, payload: bytes = b''):
         with _serial_write_lock:
             ser.write(data)
         log.info(f"TX -> CMD 0x{cmd_type:02X} payload={payload.hex() if payload else 'none'}")
+        bridge_log(f"TX >> CMD 0x{cmd_type:02X} len={len(payload)}"
+                   + (f" {payload.hex()}" if payload else ""))
 
 # ====================================================================
 # PACKET PROCESSOR
@@ -325,6 +331,7 @@ def process_packet(raw_bytes: bytearray):
 
     if calc_crc != expected_crc:
         log.error(f"CRC32 Mismatch! Expected 0x{expected_crc:08X}, got 0x{calc_crc:08X}")
+        bridge_log(f"ERROR: CRC mismatch on CMD 0x{cmd_type:02X} — frame dropped")
         return
 
     # Valid packet -> Link is active
@@ -332,6 +339,9 @@ def process_packet(raw_bytes: bytearray):
     latest_telemetry["last_packet_time"] = time.time()
 
     log.info(f"RX <- CMD 0x{cmd_type:02X} payload_len={payload_len}")
+    bridge_log(f"RX << CMD 0x{cmd_type:02X} len={payload_len}"
+               + (f" {bytes(payload).hex()}" if payload_len else "")
+               + f"  rssi={latest_telemetry['rssi']}dBm")
 
     # ---- Handle by command type ----
 
