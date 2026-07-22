@@ -42,6 +42,7 @@ uint8_t kissBuffer[256];
 uint16_t kissIndex = 0;
 bool inFrame = false;
 bool escapeNext = false;
+uint32_t droppedFrames = 0; // KISS frames lost to UART overflow (D11 diagnostic)
 
 // ====================================================================
 // INTERRUPT FLAG FOR RF RECEPTION
@@ -144,6 +145,10 @@ void setup() {
     while (true); // Halt on radio fail
   }
 
+  // Confirm the enlarged core UART buffers (build_opt.h) actually took effect.
+  Serial.print("[SYSTEM] UART RX buffer = ");
+  Serial.print(SERIAL_RX_BUFFER_SIZE);
+  Serial.println(SERIAL_RX_BUFFER_SIZE >= 256 ? " (OK)" : " (SMALL - check build_opt.h!)");
   Serial.println("[SYSTEM] COMMU Ready.");
 }
 
@@ -206,7 +211,10 @@ void loop() {
           // Buffer overflow - discard frame
           inFrame = false;
           kissIndex = 0;
-          Serial.println("[ERROR] KISS RX buffer overflow from OBC");
+          droppedFrames++;
+          Serial.print("[ERROR] KISS RX buffer overflow from OBC (dropped ");
+          Serial.print(droppedFrames);
+          Serial.println(" total)");
         }
       }
     }

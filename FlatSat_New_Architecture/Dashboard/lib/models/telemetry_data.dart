@@ -72,6 +72,9 @@ class TelemetryData {
 
   bool get isLinkActive => linkStatus == 'ACTIVE';
 
+  /// SNR is a LoRa-only metric; the GS sends -12.8 as an "N/A" sentinel in FSK.
+  bool get snrValid => snr > -12.75;
+
   String get errorString {
     if (systemErrors == 0) return 'No Errors';
     List<String> errors = [];
@@ -235,11 +238,19 @@ class DownloadProgress {
   final String filename;
   final int bytesReceived;
   final int chunk;
+  final int totalSize; // 0 = unknown
+  final int percent;
+  final double speedBps;
+  final int etaSeconds;
 
   DownloadProgress({
     this.filename = '',
     this.bytesReceived = 0,
     this.chunk = 0,
+    this.totalSize = 0,
+    this.percent = 0,
+    this.speedBps = 0,
+    this.etaSeconds = 0,
   });
 
   factory DownloadProgress.fromJson(Map<String, dynamic> json) {
@@ -247,6 +258,12 @@ class DownloadProgress {
       filename: json['filename'] ?? '',
       bytesReceived: json['bytes_received'] ?? 0,
       chunk: json['chunk'] ?? 0,
+      totalSize: json['total_size'] ?? 0,
+      percent: json['percent'] ?? 0,
+      speedBps: (json['speed_bps'] ?? 0).toDouble(),
+      etaSeconds: json['eta_s'] ?? 0,
     );
   }
+
+  bool get hasTotal => totalSize > 0;
 }

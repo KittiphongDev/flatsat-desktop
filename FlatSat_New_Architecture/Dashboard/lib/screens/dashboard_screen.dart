@@ -359,8 +359,11 @@ class DashboardScreen extends StatelessWidget {
               icon: Icons.signal_cellular_alt,
               title: 'SIGNAL RSSI',
               value: '${ws.telemetry.rssi.toStringAsFixed(1)} dBm',
-              // A plain reading — no state to signal, so no color.
-              subtitle: 'SNR: ${ws.telemetry.snr.toStringAsFixed(1)} dB',
+              // SNR is meaningless in FSK, so show it only if the GS reports a
+              // real value (it sends an N/A sentinel otherwise).
+              subtitle: ws.telemetry.snrValid
+                  ? 'SNR: ${ws.telemetry.snr.toStringAsFixed(1)} dB'
+                  : 'FSK · 433 MHz',
             ),
             TelemetryCard(
               icon: Icons.link,
@@ -784,7 +787,8 @@ class DashboardScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value: null,
+              // Determinate when the size is known, else indeterminate.
+              value: dl.hasTotal ? dl.percent / 100.0 : null,
               backgroundColor: c.border,
               valueColor: AlwaysStoppedAnimation(c.accent),
               minHeight: 4,
@@ -792,13 +796,28 @@ class DashboardScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Chunk #${dl.chunk}  •  ${dl.bytesReceived} bytes received',
+            dl.hasTotal
+                ? '${dl.percent}%  •  ${dl.bytesReceived}/${dl.totalSize} B  •  '
+                    '${_fmtBps(dl.speedBps)}  •  ETA ${_fmtEta(dl.etaSeconds)}'
+                : '${dl.bytesReceived} B received  •  ${_fmtBps(dl.speedBps)}',
             style: monoStyle(
                 color: c.textMuted, fontSize: 11, fontWeight: FontWeight.w400),
           ),
         ],
       ),
     );
+  }
+
+  static String _fmtBps(double bps) {
+    if (bps <= 0) return '— B/s';
+    if (bps >= 1024) return '${(bps / 1024).toStringAsFixed(1)} KB/s';
+    return '${bps.toStringAsFixed(0)} B/s';
+  }
+
+  static String _fmtEta(int s) {
+    if (s <= 0) return '—';
+    if (s < 60) return '${s}s';
+    return '${s ~/ 60}m ${s % 60}s';
   }
 
   // ---- Event Log ----

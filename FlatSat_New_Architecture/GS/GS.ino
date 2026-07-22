@@ -160,8 +160,14 @@ void loop() {
         // Append RSSI and SNR metadata to the end of the payload
         // so the PC Bridge can extract them.
         // Format: [original app packet] [RSSI as int16, 2 bytes] [SNR as int8, 1 byte]
-        int16_t rssiInt = (int16_t)(rssi * 10); // -1234 = -123.4 dBm
-        int8_t snrInt = (int8_t)(snr * 10);     // 75 = 7.5 dB
+        // RSSI is genuine in FSK. Constrain before the cast so it never wraps.
+        int rssiScaled = (int)(rssi * 10);
+        if (rssiScaled > 32767) rssiScaled = 32767;
+        if (rssiScaled < -32768) rssiScaled = -32768;
+        int16_t rssiInt = (int16_t)rssiScaled;
+        // SNR is a LoRa-only metric; in FSK it is meaningless. Send a deliberate
+        // sentinel (-128) so the dashboard hides the line instead of faking it.
+        int8_t snrInt = -128; // D12: FSK SNR N/A sentinel
 
         uint8_t enrichedPayload[260];
         memcpy(enrichedPayload, rawPayload, rawLen);

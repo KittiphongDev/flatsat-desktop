@@ -79,7 +79,18 @@ WS_HOST = 'localhost'
 WS_PORT = 8080
 DOWNLOAD_DIR = './downloads'
 LINK_TIMEOUT_S = 15  # Seconds without a packet before link is "LOST"
-CHUNK_SIZE = 48
+
+# Image download tuning. IMAGE_CHUNK_SIZE MUST equal the OBC's CHUNK_SIZE (32).
+IMAGE_CHUNK_SIZE = 32
+# Frame-budget guard (F22): AX.25(16)+header/CRC(8)+[idx][total](2)+data must
+# stay within the 64-byte radio frame. Fails loudly if anyone raises the size.
+assert 24 + 2 + IMAGE_CHUNK_SIZE <= 64, "Chunk too large for the 64-byte radio frame"
+CHUNK_TIMEOUT_S = 2.5           # no chunk within this -> retry (~4-5x median RTT)
+CHUNK_MAX_RETRIES = 5
+DOWNLOAD_ABSOLUTE_CAP_S = 1800  # hard ceiling for one download
+
+# Image sizes learned from the last LIST, so downloads can show a real %.
+known_image_sizes = {}
 
 # ====================================================================
 # KISS PROTOCOL CONSTANTS
@@ -131,23 +142,38 @@ latest_telemetry = {
 # WebSocket clients
 connected_clients = set()
 
-# Download Manager
+# Download Manager (offset-addressed: store each chunk by index, assemble on EOT)
 download_state = {
     "active": False,
     "filename": "",
-    "current_chunk": 0,
-    "total_size": 0,
-    "buffer": bytearray(),
+    "current_chunk": 0,     # next in-order chunk we still need
+    "expected_size": 0,     # from the image list (0 = unknown)
+    "chunks": {},           # idx -> bytes
+    "highest_chunk": -1,
     "start_time": 0,
+    "last_rx_time": 0,      # last request or receipt (drives the retry timer)
+    "retries": 0,
+    "deadline": 0,          # absolute time to give up
 }
 
-# EPS telemetry is split into several small radio packets (to fit the SX1278
-# FIFO). We reassemble the chunks here before parsing the full blob.
-eps_reassembly = {"total": 0, "chunks": {}}
+# Chunked responses (EPS / image list / health) are split into small radio
+# frames [idx][total][data]. One duplicate-aware reassembler handles them all,
+# keyed by a short name. Completed transfers are kept as a short-lived tombstone
+# so the COPIES=2 echo of the last chunk cannot re-open a phantom transfer.
+DUPLICATE_GUARD_S = 2.5   # swallow the redundant re-send after completion
+REASSEMBLY_STALE_S = 4.0  # abandon a transfer that is missing a chunk
+_reassembly = {}          # key -> {"total","chunks","ts","done"}
 
-# Generic chunk reassembly buffers for other chunked responses (image list,
-# device health), keyed by a short name.
-misc_reassembly = {}
+# De-dup identical single-frame responses (e.g. the 3x GPS send) so the app
+# doesn't get three toasts for one reply.
+_dedup = {}               # cmd_type -> (payload_bytes, ts)
+
+def _is_duplicate(cmd_type, payload, window=1.0):
+    now = time.time()
+    cur = bytes(payload)
+    prev = _dedup.get(cmd_type)
+    _dedup[cmd_type] = (cur, now)
+    return bool(prev and prev[0] == cur and now - prev[1] < window)
 
 # Serial port handle
 ser = None
@@ -190,11 +216,16 @@ def build_packet(cmd_type: int, payload: bytes = b'') -> bytes:
     packet.extend(struct.pack('>I', crc))
     return kiss_encode(bytes(packet))
 
+# send_command runs from both the WebSocket thread (user actions) and the serial
+# thread (chunk re-requests), so the actual write must be serialized.
+_serial_write_lock = threading.Lock()
+
 def send_command(cmd_type: int, payload: bytes = b''):
-    """Send a command to the GS over serial."""
+    """Send a command to the GS over serial (thread-safe)."""
     if ser and ser.is_open:
         data = build_packet(cmd_type, payload)
-        ser.write(data)
+        with _serial_write_lock:
+            ser.write(data)
         log.info(f"TX -> CMD 0x{cmd_type:02X} payload={payload.hex() if payload else 'none'}")
 
 # ====================================================================
@@ -283,6 +314,8 @@ def process_packet(raw_bytes: bytearray):
         schedule_broadcast({"type": "nack", "data": "Command failed"})
 
     elif cmd_type == CMD_GPS_DATA:
+        if _is_duplicate(cmd_type, payload):
+            return  # 2nd/3rd copy of a 3x GPS send — link already marked active
         if payload_len >= 13:
             lat = struct.unpack('<f', payload[0:4])[0]
             lon = struct.unpack('<f', payload[4:8])[0]
@@ -303,14 +336,14 @@ def process_packet(raw_bytes: bytearray):
 
     elif cmd_type == CMD_IMAGE_LIST:
         # The image list is sent chunked (it can exceed one radio frame).
-        blob = reassemble_simple("image", payload, payload_len)
+        blob = reassemble("image", payload, payload_len)
         if blob is not None:
             files = parse_image_list(blob)
             log.info(f"IMAGE_LIST: {len(files)} files")
             schedule_broadcast({"type": "image_list", "data": files})
 
     elif cmd_type == CMD_HEALTH_DATA:
-        blob = reassemble_simple("health", payload, payload_len)
+        blob = reassemble("health", payload, payload_len)
         if blob is not None:
             devices = parse_health(blob)
             online = sum(1 for d in devices if d["online"])
@@ -377,30 +410,41 @@ def parse_eps_payload(payload: bytes):
         log.error(f"Failed to parse EPS payload: {e}")
         return None
 
-def reassemble_simple(key: str, payload: bytes, payload_len: int):
-    """Generic chunk reassembler for non-progress transfers (image list,
-    health). Chunk = [chunkIdx][totalChunks][data...]. Returns the full blob
-    once all chunks are in, else None. De-duplicates redundant re-sends."""
+def reassemble(key: str, payload: bytes, payload_len: int, on_progress=None):
+    """One duplicate-aware chunk reassembler for every chunked response.
+    Chunk = [chunkIdx][totalChunks][data...]. Returns the full blob exactly
+    once (on the frame that completes it); None otherwise. Redundant re-sends
+    (COPIES=2) and the post-completion echo are swallowed via a tombstone."""
     if payload_len < 2:
         return None
-    chunk_idx = payload[0]
-    total = payload[1]
-    if total <= 0:
+    chunk_idx, total = payload[0], payload[1]
+    if total == 0:
         return None
     data = bytes(payload[2:payload_len])
-
     now = time.time()
-    buf = misc_reassembly.get(key)
-    if buf is None or buf.get("total") != total or now - buf.get("ts", 0) > 4.0:
-        buf = {"total": total, "chunks": {}, "ts": now}
-        misc_reassembly[key] = buf
-    buf["ts"] = now
-    buf["chunks"][chunk_idx] = data
+    buf = _reassembly.get(key)
 
-    if len(buf["chunks"]) >= total and all(i in buf["chunks"] for i in range(total)):
-        blob = b"".join(buf["chunks"][i] for i in range(total))
-        del misc_reassembly[key]
-        return blob
+    # Drop the tail of an already-delivered transfer (kills the phantom restart).
+    if buf and buf["done"]:
+        if now - buf["ts"] <= DUPLICATE_GUARD_S:
+            buf["ts"] = now
+            return None
+        buf = None
+
+    if buf is None or buf["total"] != total or now - buf["ts"] > REASSEMBLY_STALE_S:
+        buf = {"total": total, "chunks": {}, "ts": now, "done": False}
+        _reassembly[key] = buf
+
+    is_new = chunk_idx not in buf["chunks"]
+    buf["chunks"][chunk_idx] = data
+    buf["ts"] = now
+    if on_progress and is_new:
+        on_progress(len(buf["chunks"]), total,
+                    sum(len(v) for v in buf["chunks"].values()))
+
+    if all(i in buf["chunks"] for i in range(total)):
+        buf["done"] = True  # tombstone, reaped by the watchdog
+        return b"".join(buf["chunks"][i] for i in range(total))
     return None
 
 def parse_image_list(blob: bytes):
@@ -418,6 +462,7 @@ def parse_image_list(blob: bytes):
         fsize = struct.unpack('>I', blob[idx:idx + 4])[0]
         idx += 4
         files.append({"name": name, "size": fsize})
+        known_image_sizes[name] = fsize  # so a later download can show a real %
     return files
 
 def parse_health(blob: bytes):
@@ -448,36 +493,9 @@ def parse_health(blob: bytes):
         })
     return devices
 
-def handle_eps_chunk(payload: bytes, payload_len: int):
-    """Reassemble the chunked EPS telemetry and report transfer progress.
-    Each chunk payload = [chunk_idx][total_chunks][data...]."""
-    global eps_reassembly
-
-    if payload_len < 2:
-        return
-
-    chunk_idx = payload[0]
-    total = payload[1]
-    data = bytes(payload[2:payload_len])
-
-    if total <= 0:
-        return
-
-    # Start a fresh transfer only when the chunk count changes or the previous
-    # transfer went stale. Redundant re-sends of the same transfer (including a
-    # repeated chunk 0) must NOT reset progress, so we do not reset on index 0.
-    now = time.time()
-    if eps_reassembly.get("total", 0) != total or \
-       now - eps_reassembly.get("ts", 0) > 4.0:
-        eps_reassembly = {"total": total, "chunks": {}, "ts": now}
-    eps_reassembly["ts"] = now
-
-    eps_reassembly["chunks"][chunk_idx] = data
-    received = len(eps_reassembly["chunks"])
-    percent = int(received * 100 / total)
-    bytes_so_far = sum(len(v) for v in eps_reassembly["chunks"].values())
-
-    log.info(f"EPS chunk {chunk_idx + 1}/{total} ({len(data)} bytes) - {percent}%")
+def _eps_progress(received, total, bytes_so_far):
+    percent = int(received * 100 / total) if total else 0
+    log.info(f"EPS chunk {received}/{total} - {percent}%")
     schedule_broadcast({
         "type": "eps_progress",
         "data": {
@@ -488,84 +506,142 @@ def handle_eps_chunk(payload: bytes, payload_len: int):
         },
     })
 
-    # Complete once every chunk index 0..total-1 is present.
-    if received >= total and all(i in eps_reassembly["chunks"] for i in range(total)):
-        blob = b"".join(eps_reassembly["chunks"][i] for i in range(total))
-        eps = parse_eps_payload(blob)
-        eps_reassembly = {"total": 0, "chunks": {}}
-        if eps:
-            latest_telemetry["eps"] = eps
-            log.info(f"EPS complete: {len(eps['ina226'])} INA226, "
-                     f"{len(eps['tmp102'])} TMP102, {len(eps['adm1177'])} ADM1177")
-            schedule_broadcast({"type": "eps", "data": eps})
-        else:
-            log.error("EPS reassembly parsed empty/invalid")
+def handle_eps_chunk(payload: bytes, payload_len: int):
+    """Reassemble the chunked EPS telemetry, reporting progress as chunks land."""
+    blob = reassemble("eps", payload, payload_len, on_progress=_eps_progress)
+    if blob is None:
+        return
+    eps = parse_eps_payload(blob)
+    if eps:
+        latest_telemetry["eps"] = eps
+        log.info(f"EPS complete: {len(eps['ina226'])} INA226, "
+                 f"{len(eps['tmp102'])} TMP102, {len(eps['adm1177'])} ADM1177")
+        schedule_broadcast({"type": "eps", "data": eps})
+    else:
+        log.error("EPS reassembly parsed empty/invalid")
+        schedule_broadcast({"type": "eps_failed",
+                            "data": "EPS data was invalid — press GET EPS again"})
 
 # ====================================================================
 # IMAGE DOWNLOAD STATE MACHINE
 # ====================================================================
-def handle_image_chunk(payload: bytes, payload_len: int):
-    global download_state
+def _safe_name(name: str) -> str:
+    """Reject path traversal — keep only the basename, no slashes."""
+    return os.path.basename(name or "").replace("\\", "").replace("/", "")
 
+def request_chunk(idx: int):
+    """Ask the OBC for a chunk. The filename is included on EVERY request so a
+    download survives an OBC watchdog reset (the OBC would otherwise forget it)."""
+    name = download_state["filename"].encode('ascii', errors='ignore')[:30]
+    send_command(CMD_REQ_CHUNK, struct.pack('>H', idx) + name)
+    download_state["last_rx_time"] = time.time()  # reset the per-chunk timer
+
+def start_download(filename: str):
+    safe = _safe_name(filename) or "photo.jpg"
+    now = time.time()
+    download_state.update({
+        "active": True, "filename": safe, "current_chunk": 0,
+        "expected_size": known_image_sizes.get(safe, 0),
+        "chunks": {}, "highest_chunk": -1,
+        "start_time": now, "last_rx_time": now,
+        "retries": 0, "deadline": now + DOWNLOAD_ABSOLUTE_CAP_S,
+    })
+    log.info(f"Download started: {safe} (expected {download_state['expected_size']} B)")
+    request_chunk(0)
+
+def abort_download(reason: str):
+    if not download_state["active"]:
+        return
+    fname = download_state["filename"]
+    download_state["active"] = False
+    download_state["chunks"] = {}
+    log.error(f"DOWNLOAD FAILED ({fname}): {reason}")
+    schedule_broadcast({"type": "download_failed",
+                        "data": {"filename": fname, "reason": reason}})
+
+def _emit_download_progress():
+    received = sum(len(v) for v in download_state["chunks"].values())
+    expected = download_state["expected_size"]
+    elapsed = max(1e-3, time.time() - download_state["start_time"])
+    spd = received / elapsed
+    pct = int(received * 100 / expected) if expected else 0
+    eta = int((expected - received) / spd) if (expected and spd > 0) else 0
+    schedule_broadcast({"type": "download_progress", "data": {
+        "chunk": download_state["highest_chunk"],
+        "bytes_received": received,
+        "total_size": expected,        # 0 = unknown
+        "percent": pct,
+        "speed_bps": round(spd, 1),
+        "eta_s": eta,
+        "filename": download_state["filename"],
+    }})
+
+def _finish_download():
+    chunks = download_state["chunks"]
+    data = b"".join(chunks[i] for i in sorted(chunks))
+    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+    save_path = os.path.join(DOWNLOAD_DIR, _safe_name(download_state["filename"]))
+    with open(save_path, "wb") as f:
+        f.write(data)
+    elapsed = time.time() - download_state["start_time"]
+    log.info(f"DOWNLOAD COMPLETE: {save_path} ({len(data)} B in {elapsed:.1f}s)")
+    schedule_broadcast({"type": "download_complete", "data": {
+        "filename": download_state["filename"],
+        "size": len(data),
+        "elapsed": round(elapsed, 1),
+        "path": save_path,
+    }})
+    download_state["active"] = False
+    download_state["chunks"] = {}
+
+def handle_image_chunk(payload: bytes, payload_len: int):
     if not download_state["active"]:
         return
 
-    # Check for EOT (End of Transmission)
+    # EOT: the OBC only sends it once we've requested past the last chunk, so by
+    # now every in-order chunk has been received.
     if payload_len >= 2 and payload[0] == 0xFF and payload[1] == 0xFF:
-        # Download complete
-        elapsed = time.time() - download_state["start_time"]
-        total_bytes = len(download_state["buffer"])
-
-        # Save to file
-        os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-        save_path = os.path.join(DOWNLOAD_DIR, download_state["filename"])
-        with open(save_path, "wb") as f:
-            f.write(download_state["buffer"])
-
-        log.info(f"DOWNLOAD COMPLETE: {save_path} ({total_bytes} bytes in {elapsed:.1f}s)")
-        schedule_broadcast({
-            "type": "download_complete",
-            "data": {
-                "filename": download_state["filename"],
-                "size": total_bytes,
-                "elapsed": round(elapsed, 1),
-                "path": save_path,
-            }
-        })
-
-        download_state["active"] = False
-        download_state["buffer"].clear()
+        _finish_download()
         return
 
     if payload_len < 3:
         return
 
     chunk_id = struct.unpack('>H', payload[:2])[0]
-    chunk_data = payload[2:]
+    chunk_data = bytes(payload[2:])
 
-    if chunk_id == download_state["current_chunk"]:
-        download_state["buffer"].extend(chunk_data)
-        download_state["current_chunk"] += 1
+    download_state["last_rx_time"] = time.time()
+    download_state["retries"] = 0
 
-        total_downloaded = len(download_state["buffer"])
-        log.info(f"Chunk #{chunk_id} OK ({len(chunk_data)} bytes, total: {total_downloaded})")
+    if chunk_id not in download_state["chunks"]:
+        download_state["chunks"][chunk_id] = chunk_data
+        if chunk_id > download_state["highest_chunk"]:
+            download_state["highest_chunk"] = chunk_id
+        _emit_download_progress()
 
-        # Broadcast progress
-        schedule_broadcast({
-            "type": "download_progress",
-            "data": {
-                "chunk": chunk_id,
-                "bytes_received": total_downloaded,
-                "filename": download_state["filename"],
-            }
-        })
+    # Request the next in-order chunk we still need.
+    nxt = download_state["current_chunk"]
+    while nxt in download_state["chunks"]:
+        nxt += 1
+    download_state["current_chunk"] = nxt
+    request_chunk(nxt)
 
-        # Request next chunk
-        send_command(CMD_REQ_CHUNK, struct.pack('>H', download_state["current_chunk"]))
-    else:
-        log.warning(f"Chunk mismatch: expected {download_state['current_chunk']}, got {chunk_id}. Retransmitting.")
-        # Re-request the expected chunk
-        send_command(CMD_REQ_CHUNK, struct.pack('>H', download_state["current_chunk"]))
+def service_download():
+    """Called from the serial loop: drive retries + timeouts for the download."""
+    if not download_state["active"]:
+        return
+    now = time.time()
+    if now > download_state["deadline"]:
+        abort_download("Timed out (exceeded maximum download time)")
+        return
+    if now - download_state["last_rx_time"] > CHUNK_TIMEOUT_S:
+        download_state["retries"] += 1
+        if download_state["retries"] > CHUNK_MAX_RETRIES:
+            abort_download(f"No response after {CHUNK_MAX_RETRIES} retries")
+            return
+        log.warning(f"Download stall: retry {download_state['retries']} "
+                    f"for chunk {download_state['current_chunk']}")
+        request_chunk(download_state["current_chunk"])
 
 # ====================================================================
 # SERIAL READER THREAD
@@ -683,6 +759,24 @@ def serial_reader_loop():
                         log.warning("Link LOST (timeout)")
                         schedule_broadcast({"type": "telemetry", "data": latest_telemetry})
 
+            # Reassembly watchdog: reap completed tombstones and abandon stalled
+            # transfers (report EPS loss so the dashboard clears its bar).
+            _now = time.time()
+            for _k, _b in list(_reassembly.items()):
+                if _b["done"] and _now - _b["ts"] > DUPLICATE_GUARD_S:
+                    del _reassembly[_k]
+                elif not _b["done"] and _now - _b["ts"] > REASSEMBLY_STALE_S:
+                    missing = [i for i in range(_b["total"]) if i not in _b["chunks"]]
+                    del _reassembly[_k]
+                    if _k == "eps":
+                        schedule_broadcast({
+                            "type": "eps_failed",
+                            "data": f"Lost chunk(s) {missing} — press GET EPS again",
+                        })
+
+            # Drive any in-progress image download (timeouts + retries).
+            service_download()
+
         except serial.SerialException as e:
             log.error(f"Serial error: {e}. Reconnecting...")
             serial_connected = False
@@ -764,7 +858,11 @@ async def ws_handler(websocket):
                     send_command(CMD_PING)
 
                 elif cmd == "status":
-                    send_command(CMD_STATUS)
+                    if download_state["active"]:
+                        await websocket.send(json.dumps(
+                            {"type": "busy", "data": "Download in progress"}))
+                    else:
+                        send_command(CMD_STATUS)
 
                 elif cmd == "beacon":
                     send_command(CMD_BEACON)
@@ -776,14 +874,22 @@ async def ws_handler(websocket):
                     send_command(CMD_GET_GPS)
 
                 elif cmd == "get_eps":
-                    send_command(CMD_GET_EPS)
+                    if download_state["active"]:
+                        await websocket.send(json.dumps(
+                            {"type": "busy", "data": "Download in progress"}))
+                    else:
+                        send_command(CMD_GET_EPS)
 
                 elif cmd == "toggle_pwr":
                     subsystem = data.get("subsystem", 0)
                     send_command(CMD_TOGGLE_PWR, bytes([subsystem]))
 
                 elif cmd == "list_image":
-                    send_command(CMD_LIST_IMAGE)
+                    if download_state["active"]:
+                        await websocket.send(json.dumps(
+                            {"type": "busy", "data": "Download in progress"}))
+                    else:
+                        send_command(CMD_LIST_IMAGE)
 
                 elif cmd == "remove_image":
                     filename = data.get("filename", "")
@@ -795,22 +901,16 @@ async def ws_handler(websocket):
                         }))
 
                 elif cmd == "download":
-                    filename = data.get("filename", "photo.jpg")
-                    download_state["active"] = True
-                    download_state["filename"] = filename
-                    download_state["current_chunk"] = 0
-                    download_state["buffer"].clear()
-                    download_state["start_time"] = time.time()
-
-                    # Build payload: [chunk_id(2)] + [filename]
-                    payload = struct.pack('>H', 0) + filename.encode('ascii')
-                    send_command(CMD_REQ_CHUNK, payload)
-                    log.info(f"Download started: {filename}")
-
-                    await websocket.send(json.dumps({
-                        "type": "download_started",
-                        "data": {"filename": filename}
-                    }))
+                    if download_state["active"]:
+                        await websocket.send(json.dumps(
+                            {"type": "busy", "data": "A download is already running"}))
+                    else:
+                        filename = data.get("filename", "photo.jpg")
+                        start_download(filename)
+                        await websocket.send(json.dumps({
+                            "type": "download_started",
+                            "data": {"filename": download_state["filename"]}
+                        }))
 
                 else:
                     log.warning(f"Unknown WS command: {cmd}")

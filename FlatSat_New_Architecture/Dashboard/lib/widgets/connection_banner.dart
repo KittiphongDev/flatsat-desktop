@@ -24,10 +24,11 @@ class ConnectionBanner extends StatelessWidget {
       case ConnectionStage.bridgeOffline:
         color = c.error;
         icon = Icons.cloud_off;
-        title = 'Starting ground station software…';
+        title = 'Ground station bridge not connected';
         subtitle =
-            'Connecting to the local bridge. If this persists, launch the app '
-            'with the provided start script.';
+            'Start the app with run_mission_control.bat (Windows) or '
+            'run_mission_control.sh (Linux/Pi) — the launcher runs the bridge '
+            'for you.';
         break;
       case ConnectionStage.noGroundStation:
         color = c.warning;

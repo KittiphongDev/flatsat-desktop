@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/telemetry_data.dart';
@@ -12,7 +11,7 @@ class WebSocketService extends ChangeNotifier {
   bool _isConnected = false;
   Timer? _reconnectTimer;
   Timer? _epsTimeout;
-  Process? _bridgeProcess;
+  Timer? _downloadTimeout;
 
   // ---- Reactive State ----
   TelemetryData telemetry = TelemetryData();
@@ -67,6 +66,20 @@ class WebSocketService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Client-side download watchdog: if the bridge itself dies mid-download
+  /// (so not even a download_failed arrives), resolve the spinner after 40s.
+  /// Refreshed on every progress message.
+  void _armDownloadWatchdog() {
+    _downloadTimeout?.cancel();
+    _downloadTimeout = Timer(const Duration(seconds: 40), () {
+      if (isDownloading) {
+        isDownloading = false;
+        _flash('Download stalled — no data from the bridge', error: true);
+        notifyListeners();
+      }
+    });
+  }
+
   // ---- Serial / bridge status (drives the in-app connection helper) ----
   bool serialConnected = false;
   String? currentPort;
@@ -79,44 +92,9 @@ class WebSocketService extends ChangeNotifier {
   String get wsUrl => _wsUrl;
 
   WebSocketService() {
-    _startPythonBridge().then((_) {
-      connect();
-    });
-  }
-
-  /// Automatically spawn the Python bridge when the app opens
-  Future<void> _startPythonBridge() async {
-    // Try to locate the PC_Bridge directory
-    String? bridgeDir;
-    final possibleDirs = [
-      '../PC_Bridge', // flutter run from Dashboard folder
-      '../../../../../../PC_Bridge', // from built linux bundle
-      './PC_Bridge', // if user copied PC_Bridge next to the bundle
-    ];
-
-    for (String dir in possibleDirs) {
-      if (File('$dir/gs_bridge.py').existsSync()) {
-        bridgeDir = dir;
-        break;
-      }
-    }
-
-    if (bridgeDir != null) {
-      try {
-        _addLog('Auto-starting Python Bridge from $bridgeDir');
-        _bridgeProcess = await Process.start(
-          'python3',
-          ['gs_bridge.py'],
-          workingDirectory: bridgeDir,
-        );
-        // Wait a moment for the Python web socket server to bind to port 8080
-        await Future.delayed(const Duration(seconds: 1));
-      } catch (e) {
-        _addLog('Failed to auto-start bridge: $e');
-      }
-    } else {
-      _addLog('Warning: Could not locate gs_bridge.py for auto-start.');
-    }
+    // The launcher scripts (run_mission_control.*) own the bridge's lifecycle —
+    // they start it before the app and stop it on close. The app only connects.
+    connect();
   }
 
   /// Connect to the Python bridge WebSocket.
@@ -245,7 +223,9 @@ class WebSocketService extends ChangeNotifier {
           epsChunksReceived = d['received'] ?? 0;
           epsChunksTotal = d['total'] ?? 0;
           epsProgress = d['percent'] ?? 0;
-          epsReceiving = epsProgress < 100;
+          // Note: epsReceiving is driven explicitly (sendGetEps -> true,
+          // eps / eps_failed -> false), NOT derived from percent, so a stray
+          // progress message can't revive a finished bar.
           // Compute receive speed (bytes/second) from chunk arrivals.
           final now = DateTime.now();
           final newBytes = d['bytes'] ?? epsBytes;
@@ -271,6 +251,19 @@ class WebSocketService extends ChangeNotifier {
           }
           break;
 
+        case 'eps_failed':
+          epsReceiving = false;
+          _epsTimeout?.cancel();
+          _addLog('EPS failed: ${data['data']}');
+          _flash('${data['data']}', error: true);
+          break;
+
+        case 'busy':
+          _addLog('BUSY: ${data['data']}');
+          _flash('Satellite busy — finish the current transfer first',
+              error: true);
+          break;
+
         case 'image_list':
           imageList = (data['data'] as List)
               .map((e) => ImageEntry.fromJson(e))
@@ -286,20 +279,31 @@ class WebSocketService extends ChangeNotifier {
             filename: data['data']['filename'] ?? '',
           );
           _addLog('Download started: ${data['data']['filename']}');
+          _armDownloadWatchdog();
           break;
 
         case 'download_progress':
           downloadProgress = DownloadProgress.fromJson(data['data']);
+          _armDownloadWatchdog();
           break;
 
         case 'download_complete':
           isDownloading = false;
+          _downloadTimeout?.cancel();
           downloadCompleteFile = data['data']['path'];
           final size = data['data']['size'] ?? 0;
           final elapsed = data['data']['elapsed'] ?? 0;
           _addLog('Download complete: $downloadCompleteFile '
               '(${size}B in ${elapsed}s)');
           _flash('Download complete');
+          break;
+
+        case 'download_failed':
+          isDownloading = false;
+          _downloadTimeout?.cancel();
+          final reason = data['data']?['reason'] ?? 'unknown error';
+          _addLog('Download failed: $reason');
+          _flash('Download failed — $reason', error: true);
           break;
 
         case 'bridge_status':
@@ -546,7 +550,7 @@ class WebSocketService extends ChangeNotifier {
   @override
   void dispose() {
     _epsTimeout?.cancel();
-    _bridgeProcess?.kill();
+    _downloadTimeout?.cancel();
     _disconnect();
     super.dispose();
   }

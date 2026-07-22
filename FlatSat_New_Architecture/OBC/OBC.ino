@@ -360,6 +360,35 @@ void checkHardware() {
 
   // Check SD Card
   if (!sd.exists("/")) systemErrors |= ERR_SD;
+
+  // GPS: flag when there is no valid fix, so the dashboard's error string can
+  // actually light up (R7). ERR_CAM is reserved for a real camera fault.
+  if (!gps.location.isValid()) systemErrors |= ERR_GPS;
+}
+
+// ====================================================================
+// IMAGE COUNTER — resume numbering past the highest img_NNNN.jpg on the SD
+// card so a reboot doesn't overwrite existing captures (D15).
+// ====================================================================
+void scanImageCounter() {
+  uint32_t maxNext = 0;
+  File root = sd.open("/");
+  if (root) {
+    File entry;
+    while (entry.openNext(&root, O_RDONLY)) {
+      char name[32];
+      entry.getName(name, sizeof(name));
+      unsigned long n = 0;
+      if (sscanf(name, "img_%lu.jpg", &n) == 1) {
+        if (n + 1 > maxNext) maxNext = n + 1;
+      }
+      entry.close();
+    }
+    root.close();
+  }
+  imageCounter = maxNext;
+  Serial.print("[SD] Image counter resumed at ");
+  Serial.println(imageCounter);
 }
 
 // ====================================================================
@@ -444,6 +473,18 @@ void sendEPSData() {
 // Each chunk is sent twice (back-to-back) so a single dropped frame doesn't
 // lose the transfer; the PC bridge de-duplicates by chunk index.
 // ====================================================================
+// A delay that keeps the GPS NMEA parser fed and the watchdog happy, so the
+// paced chunked sends don't starve the GPS (D10). Blocking is retained (a
+// second command safely waits in the UART RX buffer), avoiding the R1
+// dropped-command regression of a full non-blocking rewrite.
+void pacedDelay(uint16_t ms) {
+  uint32_t end = millis() + ms;
+  while ((int32_t)(end - millis()) > 0) {
+    while (GpsUART.available()) gps.encode(GpsUART.read());
+    IWatchdog.reload();
+  }
+}
+
 void sendChunked(uint8_t cmdType, const uint8_t *blob, uint16_t blobLen) {
   uint8_t totalChunks = (blobLen + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE;
   if (totalChunks == 0) totalChunks = 1;
@@ -460,8 +501,7 @@ void sendChunked(uint8_t cmdType, const uint8_t *blob, uint16_t blobLen) {
 
     for (uint8_t rep = 0; rep < COPIES; rep++) {
       sendPacket(cmdType, part, len + 2);
-      delay(90);
-      IWatchdog.reload();
+      pacedDelay(90); // feeds GPS + watchdog during the send
     }
   }
 }
@@ -546,18 +586,30 @@ void sendPacket(uint8_t cmdType, const uint8_t *payload, uint8_t payloadLen) {
 void sendBeacon() {
   checkHardware();
 
+  // Real telemetry from the EPS. Battery is a 1S Li-ion (3.0 V empty →
+  // 4.2 V full), read from the discharge rail monitor (index 5 = 0x48).
+  float battV = powerMonitors[5].getBusVoltage_V();
+  int pct = (int)((battV - 3.0f) / 1.2f * 100.0f); // 1S Li-ion state of charge
+  pct = constrain(pct, 0, 100);
+  float obcTemp = tempSensors[0].readTemperatureC();
+
   uint8_t beaconData[8];
   beaconData[0] = systemErrors;                  // Error bitmask
-  beaconData[1] = payloadPwrState ? 1 : 0;       // Payload power state
-  beaconData[2] = gpsPwrState ? 1 : 0;           // GPS power state
-  beaconData[3] = camPwrState ? 1 : 0;           // Camera power state
-  beaconData[4] = 80;                            // Battery % (mock/read from EPS)
-  beaconData[5] = 25;                            // OBC Temp (mock/read from sensor)
-  beaconData[6] = 12;                            // Solar Voltage (mock/read from EPS)
+  beaconData[1] = payloadPwrState ? 1 : 0;       // Communication power (PD1)
+  beaconData[2] = gpsPwrState ? 1 : 0;           // Payload 1 / GPS power (PD2)
+  beaconData[3] = camPwrState ? 1 : 0;           // Payload 2 / PC104 power (PD3)
+  beaconData[4] = (uint8_t)pct;                  // Battery state of charge (%)
+  beaconData[5] = (uint8_t)constrain((int)obcTemp, 0, 255);   // Battery temp (°C)
+  beaconData[6] = (uint8_t)constrain((int)(battV + 0.5f), 0, 255); // Batt V (whole volts)
   beaconData[7] = (millis() - lastAckTime < LINK_TIMEOUT) ? 1 : 0; // Link status
 
   sendPacket(CMD_BEACON, beaconData, 8);
-  Serial.println("[BEACON] Transmitted");
+  Serial.print("[BEACON] Bat=");
+  Serial.print(pct);
+  Serial.print("% V=");
+  Serial.print(battV, 2);
+  Serial.print(" T=");
+  Serial.println(obcTemp, 1);
 }
 
 // ====================================================================
@@ -733,8 +785,7 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
       // doesn't lose the whole response.
       for (uint8_t r = 0; r < 3; r++) {
         sendPacket(CMD_GPS_DATA, gpsData, 14);
-        delay(80);
-        IWatchdog.reload();
+        pacedDelay(80);
       }
       Serial.print("[CMD] GPS data sent (x3), fix=");
       Serial.println(fixValid);
@@ -881,10 +932,18 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
       if (payloadLen >= 2) {
         uint16_t chunkId = (payload[0] << 8) | payload[1];
 
-        // If payload has a filename (payloadLen > 2), use it
-        if (payloadLen > 2 && payloadLen < 66) {
-          memcpy(downloadFilename, &payload[2], payloadLen - 2);
-          downloadFilename[payloadLen - 2] = '\0';
+        // If payload has a filename (payloadLen > 2), use it. Guard the length
+        // so the uplink frame stays within the 64-byte radio limit (D13):
+        // 2 (chunk id) + name(<=30) + 8 (packet) + 16 (AX.25) = <=56 on air.
+        uint8_t nameLen = (payloadLen >= 2) ? (payloadLen - 2) : 0;
+        if (nameLen > 30) {
+          Serial.println("[CMD] REQ_CHUNK filename too long — NACK");
+          sendPacket(CMD_NACK, nullptr, 0);
+          break;
+        }
+        if (nameLen > 0) {
+          memcpy(downloadFilename, &payload[2], nameLen);
+          downloadFilename[nameLen] = '\0';
         }
 
         Serial.print("[CMD] REQ_CHUNK #");
@@ -1066,6 +1125,7 @@ void setup() {
     Serial.println("FAILED!");
   } else {
     Serial.println("OK!");
+    scanImageCounter(); // continue numbering past existing images (D15)
   }
 
   // Hardware Watchdog
