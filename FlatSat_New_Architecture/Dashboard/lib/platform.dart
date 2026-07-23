@@ -16,6 +16,29 @@ bool get isDesktopPlatform {
 bool get isMacOSPlatform =>
     !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
 
+/// Host operating systems the setup guide covers.
+enum HostOs { windows, macos, linux }
+
+extension HostOsLabel on HostOs {
+  String get label => switch (this) {
+        HostOs.windows => 'Windows',
+        HostOs.macos => 'macOS',
+        HostOs.linux => 'Linux / Raspberry Pi',
+      };
+}
+
+/// Best-guess current OS (used to preselect the setup-guide tab).
+HostOs get currentHostOs {
+  switch (defaultTargetPlatform) {
+    case TargetPlatform.windows:
+      return HostOs.windows;
+    case TargetPlatform.macOS:
+      return HostOs.macos;
+    default:
+      return HostOs.linux;
+  }
+}
+
 /// Windows and Linux lose their window buttons when the title bar is hidden,
 /// so we draw our own. macOS keeps its native traffic lights floating over the
 /// content, so drawing buttons there would duplicate them.

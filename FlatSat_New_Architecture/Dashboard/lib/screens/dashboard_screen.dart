@@ -8,6 +8,9 @@ import '../widgets/telemetry_card.dart';
 import '../widgets/connection_banner.dart';
 import '../widgets/eps_dashboard.dart';
 import '../widgets/settings_dialog.dart';
+import '../widgets/setup_guide_dialog.dart';
+import '../widgets/take_pic_dialog.dart';
+import '../utils/os_open.dart';
 import '../theme/app_theme.dart';
 
 /// Breakpoint above which the dashboard uses a multi-column desktop layout.
@@ -43,6 +46,9 @@ class DashboardScreen extends StatelessWidget {
         children: [
           _buildScroll(context, c),
           const _CommandFeedback(),
+          const _FirstRunGate(),
+          const _DownloadDirSync(),
+          const _AutoTimeSync(),
         ],
       ),
     );
@@ -175,12 +181,10 @@ class DashboardScreen extends StatelessWidget {
       _cmdBtn(context, Icons.radar, 'SCAN', ws.sendStatus);
 
   Widget _imageAction(BuildContext context, WebSocketService ws) => _cmdRow([
-        _cmdBtn(context, Icons.camera, 'TAKE PIC', () {
-          // Auto-power is a dashboard-side behaviour: in production with the
-          // setting on, this powers the camera and waits before capturing.
-          final autoPower = context.read<SettingsService>().autoPowerOnCapture;
-          ws.capturePhoto(autoPower: autoPower);
-        }),
+        // Opens a popup to pick the resolution (remembered), then captures —
+        // the popup handles auto-power via capturePhoto().
+        _cmdBtn(context, Icons.camera, 'TAKE PIC',
+            () => showTakePicDialog(context)),
         _cmdBtn(context, Icons.photo_library, 'LIST', ws.sendListImage),
       ]);
 
@@ -461,14 +465,15 @@ class DashboardScreen extends StatelessWidget {
   // ---- Subsystem Power ----
   // Maps to the three controllable ADM1177 EPS outputs (PD1/PD2/PD3).
   Widget _subsystemPower(BuildContext context, WebSocketService ws) {
+    final commsLocked = context.watch<SettingsService>().commsLockEnabled;
     return Column(
       children: [
         SubsystemCard(
           name: 'Communication',
           icon: Icons.cell_tower,
           isOn: ws.telemetry.payloadPwr, // channel 0 = COMMS (PD1)
-          locked: true, // never switch COMMS off from the ground — cuts the link
-          onToggle: () {},
+          locked: commsLocked, // lock is user-controllable in Settings
+          onToggle: () => _toggleComms(context, ws),
         ),
         const SizedBox(height: 8),
         SubsystemCard(
@@ -499,13 +504,48 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  /// Toggle the Communication channel. If the lock is disabled and the user is
+  /// turning it OFF, confirm first (it cuts the radio link).
+  void _toggleComms(BuildContext context, WebSocketService ws) {
+    final turningOff = ws.telemetry.payloadPwr;
+    if (!turningOff) {
+      ws.sendTogglePwr(0);
+      return;
+    }
+    final c = context.colors;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: c.surface,
+        title: const Text('Turn off Communication?'),
+        content: const Text(
+          'This powers down the radio. You will not be able to command the '
+          'satellite until it is power-cycled on the board. Continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ws.sendTogglePwr(0);
+              Navigator.pop(ctx);
+            },
+            child: Text('Turn off', style: TextStyle(color: c.error)),
+          ),
+        ],
+      ),
+    );
+  }
 
-  // ---- Command Grid ----
   // ---- Image Manager ----
   Widget _imageManager(BuildContext context, WebSocketService ws) {
     final c = context.colors;
+
+    final Widget list;
     if (ws.imageList.isEmpty) {
-      return Container(
+      list = Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: c.surface,
@@ -519,8 +559,71 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
       );
+    } else {
+      list = _imageListCard(context, ws);
     }
 
+    // Prepend a "saved" banner after a completed download.
+    if (ws.downloadCompleteFile != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [_savedBanner(context, ws), const SizedBox(height: 10), list],
+      );
+    }
+    return list;
+  }
+
+  Widget _savedBanner(BuildContext context, WebSocketService ws) {
+    final c = context.colors;
+    final path = ws.downloadCompleteFile!;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: c.success.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(kRadiusControl),
+        border: Border.all(color: c.success.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: c.success, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Saved',
+                    style: TextStyle(
+                        color: c.textPrimary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700)),
+                Text(path,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: c.textMuted,
+                        fontSize: 10.5,
+                        fontFamily: 'monospace')),
+              ],
+            ),
+          ),
+          TextButton.icon(
+            style: TextButton.styleFrom(foregroundColor: c.success),
+            icon: const Icon(Icons.folder_open, size: 15),
+            label: const Text('Show in folder'),
+            onPressed: () => revealInFileManager(path),
+          ),
+          IconButton(
+            icon: Icon(Icons.close, color: c.textMuted, size: 16),
+            tooltip: 'Dismiss',
+            onPressed: ws.clearDownloadResult,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _imageListCard(BuildContext context, WebSocketService ws) {
+    final c = context.colors;
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
@@ -551,7 +654,8 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        img.sizeFormatted,
+                        formatImageSize(
+                            img.size, context.watch<SettingsService>().imageSizeUnit),
                         style: TextStyle(color: c.textMuted, fontSize: 11),
                       ),
                     ],
@@ -873,17 +977,25 @@ class DashboardScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.downloading, color: c.accent),
+              Icon(ws.downloadPaused ? Icons.pause_circle_outline : Icons.downloading,
+                  color: c.accent),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Downloading: ${dl.filename}',
+                  '${ws.downloadPaused ? 'Paused' : 'Downloading'}: ${dl.filename}',
                   style: TextStyle(
                     color: c.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+              ),
+              // Pause / resume control.
+              _cmdBtn(
+                context,
+                ws.downloadPaused ? Icons.play_arrow : Icons.pause,
+                ws.downloadPaused ? 'RESUME' : 'PAUSE',
+                ws.downloadPaused ? ws.resumeDownload : ws.pauseDownload,
               ),
             ],
           ),
@@ -892,9 +1004,12 @@ class DashboardScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               // Determinate when the size is known, else indeterminate.
-              value: dl.hasTotal ? dl.percent / 100.0 : null,
+              value: ws.downloadPaused
+                  ? (dl.hasTotal ? dl.percent / 100.0 : 0)
+                  : (dl.hasTotal ? dl.percent / 100.0 : null),
               backgroundColor: c.border,
-              valueColor: AlwaysStoppedAnimation(c.accent),
+              valueColor: AlwaysStoppedAnimation(
+                  ws.downloadPaused ? c.textMuted : c.accent),
               minHeight: 4,
             ),
           ),
@@ -1351,7 +1466,20 @@ class _CommandFeedbackState extends State<_CommandFeedback> {
       _lastSeq = ws.feedbackSeq;
       final msg = ws.feedbackMessage;
       final isErr = ws.feedbackIsError;
+      final isSuccess = ws.feedbackIsSuccess;
       final c = context.colors;
+      // Green = confirmed success, red = error, neutral grey = informational
+      // ("… sent"), so a glance at the colour tells you the outcome.
+      final Color bg = isErr
+          ? c.error
+          : isSuccess
+              ? c.success
+              : c.textSecondary;
+      final IconData icon = isErr
+          ? Icons.error_outline
+          : isSuccess
+              ? Icons.check_circle_outline
+              : Icons.info_outline;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         final messenger = ScaffoldMessenger.of(context);
@@ -1361,11 +1489,7 @@ class _CommandFeedbackState extends State<_CommandFeedback> {
             content: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  isErr ? Icons.error_outline : Icons.check_circle_outline,
-                  color: Colors.white,
-                  size: 18,
-                ),
+                Icon(icon, color: Colors.white, size: 18),
                 const SizedBox(width: 10),
                 Flexible(child: Text(msg)),
               ],
@@ -1373,11 +1497,84 @@ class _CommandFeedbackState extends State<_CommandFeedback> {
             duration: const Duration(milliseconds: 1500),
             behavior: SnackBarBehavior.floating,
             width: 320,
-            backgroundColor: isErr ? c.error : c.accent,
+            backgroundColor: bg,
           ),
         );
       });
     }
+    return const SizedBox.shrink();
+  }
+}
+
+/// Shows the setup guide once on the very first launch.
+class _FirstRunGate extends StatefulWidget {
+  const _FirstRunGate();
+
+  @override
+  State<_FirstRunGate> createState() => _FirstRunGateState();
+}
+
+class _FirstRunGateState extends State<_FirstRunGate> {
+  bool _triggered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsService>();
+    if (settings.loaded && !settings.firstRunDone && !_triggered) {
+      _triggered = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) showSetupGuide(context, firstRun: true);
+      });
+    }
+    return const SizedBox.shrink();
+  }
+}
+
+/// Pushes the chosen image save folder to the bridge whenever it changes.
+class _DownloadDirSync extends StatefulWidget {
+  const _DownloadDirSync();
+
+  @override
+  State<_DownloadDirSync> createState() => _DownloadDirSyncState();
+}
+
+class _DownloadDirSyncState extends State<_DownloadDirSync> {
+  String? _last;
+
+  @override
+  Widget build(BuildContext context) {
+    final dir = context.watch<SettingsService>().downloadDir;
+    if (dir != null && dir.isNotEmpty && dir != _last) {
+      _last = dir;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.read<WebSocketService>().setDownloadDir(dir);
+      });
+    }
+    return const SizedBox.shrink();
+  }
+}
+
+/// Auto-syncs the satellite clock once each time the link connects (if enabled).
+class _AutoTimeSync extends StatefulWidget {
+  const _AutoTimeSync();
+
+  @override
+  State<_AutoTimeSync> createState() => _AutoTimeSyncState();
+}
+
+class _AutoTimeSyncState extends State<_AutoTimeSync> {
+  bool _wasConnected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final connected = context.watch<WebSocketService>().isConnected;
+    final autoSync = context.watch<SettingsService>().timeAutoSync;
+    if (connected && !_wasConnected && autoSync) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.read<WebSocketService>().syncTime();
+      });
+    }
+    _wasConnected = connected;
     return const SizedBox.shrink();
   }
 }

@@ -37,6 +37,8 @@ Future<void> main() async {
   // right camera mode instead of flickering from the default.
   final settings = SettingsService();
   await settings.load();
+  // Resolve the default image save folder (Documents/FlatSat Images) on first run.
+  await settings.ensureDownloadDir();
 
   runApp(
     MultiProvider(

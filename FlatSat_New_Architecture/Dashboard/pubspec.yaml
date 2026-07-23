@@ -18,6 +18,10 @@ dependencies:
   window_manager: ^0.5.2
   # Persists user settings (camera mode, auto-power) across restarts.
   shared_preferences: ^2.3.2
+  # Folder picker for the image save location (F2).
+  file_picker: ^8.1.2
+  # Default save folder (Documents) + "show in folder" support.
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:

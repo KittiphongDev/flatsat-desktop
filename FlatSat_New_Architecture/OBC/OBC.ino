@@ -272,7 +272,8 @@ enum CommandByte {
   CMD_NACK         = 0x0E,
   CMD_GET_EPS      = 0x0F, // GS -> OBC: request full EPS telemetry
   CMD_EPS_DATA     = 0x10, // OBC -> GS: full EPS telemetry dump
-  CMD_HEALTH_DATA  = 0x11  // OBC -> GS: I2C device health scan result
+  CMD_HEALTH_DATA  = 0x11, // OBC -> GS: I2C device health scan result
+  CMD_SET_TIME     = 0x12  // GS -> OBC: set the on-board clock (uint32 epoch)
 };
 
 // --- KISS Framing ---
@@ -329,6 +330,19 @@ bool camReady = false;                                        // myCAM.begin() d
 
 // --- Image Counter ---
 uint32_t imageCounter = 0;
+
+// --- Software clock (set by the dashboard via CMD_SET_TIME) ---
+// A hardware RTC needs a backup cell; instead we keep a base UNIX time captured
+// at the last sync and add elapsed millis(). Good enough for logging timestamps
+// and resets to "unsynced" on reboot until the dashboard syncs again.
+uint32_t timeBaseEpoch = 0;
+uint32_t timeBaseMillis = 0;
+bool timeSynced = false;
+
+uint32_t getUnixTime() {
+  if (!timeSynced) return 0;
+  return timeBaseEpoch + (uint32_t)((millis() - timeBaseMillis) / 1000UL);
+}
 
 // --- Download State ---
 char downloadFilename[64] = "photo.jpg"; // Default file for download
@@ -687,7 +701,19 @@ void sendBeacon() {
 // powered and initialised. In PRODUCTION it refuses if the camera isn't ready.
 // Returns true on success and ACKs with the filename; NACKs on failure.
 // ====================================================================
-bool captureAndSaveImage() {
+// Map a dashboard resolution id (0..4) to an Arducam Mega capture mode.
+// All are 4:3 to match the 5 MP sensor's native aspect ratio.
+static CAM_IMAGE_MODE resIdToMode(uint8_t resId) {
+  switch (resId) {
+    case 1:  return CAM_IMAGE_MODE_SVGA;   // 800x600
+    case 2:  return CAM_IMAGE_MODE_UXGA;   // 1600x1200
+    case 3:  return CAM_IMAGE_MODE_QXGA;   // 2048x1536 (3 MP)
+    case 4:  return CAM_IMAGE_MODE_WQXGA2; // 2592x1944 (5 MP)
+    default: return CAM_IMAGE_MODE_VGA;    // 640x480
+  }
+}
+
+bool captureAndSaveImage(uint8_t resId = 0) {
 #if CAMERA_MODE == CAMERA_MODE_PRODUCTION
   if (!camReady) {
     Serial.println("[CAM] Capture refused: camera not powered/ready");
@@ -709,7 +735,7 @@ bool captureAndSaveImage() {
   Serial.print("[CAM] Capturing ");
   Serial.print(filename);
   Serial.print(" ... ");
-  myCAM.takePicture(CAM_IMAGE_MODE_VGA, CAM_IMAGE_PIX_FMT_JPG);
+  myCAM.takePicture(resIdToMode(resId), CAM_IMAGE_PIX_FMT_JPG);
 
   uint8_t  buf[CAM_BUF_SIZE];
   uint16_t buffIndex = 0;
@@ -811,13 +837,35 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
       Serial.println("[CMD] BEACON forced by GS");
       break;
 
+    // --- SET TIME (sync the on-board software clock) ---
+    case CMD_SET_TIME: {
+      if (payloadLen >= 4) {
+        uint32_t epoch = (uint32_t)payload[0] |
+                         ((uint32_t)payload[1] << 8) |
+                         ((uint32_t)payload[2] << 16) |
+                         ((uint32_t)payload[3] << 24); // little-endian
+        timeBaseEpoch = epoch;
+        timeBaseMillis = millis();
+        timeSynced = true;
+        Serial.print("[CMD] SET_TIME -> epoch ");
+        Serial.println(epoch);
+        sendPacket(CMD_ACK, nullptr, 0);
+      } else {
+        sendPacket(CMD_NACK, nullptr, 0);
+      }
+      break;
+    }
+
     // --- TAKE PICTURE ---
     case CMD_TAKE_PIC: {
-      Serial.println("[CMD] TAKE_PIC");
+      // Optional payload[0] = resolution id (0=VGA..4=5MP); default VGA.
+      uint8_t resId = (payloadLen >= 1) ? payload[0] : 0;
+      Serial.print("[CMD] TAKE_PIC res=");
+      Serial.println(resId);
       // Real Arducam capture. In PRODUCTION the dashboard powers the camera on
       // (toggle subsystem 3) and waits before sending this, so the camera is
       // expected to be ready; captureAndSaveImage() NACKs if it isn't.
-      captureAndSaveImage();
+      captureAndSaveImage(resId);
       break;
     }
 

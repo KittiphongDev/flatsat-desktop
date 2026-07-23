@@ -183,6 +183,7 @@ CMD_NACK         = 0x0E
 CMD_GET_EPS      = 0x0F
 CMD_EPS_DATA     = 0x10
 CMD_HEALTH_DATA  = 0x11
+CMD_SET_TIME     = 0x12
 
 # ====================================================================
 # APPLICATION STATE
@@ -217,6 +218,7 @@ download_state = {
     "last_rx_time": 0,      # last request or receipt (drives the retry timer)
     "retries": 0,
     "deadline": 0,          # absolute time to give up
+    "paused": False,        # user paused — stop requesting, keep the partial
 }
 
 # Chunked responses (EPS / image list / health) are split into small radio
@@ -652,18 +654,99 @@ def request_chunk(idx: int):
     send_command(CMD_REQ_CHUNK, struct.pack('>H', idx) + name)
     download_state["last_rx_time"] = time.time()  # reset the per-chunk timer
 
+# --- Resume persistence: a paused/interrupted download is saved to a .part
+# file (chunk i at offset i*IMAGE_CHUNK_SIZE) + a JSON manifest of received
+# indices, so it can resume after an app/bridge restart. The satellite stores
+# nothing — it just serves whatever chunk we ask for.
+def _part_paths(fname: str):
+    base = os.path.join(DOWNLOAD_DIR, "." + _safe_name(fname))
+    return base + ".part", base + ".part.json"
+
+def _persist_chunk(fname: str, idx: int, data: bytes):
+    try:
+        os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+        part, manifest = _part_paths(fname)
+        with open(part, "r+b" if os.path.exists(part) else "w+b") as f:
+            f.seek(idx * IMAGE_CHUNK_SIZE)
+            f.write(data)
+        indices = []
+        if os.path.exists(manifest):
+            with open(manifest) as m:
+                indices = json.load(m).get("indices", [])
+        if idx not in indices:
+            indices.append(idx)
+        with open(manifest, "w") as m:
+            json.dump({"expected_size": download_state["expected_size"],
+                       "chunk_size": IMAGE_CHUNK_SIZE, "indices": indices}, m)
+    except Exception as e:
+        log.warning(f"persist chunk failed: {e}")
+
+def _load_partial(fname: str):
+    try:
+        part, manifest = _part_paths(fname)
+        if not (os.path.exists(part) and os.path.exists(manifest)):
+            return None
+        with open(manifest) as m:
+            meta = json.load(m)
+        cs = meta.get("chunk_size", IMAGE_CHUNK_SIZE)
+        chunks = {}
+        with open(part, "rb") as f:
+            for i in sorted(meta.get("indices", [])):
+                f.seek(i * cs)
+                chunks[i] = f.read(cs)
+        return chunks, meta.get("expected_size", 0)
+    except Exception as e:
+        log.warning(f"load partial failed: {e}")
+        return None
+
+def _clear_partial(fname: str):
+    for p in _part_paths(fname):
+        try:
+            if os.path.exists(p):
+                os.remove(p)
+        except Exception:
+            pass
+
 def start_download(filename: str):
     safe = _safe_name(filename) or "photo.jpg"
     now = time.time()
+    partial = _load_partial(safe)
+    chunks = {}
+    expected = known_image_sizes.get(safe, 0)
+    if partial:
+        chunks, exp2 = partial
+        if exp2:
+            expected = exp2
+        log.info(f"Resuming {safe} with {len(chunks)} cached chunk(s)")
+    nxt = 0
+    while nxt in chunks:
+        nxt += 1
     download_state.update({
-        "active": True, "filename": safe, "current_chunk": 0,
-        "expected_size": known_image_sizes.get(safe, 0),
-        "chunks": {}, "highest_chunk": -1,
+        "active": True, "filename": safe, "current_chunk": nxt,
+        "expected_size": expected,
+        "chunks": chunks, "highest_chunk": max(chunks) if chunks else -1,
         "start_time": now, "last_rx_time": now,
-        "retries": 0, "deadline": now + DOWNLOAD_ABSOLUTE_CAP_S,
+        "retries": 0, "deadline": now + DOWNLOAD_ABSOLUTE_CAP_S, "paused": False,
     })
-    log.info(f"Download started: {safe} (expected {download_state['expected_size']} B)")
-    request_chunk(0)
+    log.info(f"Download started: {safe} (expected {expected} B, from chunk {nxt})")
+    request_chunk(nxt)
+
+def pause_download():
+    if download_state["active"] and not download_state["paused"]:
+        download_state["paused"] = True
+        log.info("Download paused")
+        schedule_broadcast({"type": "download_paused",
+                            "data": {"filename": download_state["filename"]}})
+
+def resume_download():
+    if download_state["active"] and download_state["paused"]:
+        download_state["paused"] = False
+        download_state["last_rx_time"] = time.time()
+        download_state["retries"] = 0
+        log.info("Download resumed")
+        schedule_broadcast({"type": "download_resumed",
+                            "data": {"filename": download_state["filename"]}})
+        request_chunk(download_state["current_chunk"])
 
 def abort_download(reason: str):
     if not download_state["active"]:
@@ -707,6 +790,7 @@ def _finish_download():
         "elapsed": round(elapsed, 1),
         "path": save_path,
     }})
+    _clear_partial(download_state["filename"])  # transfer done — drop the resume cache
     download_state["active"] = False
     download_state["chunks"] = {}
 
@@ -733,7 +817,12 @@ def handle_image_chunk(payload: bytes, payload_len: int):
         download_state["chunks"][chunk_id] = chunk_data
         if chunk_id > download_state["highest_chunk"]:
             download_state["highest_chunk"] = chunk_id
+        _persist_chunk(download_state["filename"], chunk_id, chunk_data)
         _emit_download_progress()
+
+    # If the user paused, keep the chunk but stop asking for more.
+    if download_state["paused"]:
+        return
 
     # Request the next in-order chunk we still need.
     nxt = download_state["current_chunk"]
@@ -744,8 +833,8 @@ def handle_image_chunk(payload: bytes, payload_len: int):
 
 def service_download():
     """Called from the serial loop: drive retries + timeouts for the download."""
-    if not download_state["active"]:
-        return
+    if not download_state["active"] or download_state["paused"]:
+        return  # paused downloads keep their partial and don't time out
     now = time.time()
     if now > download_state["deadline"]:
         abort_download("Timed out (exceeded maximum download time)")
@@ -990,6 +1079,24 @@ async def ws_handler(websocket):
                     reconnect_event.set()
                     await websocket.send(json.dumps(build_bridge_status()))
 
+                elif cmd == "set_download_dir":
+                    # The app chose where downloaded images are saved.
+                    global DOWNLOAD_DIR
+                    new_dir = (data.get("path") or "").strip()
+                    if new_dir:
+                        try:
+                            os.makedirs(new_dir, exist_ok=True)
+                            DOWNLOAD_DIR = new_dir
+                            log.info(f"Download directory set to: {DOWNLOAD_DIR}")
+                        except Exception as e:
+                            log.warning(f"Bad download dir {new_dir}: {e}")
+
+                elif cmd == "pause_download":
+                    pause_download()
+
+                elif cmd == "resume_download":
+                    resume_download()
+
                 elif cmd == "ping":
                     send_command(CMD_PING)
 
@@ -1003,8 +1110,15 @@ async def ws_handler(websocket):
                 elif cmd == "beacon":
                     send_command(CMD_BEACON)
 
+                elif cmd == "sync_time":
+                    # Set the satellite's software clock to the PC's UTC time.
+                    epoch = int(time.time())
+                    send_command(CMD_SET_TIME, struct.pack('<I', epoch))
+                    log.info(f"Time sync -> epoch {epoch}")
+
                 elif cmd == "take_pic":
-                    send_command(CMD_TAKE_PIC)
+                    res_id = int(data.get("resolution", 0)) & 0xFF
+                    send_command(CMD_TAKE_PIC, bytes([res_id]))
 
                 elif cmd == "get_gps":
                     start_gps()

@@ -48,6 +48,21 @@ class WebSocketService extends ChangeNotifier {
   // GPS is a single-frame request; just a spinner while we wait for the reply.
   bool gpsRequesting = false;
 
+  // Folder where the bridge saves downloaded images (re-sent on each connect).
+  String? _pendingDownloadDir;
+
+  /// Tell the bridge where to save downloaded images.
+  void setDownloadDir(String path) {
+    _pendingDownloadDir = path;
+    _send({'cmd': 'set_download_dir', 'path': path});
+  }
+
+  /// Dismiss the "saved" banner after a completed download.
+  void clearDownloadResult() {
+    downloadCompleteFile = null;
+    notifyListeners();
+  }
+
   // Camera payload power (production build only, ADM-independent PD4 line).
   // Not carried in the beacon, so this is tracked from the toggle ACK echo.
   // Defaults to false (off); in a prototype build the camera is always powered
@@ -61,6 +76,7 @@ class WebSocketService extends ChangeNotifier {
   List<ImageEntry> imageList = [];
   DownloadProgress? downloadProgress;
   bool isDownloading = false;
+  bool downloadPaused = false;
   String? downloadCompleteFile;
   List<String> eventLog = [];
 
@@ -71,10 +87,12 @@ class WebSocketService extends ChangeNotifier {
   int feedbackSeq = 0;
   String feedbackMessage = '';
   bool feedbackIsError = false;
+  bool feedbackIsSuccess = false; // green = confirmed success; red = error
 
-  void _flash(String msg, {bool error = false}) {
+  void _flash(String msg, {bool error = false, bool success = false}) {
     feedbackMessage = msg;
     feedbackIsError = error;
+    feedbackIsSuccess = success;
     feedbackSeq++;
     notifyListeners();
   }
@@ -136,6 +154,10 @@ class WebSocketService extends ChangeNotifier {
         _wsUrl = cand;
         _isConnected = true;
         _addLog('Connected to $cand');
+        // Re-assert the chosen save folder for this bridge session.
+        if (_pendingDownloadDir != null) {
+          _send({'cmd': 'set_download_dir', 'path': _pendingDownloadDir});
+        }
         notifyListeners();
 
         _channel!.stream.listen(
@@ -203,9 +225,9 @@ class WebSocketService extends ChangeNotifier {
           if (_pingPending && _pingSentAt != null) {
             pingRttMs = DateTime.now().difference(_pingSentAt!).inMilliseconds;
             _pingPending = false;
-            _flash('Pong · ${pingRttMs}ms round-trip');
+            _flash('Pong · ${pingRttMs}ms round-trip', success: true);
           } else {
-            _flash('Satellite acknowledged ✓');
+            _flash('Satellite acknowledged ✓', success: true);
           }
           break;
 
@@ -217,7 +239,8 @@ class WebSocketService extends ChangeNotifier {
           healthXfer.markDone();
           final online = deviceHealth.where((d) => d.online).length;
           _addLog('HEALTH: $online/${deviceHealth.length} devices online');
-          _flash('Health scan: $online/${deviceHealth.length} online');
+          _flash('Health scan: $online/${deviceHealth.length} online',
+              success: true);
           break;
 
         case 'health_progress':
@@ -260,7 +283,7 @@ class WebSocketService extends ChangeNotifier {
             'Alt=${lastGps!.altitude.toStringAsFixed(1)}m '
             'Sats=${lastGps!.satellites}',
           );
-          _flash('GPS position received');
+          _flash('GPS position received', success: true);
           break;
 
         case 'eps':
@@ -277,7 +300,7 @@ class WebSocketService extends ChangeNotifier {
           _addLog('EPS: ${lastEps!.ina226.length} INA226, '
               '${lastEps!.tmp102.length} TMP102, '
               '${lastEps!.adm1177.length} ADM1177');
-          _flash('EPS telemetry received');
+          _flash('EPS telemetry received', success: true);
           break;
 
         case 'eps_progress':
@@ -332,16 +355,29 @@ class WebSocketService extends ChangeNotifier {
               .toList();
           imageXfer.markDone();
           _addLog('Image list: ${imageList.length} files');
-          _flash('Images: ${imageList.length} file(s)');
+          _flash('Images: ${imageList.length} file(s)', success: true);
           break;
 
         case 'download_started':
           isDownloading = true;
+          downloadPaused = false;
           downloadCompleteFile = null;
           downloadProgress = DownloadProgress(
             filename: data['data']['filename'] ?? '',
           );
           _addLog('Download started: ${data['data']['filename']}');
+          _armDownloadWatchdog();
+          break;
+
+        case 'download_paused':
+          downloadPaused = true;
+          _downloadTimeout?.cancel(); // don't time out while paused
+          _addLog('Download paused');
+          break;
+
+        case 'download_resumed':
+          downloadPaused = false;
+          _addLog('Download resumed');
           _armDownloadWatchdog();
           break;
 
@@ -352,17 +388,19 @@ class WebSocketService extends ChangeNotifier {
 
         case 'download_complete':
           isDownloading = false;
+          downloadPaused = false;
           _downloadTimeout?.cancel();
           downloadCompleteFile = data['data']['path'];
           final size = data['data']['size'] ?? 0;
           final elapsed = data['data']['elapsed'] ?? 0;
           _addLog('Download complete: $downloadCompleteFile '
               '(${size}B in ${elapsed}s)');
-          _flash('Download complete');
+          _flash('Download complete', success: true);
           break;
 
         case 'download_failed':
           isDownloading = false;
+          downloadPaused = false;
           _downloadTimeout?.cancel();
           final reason = data['data']?['reason'] ?? 'unknown error';
           _addLog('Download failed: $reason');
@@ -436,9 +474,19 @@ class WebSocketService extends ChangeNotifier {
     _addLog('>> BEACON');
   }
 
-  void sendTakePic() {
-    _send({'cmd': 'take_pic'});
-    _addLog('>> TAKE_PIC');
+  void sendTakePic({int resolution = 0}) {
+    _send({'cmd': 'take_pic', 'resolution': resolution});
+    _addLog('>> TAKE_PIC (res $resolution)');
+  }
+
+  DateTime? lastTimeSync;
+
+  /// Set the satellite's software clock to this PC's current time.
+  void syncTime() {
+    _send({'cmd': 'sync_time'});
+    _addLog('>> SYNC_TIME');
+    lastTimeSync = DateTime.now();
+    notifyListeners();
   }
 
   /// Toggle the Arducam power line (PD4, subsystem 3). Production build only;
@@ -459,14 +507,14 @@ class WebSocketService extends ChangeNotifier {
   /// on capture", so no new firmware command is needed. In a prototype build
   /// the camera is always on, so [autoPower] should be false and this is a
   /// plain capture.
-  Future<void> capturePhoto({bool autoPower = false}) async {
+  Future<void> capturePhoto({bool autoPower = false, int resolution = 0}) async {
     if (autoPower && !cameraPwr) {
       toggleCameraPower();
       _flash('Powering camera…');
       // Cover the firmware's PD4 boot delay (~2 s) plus a little slack.
       await Future.delayed(const Duration(milliseconds: 2600));
     }
-    sendTakePic();
+    sendTakePic(resolution: resolution);
   }
 
   void sendGetGps() {
@@ -561,6 +609,16 @@ class WebSocketService extends ChangeNotifier {
   void sendDownload(String filename) {
     _send({'cmd': 'download', 'filename': filename});
     _addLog('>> DOWNLOAD $filename');
+  }
+
+  void pauseDownload() {
+    _send({'cmd': 'pause_download'});
+    _addLog('>> PAUSE DOWNLOAD');
+  }
+
+  void resumeDownload() {
+    _send({'cmd': 'resume_download'});
+    _addLog('>> RESUME DOWNLOAD');
   }
 
   // ---- Connection helper commands ----
