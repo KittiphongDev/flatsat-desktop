@@ -273,7 +273,11 @@ enum CommandByte {
   CMD_GET_EPS      = 0x0F, // GS -> OBC: request full EPS telemetry
   CMD_EPS_DATA     = 0x10, // OBC -> GS: full EPS telemetry dump
   CMD_HEALTH_DATA  = 0x11, // OBC -> GS: I2C device health scan result
-  CMD_SET_TIME     = 0x12  // GS -> OBC: set the on-board clock (uint32 epoch)
+  CMD_SET_TIME     = 0x12, // GS -> OBC: set the on-board clock (uint32 epoch)
+  CMD_EPS_LOG_CFG  = 0x13, // GS -> OBC: [enable][interval_lo][interval_hi]
+  CMD_GET_EPS_LOG  = 0x14, // GS -> OBC: request the whole saved EPS log
+  CMD_EPS_LOG_DATA = 0x15, // OBC -> GS: log stream, uint16-chunked
+  CMD_EPS_LOG_CLEAR= 0x16  // GS -> OBC: delete the log after a verified pull
 };
 
 // --- KISS Framing ---
@@ -343,6 +347,16 @@ uint32_t getUnixTime() {
   if (!timeSynced) return 0;
   return timeBaseEpoch + (uint32_t)((millis() - timeBaseMillis) / 1000UL);
 }
+
+// --- EPS logging to SD (F8) ---
+// Compact 48-byte record: t(u32) + 6*INA(u16 mV, i16 mA) + 2*TMP(i16 c°C)
+//                         + 4*ADM(u16 mV, u16 mA).
+#define EPS_LOG_FILE    "eps_log.bin"
+#define EPS_LOG_TX      "eps_log.tx"   // frozen snapshot during a pull
+#define EPS_RECORD_SIZE 48
+bool epsLogEnabled = false;
+uint32_t epsLogIntervalMs = 5000;
+uint32_t lastEpsLogMs = 0;
 
 // --- Download State ---
 char downloadFilename[64] = "photo.jpg"; // Default file for download
@@ -531,7 +545,8 @@ unsigned long txNextAt = 0;
 unsigned long lastActivityTime = 0;
 #define BEACON_HOLDOFF_MS 2000
 
-bool txBusy() { return txActive || jobHead != jobTail; }
+bool logTxActiveFwd();  // fwd decl (defined with the log streamer below)
+bool txBusy() { return txActive || jobHead != jobTail || logTxActiveFwd(); }
 
 bool enqueueChunked(uint8_t cmdType, const uint8_t *blob, uint16_t blobLen) {
   if (blobLen > sizeof(jobQueue[0].blob)) blobLen = sizeof(jobQueue[0].blob);
@@ -578,6 +593,107 @@ void serviceChunkedTx() {
       jobHead = (uint8_t)((jobHead + 1) % JOB_QUEUE_SIZE);
     }
   }
+}
+
+// ====================================================================
+// EPS LOG: record writer + non-blocking file streamer (uint16 chunks so the
+// log can be larger than the 255-chunk uint8 limit). Streams from a frozen
+// snapshot (eps_log.tx) so records logged during the pull aren't lost; the
+// bridge deletes the snapshot (CMD_EPS_LOG_CLEAR) only after a verified pull.
+// ====================================================================
+void writeEpsLogRecord() {
+  uint8_t rec[EPS_RECORD_SIZE];
+  uint8_t n = 0;
+  uint32_t t = getUnixTime();
+  rec[n++] = t & 0xFF; rec[n++] = (t >> 8) & 0xFF;
+  rec[n++] = (t >> 16) & 0xFF; rec[n++] = (t >> 24) & 0xFF;
+  for (int i = 0; i < INA226_COUNT; i++) {
+    uint16_t mv = (uint16_t)(powerMonitors[i].getBusVoltage_V() * 1000.0f);
+    int16_t  ma = (int16_t)(powerMonitors[i].getCurrent_A() * 1000.0f);
+    rec[n++] = mv & 0xFF; rec[n++] = (mv >> 8) & 0xFF;
+    rec[n++] = ma & 0xFF; rec[n++] = (ma >> 8) & 0xFF;
+  }
+  for (int i = 0; i < TMP102_COUNT; i++) {
+    int16_t cc = (int16_t)(tempSensors[i].readTemperatureC() * 100.0f);
+    rec[n++] = cc & 0xFF; rec[n++] = (cc >> 8) & 0xFF;
+  }
+  for (int i = 0; i < ADM1177_COUNT; i++) {
+    uint16_t v = 0, c = 0;
+    powerControllers[i].readData(v, c);
+    rec[n++] = v & 0xFF; rec[n++] = (v >> 8) & 0xFF;
+    rec[n++] = c & 0xFF; rec[n++] = (c >> 8) & 0xFF;
+  }
+  File f;
+  if (f.open(EPS_LOG_FILE, O_WRONLY | O_CREAT | O_APPEND)) {
+    f.write(rec, EPS_RECORD_SIZE);
+    f.close();
+  }
+}
+
+bool          logTxActive = false;
+File          logTxFile;
+uint16_t      logTxChunk = 0, logTxTotal = 1, logTxCopy = 0;
+unsigned long logTxNextAt = 0;
+uint8_t       logTxBuf[EPS_CHUNK_SIZE];
+uint8_t       logTxBufLen = 0;
+
+bool logTxActiveFwd() { return logTxActive; }
+
+void startEpsLogTx() {
+  // Freeze the log (rename) so concurrent logging + the later delete are safe.
+  if (!sd.exists(EPS_LOG_TX) && sd.exists(EPS_LOG_FILE)) {
+    sd.rename(EPS_LOG_FILE, EPS_LOG_TX);
+  }
+  if (logTxFile.isOpen()) logTxFile.close();
+  uint32_t fsize = 0;
+  if (sd.exists(EPS_LOG_TX) && logTxFile.open(EPS_LOG_TX, O_RDONLY)) {
+    fsize = logTxFile.fileSize();
+  }
+  logTxTotal = (uint16_t)((fsize + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE);
+  if (logTxTotal == 0) logTxTotal = 1;   // empty log -> one empty chunk
+  logTxChunk = 0; logTxCopy = 0; logTxBufLen = 0;
+  logTxActive = true;
+  logTxNextAt = millis();
+  Serial.print("[EPSLOG] Pull start, ");
+  Serial.print(fsize);
+  Serial.println(" bytes");
+}
+
+void serviceEpsLogTx() {
+  if (!logTxActive) return;
+  if ((int32_t)(millis() - logTxNextAt) < 0) return;
+
+  if (logTxCopy == 0) {           // read the chunk once, resend for redundancy
+    logTxBufLen = 0;
+    if (logTxFile.isOpen()) {
+      int r = logTxFile.read(logTxBuf, EPS_CHUNK_SIZE);
+      if (r > 0) logTxBufLen = (uint8_t)r;
+    }
+  }
+  uint8_t part[EPS_CHUNK_SIZE + 4];
+  part[0] = (logTxChunk >> 8) & 0xFF;
+  part[1] = logTxChunk & 0xFF;
+  part[2] = (logTxTotal >> 8) & 0xFF;
+  part[3] = logTxTotal & 0xFF;
+  memcpy(&part[4], logTxBuf, logTxBufLen);
+  sendPacket(CMD_EPS_LOG_DATA, part, logTxBufLen + 4);
+  logTxNextAt = millis() + TX_CHUNK_GAP_MS;
+  lastActivityTime = millis();
+
+  if (++logTxCopy >= TX_COPIES) {
+    logTxCopy = 0;
+    if (++logTxChunk >= logTxTotal) {
+      logTxActive = false;
+      if (logTxFile.isOpen()) logTxFile.close();
+      Serial.println("[EPSLOG] Pull stream done");
+    }
+  }
+}
+
+void clearEpsLog() {
+  if (logTxFile.isOpen()) logTxFile.close();
+  if (sd.exists(EPS_LOG_TX)) sd.remove(EPS_LOG_TX);
+  Serial.println("[EPSLOG] Snapshot cleared");
 }
 
 // ====================================================================
@@ -855,6 +971,38 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
       }
       break;
     }
+
+    // --- EPS LOG CONFIG ([enable][interval_lo][interval_hi]) ---
+    case CMD_EPS_LOG_CFG: {
+      if (payloadLen >= 1) {
+        epsLogEnabled = (payload[0] != 0);
+        if (payloadLen >= 3) {
+          uint16_t s = (uint16_t)payload[1] | ((uint16_t)payload[2] << 8);
+          if (s < 1) s = 1;
+          epsLogIntervalMs = (uint32_t)s * 1000UL;
+        }
+        lastEpsLogMs = millis();
+        Serial.print("[CMD] EPS_LOG_CFG enable=");
+        Serial.print(epsLogEnabled);
+        Serial.print(" interval_ms=");
+        Serial.println(epsLogIntervalMs);
+        sendPacket(CMD_ACK, nullptr, 0);
+      } else {
+        sendPacket(CMD_NACK, nullptr, 0);
+      }
+      break;
+    }
+
+    // --- GET EPS LOG (stream the whole saved log) ---
+    case CMD_GET_EPS_LOG:
+      startEpsLogTx();
+      break;
+
+    // --- CLEAR EPS LOG (delete the transferred snapshot) ---
+    case CMD_EPS_LOG_CLEAR:
+      clearEpsLog();
+      sendPacket(CMD_ACK, nullptr, 0);
+      break;
 
     // --- TAKE PICTURE ---
     case CMD_TAKE_PIC: {
@@ -1290,6 +1438,18 @@ void loop() {
 
   // 4b. Drive the chunked-TX job queue (one chunk per pass, 90 ms pacing).
   serviceChunkedTx();
+
+  // 4c. Stream the EPS log only when the chunk queue is idle (share the radio).
+  if (!txActive && jobHead == jobTail) {
+    serviceEpsLogTx();
+  }
+
+  // 4d. Periodic EPS logging to SD (only when enabled and the clock is set).
+  if (epsLogEnabled && timeSynced &&
+      (currentMillis - lastEpsLogMs >= epsLogIntervalMs)) {
+    lastEpsLogMs = currentMillis;
+    writeEpsLogRecord();
+  }
 
   // 5. Service Watchdog
   IWatchdog.reload();

@@ -184,6 +184,10 @@ CMD_GET_EPS      = 0x0F
 CMD_EPS_DATA     = 0x10
 CMD_HEALTH_DATA  = 0x11
 CMD_SET_TIME     = 0x12
+CMD_EPS_LOG_CFG  = 0x13
+CMD_GET_EPS_LOG  = 0x14
+CMD_EPS_LOG_DATA = 0x15
+CMD_EPS_LOG_CLEAR = 0x16
 
 # ====================================================================
 # APPLICATION STATE
@@ -428,6 +432,14 @@ def process_packet(raw_bytes: bytearray):
             log.info(f"HEALTH complete: {online}/{len(devices)} online")
             schedule_broadcast({"type": "health", "data": devices})
 
+    elif cmd_type == CMD_EPS_LOG_DATA:
+        blob = collect_log_chunk(payload, payload_len)
+        if blob is not None:
+            records = parse_eps_log(blob)
+            log.info(f"EPS_LOG complete: {len(records)} records")
+            schedule_broadcast({"type": "eps_log", "data": records})
+            send_command(CMD_EPS_LOG_CLEAR)  # OBC deletes the transferred snapshot
+
     elif cmd_type == CMD_IMAGE_DATA:
         handle_image_chunk(payload, payload_len)
 
@@ -570,6 +582,86 @@ def service_collectors():
                 st["last"] = now
                 send_command(st["cmd"])
                 log.info(f"Collect {key}: re-request (retry {st['retries']})")
+
+# EPS log pull: a uint16-chunked stream ([idxHi][idxLo][totalHi][totalLo][data])
+# so the log can exceed 255 chunks. On a stall we re-request the WHOLE pull; the
+# OBC re-streams the same frozen snapshot, so accumulated chunks still merge.
+LOG_RETRY_S = 1.5
+LOG_MAX_RETRIES = 10
+_log_collector = {"active": False, "chunks": {}, "total": None,
+                  "retries": 0, "last": 0.0}
+
+def start_eps_log_pull():
+    _log_collector.update({"active": True, "chunks": {}, "total": None,
+                           "retries": 0, "last": time.time()})
+    send_command(CMD_GET_EPS_LOG)
+    log.info("EPS log pull requested")
+
+def collect_log_chunk(payload, payload_len):
+    if not _log_collector["active"] or payload_len < 4:
+        return None
+    idx = (payload[0] << 8) | payload[1]
+    total = (payload[2] << 8) | payload[3]
+    if total == 0:
+        return None
+    _log_collector["total"] = total
+    is_new = idx not in _log_collector["chunks"]
+    _log_collector["chunks"][idx] = bytes(payload[4:payload_len])
+    _log_collector["last"] = time.time()
+    if is_new:
+        received = len(_log_collector["chunks"])
+        schedule_broadcast({"type": "eps_log_progress", "data": {
+            "received": received, "total": total,
+            "percent": int(received * 100 / total)}})
+    if all(i in _log_collector["chunks"] for i in range(total)):
+        blob = b"".join(_log_collector["chunks"][i] for i in range(total))
+        _log_collector["active"] = False
+        return blob
+    return None
+
+def service_log_collector():
+    if not _log_collector["active"]:
+        return
+    now = time.time()
+    if now - _log_collector["last"] > LOG_RETRY_S:
+        if _log_collector["retries"] >= LOG_MAX_RETRIES:
+            _log_collector["active"] = False
+            schedule_broadcast({"type": "eps_log_failed",
+                                "data": "Lost log data — try again"})
+        else:
+            _log_collector["retries"] += 1
+            _log_collector["last"] = now
+            send_command(CMD_GET_EPS_LOG)
+
+def parse_eps_log(blob):
+    """Parse fixed 48-byte records: t(u32) + 6*(u16 mV, i16 mA) +
+    2*(i16 c°C) + 4*(u16 mV, u16 mA)."""
+    recs = []
+    rsize = 48
+    for off in range(0, len(blob) - rsize + 1, rsize):
+        r = blob[off:off + rsize]
+        t = struct.unpack('<I', r[0:4])[0]
+        p = 4
+        ina = []
+        for i in range(6):
+            mv = struct.unpack('<H', r[p:p + 2])[0]
+            ma = struct.unpack('<h', r[p + 2:p + 4])[0]
+            p += 4
+            ina.append({"index": i, "voltage": round(mv / 1000, 3),
+                        "current": round(ma / 1000, 3)})
+        tmp = []
+        for i in range(2):
+            cc = struct.unpack('<h', r[p:p + 2])[0]
+            p += 2
+            tmp.append({"index": i, "temperature": round(cc / 100, 2)})
+        adm = []
+        for i in range(4):
+            v = struct.unpack('<H', r[p:p + 2])[0]
+            c = struct.unpack('<H', r[p + 2:p + 4])[0]
+            p += 4
+            adm.append({"index": i, "voltage_mv": v, "current_ma": c})
+        recs.append({"t": t, "ina226": ina, "tmp102": tmp, "adm1177": adm})
+    return recs
 
 # GPS is a single small frame (not chunked); make it reliable with the same
 # re-request idea so a lost reply is retried instead of silently dropped.
@@ -995,6 +1087,7 @@ def serial_reader_loop():
             # GPS, and drive any in-progress image download.
             service_collectors()
             service_gps()
+            service_log_collector()
             service_download()
 
         except serial.SerialException as e:
@@ -1109,6 +1202,20 @@ async def ws_handler(websocket):
 
                 elif cmd == "beacon":
                     send_command(CMD_BEACON)
+
+                elif cmd == "eps_log_config":
+                    enable = 1 if data.get("enable") else 0
+                    interval = int(data.get("interval", 5)) & 0xFFFF
+                    send_command(CMD_EPS_LOG_CFG,
+                                 bytes([enable, interval & 0xFF, (interval >> 8) & 0xFF]))
+                    log.info(f"EPS log config: enable={enable} interval={interval}s")
+
+                elif cmd == "get_eps_log":
+                    if download_state["active"]:
+                        await websocket.send(json.dumps(
+                            {"type": "busy", "data": "Download in progress"}))
+                    else:
+                        start_eps_log_pull()
 
                 elif cmd == "sync_time":
                     # Set the satellite's software clock to the PC's UTC time.

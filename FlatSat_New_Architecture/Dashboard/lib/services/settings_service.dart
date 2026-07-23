@@ -12,6 +12,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///                   auto-power-on-capture option become available.
 enum CameraMode { prototype, production }
 
+/// How EPS state is logged.
+///  - off       : no logging; GET EPS is a single live snapshot.
+///  - pcHistory : GET EPS is live, but each snapshot is kept (persisted) on the PC.
+///  - satellite : the OBC logs to SD every N s; GET EPS pulls & clears the log.
+enum EpsLogMode { off, pcHistory, satellite }
+
+extension EpsLogModeLabel on EpsLogMode {
+  String get label => switch (this) {
+        EpsLogMode.off => 'Off (live only)',
+        EpsLogMode.pcHistory => 'Live + keep history on PC',
+        EpsLogMode.satellite => 'Log on satellite',
+      };
+  String get blurb => switch (this) {
+        EpsLogMode.off => 'GET EPS shows the current reading only.',
+        EpsLogMode.pcHistory =>
+          'GET EPS shows live data; every reading is saved on this PC.',
+        EpsLogMode.satellite =>
+          'The satellite records EPS every few seconds; GET EPS pulls the whole '
+              'log and frees the satellite memory.',
+      };
+}
+
 /// How image file sizes are displayed.
 enum ImageSizeUnit { kbOnly, both }
 
@@ -67,6 +89,8 @@ class SettingsService extends ChangeNotifier {
   static const _kDownloadDir = 'download_dir';
   static const _kTimeAutoSync = 'time_auto_sync';
   static const _kPicResolution = 'pic_resolution';
+  static const _kEpsLogMode = 'eps_log_mode';
+  static const _kEpsLogInterval = 'eps_log_interval';
 
   CameraMode _cameraMode = CameraMode.prototype;
   bool _autoPowerOnCapture = false;
@@ -78,6 +102,8 @@ class SettingsService extends ChangeNotifier {
   String? _downloadDir;
   bool _timeAutoSync = true;
   int _picResolution = 0;
+  EpsLogMode _epsLogMode = EpsLogMode.off;
+  int _epsLogInterval = 5;
   bool _loaded = false;
 
   CameraMode get cameraMode => _cameraMode;
@@ -101,6 +127,10 @@ class SettingsService extends ChangeNotifier {
 
   /// Remembered capture resolution id (index into [kPicResolutions]).
   int get picResolution => _picResolution;
+
+  /// EPS logging mode + interval (seconds).
+  EpsLogMode get epsLogMode => _epsLogMode;
+  int get epsLogInterval => _epsLogInterval;
 
   /// Show the EVENT LOG terminal panel (app-level commands & responses).
   bool get showEventLog => _showEventLog;
@@ -131,6 +161,9 @@ class SettingsService extends ChangeNotifier {
       _downloadDir = prefs.getString(_kDownloadDir);
       _timeAutoSync = prefs.getBool(_kTimeAutoSync) ?? true;
       _picResolution = prefs.getInt(_kPicResolution) ?? 0;
+      _epsLogMode = EpsLogMode.values[
+          (prefs.getInt(_kEpsLogMode) ?? 0).clamp(0, EpsLogMode.values.length - 1)];
+      _epsLogInterval = (prefs.getInt(_kEpsLogInterval) ?? 5).clamp(1, 3600);
     } catch (_) {
       // First run / no store yet — keep defaults.
     }
@@ -237,6 +270,27 @@ class SettingsService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_kPicResolution, id);
+    } catch (_) {}
+  }
+
+  Future<void> setEpsLogMode(EpsLogMode mode) async {
+    if (_epsLogMode == mode) return;
+    _epsLogMode = mode;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kEpsLogMode, mode.index);
+    } catch (_) {}
+  }
+
+  Future<void> setEpsLogInterval(int seconds) async {
+    seconds = seconds.clamp(1, 3600);
+    if (_epsLogInterval == seconds) return;
+    _epsLogInterval = seconds;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kEpsLogInterval, seconds);
     } catch (_) {}
   }
 

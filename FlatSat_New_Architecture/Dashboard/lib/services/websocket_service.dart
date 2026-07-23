@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/telemetry_data.dart';
+import '../utils/eps_history.dart';
 // Desktop builds get the real launcher (dart:io); web gets a no-op stub.
 import 'bridge_launcher_stub.dart'
     if (dart.library.io) 'bridge_launcher.dart';
@@ -22,7 +23,7 @@ class WebSocketService extends ChangeNotifier {
   EpsData? lastEps;
 
   // Rolling EPS history for live charts.
-  static const int epsHistoryCap = 60;
+  static const int epsHistoryCap = 300;
   final List<EpsData> epsHistory = [];
   int epsPacketCount = 0;
   DateTime? lastEpsTime; // when the most recent EPS packet arrived
@@ -44,6 +45,11 @@ class WebSocketService extends ChangeNotifier {
   // Generic transfer progress (drives the % loaders) for health + image list.
   final TransferState healthXfer = TransferState();
   final TransferState imageXfer = TransferState();
+  final TransferState epsLogXfer = TransferState(); // satellite log pull
+
+  // When true (PC-history mode), each live EPS snapshot is persisted to CSV.
+  bool persistLiveEps = false;
+  String? epsHistoryFile; // path of the last-written history CSV
 
   // GPS is a single-frame request; just a spinner while we wait for the reply.
   bool gpsRequesting = false;
@@ -96,6 +102,16 @@ class WebSocketService extends ChangeNotifier {
     feedbackSeq++;
     notifyListeners();
   }
+
+  Map<String, dynamic> _epsToRecord(EpsData e) => {
+        't': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        'ina226':
+            e.ina226.map((r) => {'voltage': r.voltage, 'current': r.current}).toList(),
+        'tmp102': e.tmp102.map((r) => {'temperature': r.temperature}).toList(),
+        'adm1177': e.adm1177
+            .map((r) => {'voltage_mv': r.voltageMv, 'current_ma': r.currentMa})
+            .toList(),
+      };
 
   /// Client-side download watchdog: if the bridge itself dies mid-download
   /// (so not even a download_failed arrives), resolve the spinner after 40s.
@@ -301,6 +317,50 @@ class WebSocketService extends ChangeNotifier {
               '${lastEps!.tmp102.length} TMP102, '
               '${lastEps!.adm1177.length} ADM1177');
           _flash('EPS telemetry received', success: true);
+          // PC-history mode: persist this live snapshot to the CSV.
+          if (persistLiveEps && lastEps != null) {
+            appendEpsHistory([_epsToRecord(lastEps!)]).then((p) {
+              if (p != null) {
+                epsHistoryFile = p;
+                notifyListeners();
+              }
+            });
+          }
+          break;
+
+        case 'eps_log':
+          final records = (data['data'] as List?) ?? [];
+          epsLogXfer.markDone();
+          for (final r in records) {
+            final e = EpsData.fromJson(r as Map<String, dynamic>);
+            epsHistory.add(e);
+            lastEps = e;
+          }
+          if (epsHistory.length > epsHistoryCap) {
+            epsHistory.removeRange(0, epsHistory.length - epsHistoryCap);
+          }
+          if (records.isNotEmpty) {
+            lastEpsTime = DateTime.now();
+            epsPacketCount++;
+          }
+          _addLog('EPS log: ${records.length} records pulled');
+          _flash('EPS log: ${records.length} records', success: true);
+          appendEpsHistory(records).then((p) {
+            if (p != null) {
+              epsHistoryFile = p;
+              notifyListeners();
+            }
+          });
+          break;
+
+        case 'eps_log_progress':
+          epsLogXfer.applyProgress(data['data'] as Map<String, dynamic>);
+          break;
+
+        case 'eps_log_failed':
+          epsLogXfer.markFailed();
+          _addLog('EPS log failed: ${data['data']}');
+          _flash('EPS log pull failed — try again', error: true);
           break;
 
         case 'eps_progress':
@@ -546,6 +606,20 @@ class WebSocketService extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
+
+  /// Configure on-satellite EPS logging (enable + interval seconds).
+  void sendEpsLogConfig(bool enable, int interval) {
+    _send({'cmd': 'eps_log_config', 'enable': enable, 'interval': interval});
+    _addLog('>> EPS_LOG_CFG ${enable ? "on ${interval}s" : "off"}');
+  }
+
+  /// Pull the whole saved EPS log from the satellite (then it self-clears).
+  void getEpsLog() {
+    _send({'cmd': 'get_eps_log'});
+    _addLog('>> GET_EPS_LOG');
+    epsLogXfer.begin();
+    notifyListeners();
   }
 
   void sendTogglePwr(int subsystem) {

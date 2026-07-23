@@ -204,6 +204,47 @@ class SettingsDialog extends StatelessWidget {
                 ),
               ),
 
+              // ---- EPS logging ----
+              const SizedBox(height: 20),
+              _sectionLabel(context, 'EPS LOGGING'),
+              const SizedBox(height: 8),
+              for (final m in EpsLogMode.values) ...[
+                _ModeChoice(
+                  selected: settings.epsLogMode == m,
+                  title: m.label,
+                  subtitle: m.blurb,
+                  onTap: () => settings.setEpsLogMode(m),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (settings.epsLogMode == EpsLogMode.satellite)
+                Row(
+                  children: [
+                    Text('Log every',
+                        style:
+                            TextStyle(color: c.textSecondary, fontSize: 12.5)),
+                    const SizedBox(width: 10),
+                    IconButton(
+                      icon: Icon(Icons.remove_circle_outline,
+                          color: c.textMuted, size: 20),
+                      onPressed: () => settings
+                          .setEpsLogInterval(settings.epsLogInterval - 1),
+                    ),
+                    Text('${settings.epsLogInterval}s',
+                        style: TextStyle(
+                            color: c.textPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'monospace')),
+                    IconButton(
+                      icon: Icon(Icons.add_circle_outline,
+                          color: c.textMuted, size: 20),
+                      onPressed: () => settings
+                          .setEpsLogInterval(settings.epsLogInterval + 1),
+                    ),
+                  ],
+                ),
+
               // ---- Image save folder ----
               const SizedBox(height: 20),
               _sectionLabel(context, 'IMAGE SAVE FOLDER'),

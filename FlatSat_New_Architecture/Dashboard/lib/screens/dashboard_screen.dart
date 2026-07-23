@@ -49,6 +49,7 @@ class DashboardScreen extends StatelessWidget {
           const _FirstRunGate(),
           const _DownloadDirSync(),
           const _AutoTimeSync(),
+          const _EpsLogSync(),
         ],
       ),
     );
@@ -174,8 +175,18 @@ class DashboardScreen extends StatelessWidget {
   Widget _gpsAction(BuildContext context, WebSocketService ws) =>
       _cmdBtn(context, Icons.gps_fixed, 'GET GPS', ws.sendGetGps);
 
-  Widget _epsAction(BuildContext context, WebSocketService ws) =>
-      _cmdBtn(context, Icons.bolt, 'GET EPS', ws.sendGetEps);
+  Widget _epsAction(BuildContext context, WebSocketService ws) {
+    final mode = context.watch<SettingsService>().epsLogMode;
+    // In satellite-log mode, GET EPS pulls the whole log; otherwise it's a
+    // single live snapshot.
+    return _cmdBtn(context, Icons.bolt, 'GET EPS', () {
+      if (mode == EpsLogMode.satellite) {
+        ws.getEpsLog();
+      } else {
+        ws.sendGetEps();
+      }
+    });
+  }
 
   Widget _healthAction(BuildContext context, WebSocketService ws) =>
       _cmdBtn(context, Icons.radar, 'SCAN', ws.sendStatus);
@@ -203,7 +214,7 @@ class DashboardScreen extends StatelessWidget {
             action: _imageAction(context, ws)),
         _section(context, 'GPS DATA', _gpsCard(context, ws),
             action: _gpsAction(context, ws)),
-        _section(context, 'EPS SUBSYSTEM', const EpsDashboard(),
+        _section(context, 'EPS SUBSYSTEM', _withXfer(context, ws.epsLogXfer, 'Pulling EPS log…', const EpsDashboard()),
             action: _epsAction(context, ws)),
         if (ws.isDownloading && ws.downloadProgress != null)
           _section(context, 'DOWNLOAD PROGRESS', _downloadCard(context, ws)),
@@ -1572,6 +1583,44 @@ class _AutoTimeSyncState extends State<_AutoTimeSync> {
     if (connected && !_wasConnected && autoSync) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.read<WebSocketService>().syncTime();
+      });
+    }
+    _wasConnected = connected;
+    return const SizedBox.shrink();
+  }
+}
+
+/// Pushes the EPS-logging config to the satellite and keeps the PC-history flag
+/// in sync with the chosen mode.
+class _EpsLogSync extends StatefulWidget {
+  const _EpsLogSync();
+
+  @override
+  State<_EpsLogSync> createState() => _EpsLogSyncState();
+}
+
+class _EpsLogSyncState extends State<_EpsLogSync> {
+  EpsLogMode? _lastMode;
+  int? _lastInterval;
+  bool _wasConnected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = context.watch<SettingsService>();
+    final connected = context.watch<WebSocketService>().isConnected;
+    final ws = context.read<WebSocketService>();
+    ws.persistLiveEps = s.epsLogMode == EpsLogMode.pcHistory;
+
+    final changed = s.epsLogMode != _lastMode || s.epsLogInterval != _lastInterval;
+    final justConnected = connected && !_wasConnected;
+    if (connected && (changed || justConnected)) {
+      _lastMode = s.epsLogMode;
+      _lastInterval = s.epsLogInterval;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ws.sendEpsLogConfig(
+              s.epsLogMode == EpsLogMode.satellite, s.epsLogInterval);
+        }
       });
     }
     _wasConnected = connected;

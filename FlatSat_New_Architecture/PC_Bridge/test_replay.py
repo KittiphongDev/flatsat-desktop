@@ -42,6 +42,24 @@ def test_collector_merges_across_retry():
     print("Test2 OK: collector merges chunks across retries")
 
 
+def test_log_collector_uint16():
+    """uint16-chunked EPS log reassembles across the 255-chunk boundary."""
+    gb.schedule_broadcast = lambda *a, **k: None
+    gb._log_collector.update({"active": True, "chunks": {}, "total": None,
+                              "retries": 0, "last": __import__('time').time()})
+    total = 300  # > 255, needs uint16
+    payloads = {}
+    for i in range(total):
+        data = bytes([i & 0xFF]) * 4
+        payloads[i] = bytes([(i >> 8) & 0xFF, i & 0xFF,
+                             (total >> 8) & 0xFF, total & 0xFF]) + data
+    blob = None
+    for i in range(total):
+        blob = gb.collect_log_chunk(payloads[i], len(payloads[i]))
+    assert blob is not None and len(blob) == total * 4, len(blob) if blob else None
+    print("Test LOG OK: uint16 collector reassembles 300 chunks")
+
+
 def test_crc_vector():
     data = b'\xAA\xBB\x01\x00'
     assert gb.calculate_crc32(data) == (binascii.crc32(data) & 0xFFFFFFFF)
@@ -65,6 +83,7 @@ def test_parse_health():
 if __name__ == "__main__":
     test_collector_completes_with_dupes()
     test_collector_merges_across_retry()
+    test_log_collector_uint16()
     test_crc_vector()
     test_frame_budget()
     test_parse_health()
