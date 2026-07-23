@@ -48,6 +48,20 @@ SERIAL_PORT = '/dev/ttyUSB0'
 BAUD_RATE = 115200
 
 
+def _is_usb_serial(dev: str) -> bool:
+    """Keep only real USB serial ports. Drop legacy motherboard UARTs
+    (/dev/ttyS0..31) and the Pi's own UART (/dev/ttyAMA*) — they are never the
+    Ground Station, always error on open, and just slow the probe down 20 s."""
+    if not dev:
+        return False
+    base = dev.lower().rsplit('/', 1)[-1]
+    if base.startswith('ttys') and base[4:].isdigit():
+        return False
+    if base.startswith('ttyama'):
+        return False
+    return True
+
+
 def autodetect_serial_port():
     """Resolve the GS serial port. Explicit override wins; otherwise scan the
     connected serial devices and prefer STM32-style native-USB (CDC ACM)."""
@@ -73,8 +87,11 @@ def autodetect_serial_port():
             return 1
         return 2
 
-    # Filter out Bluetooth ports as opening them can hang indefinitely on Windows
-    valid_ports = [p for p in ports if "bluetooth" not in (p.description or "").lower()]
+    # Filter out Bluetooth ports (opening them can hang on Windows) and legacy
+    # motherboard UARTs (/dev/ttyS*, which error and waste ~20 s of probing).
+    valid_ports = [p for p in ports
+                   if "bluetooth" not in (p.description or "").lower()
+                   and _is_usb_serial(p.device)]
     
     devices = sorted((p.device for p in valid_ports), key=lambda dev: rank(dev))
     if not devices:
@@ -746,11 +763,14 @@ def service_download():
 # SERIAL READER THREAD
 # ====================================================================
 def list_available_ports():
-    """Return a list of {device, description} for every serial port present."""
+    """Return a list of {device, description} for the USB serial ports present
+    (legacy /dev/ttyS* motherboard UARTs are hidden — they clutter the picker
+    and are never the Ground Station)."""
     ports = []
     try:
         for p in list_ports.comports():
-            ports.append({"device": p.device, "description": p.description or ""})
+            if _is_usb_serial(p.device):
+                ports.append({"device": p.device, "description": p.description or ""})
     except Exception:
         pass
     return ports
@@ -1067,11 +1087,20 @@ async def main():
     # Start worker
     asyncio.create_task(broadcast_worker())
 
-    # Start WebSocket server
-    log.info(f"WebSocket Server starting on ws://{WS_HOST}:{WS_PORT}")
-    async with websockets.serve(ws_handler, WS_HOST, WS_PORT):
-        log.info("Bridge is running. Waiting for connections...")
-        await asyncio.Future()  # Run forever
+    # Start WebSocket server. Bind BOTH loopback stacks (IPv4 127.0.0.1 and
+    # IPv6 ::1) so the app connects regardless of how "localhost" resolves on
+    # this OS (the Linux IPv4/IPv6 mismatch bug). Fall back to IPv4 only if the
+    # dual-stack bind fails (e.g. IPv6 disabled).
+    try:
+        await websockets.serve(ws_handler, ["127.0.0.1", "::1"], WS_PORT)
+        log.info(f"WebSocket Server listening on 127.0.0.1 + ::1 :{WS_PORT}")
+    except OSError as e:
+        log.warning(f"Dual-stack bind failed ({e}); using 127.0.0.1 only")
+        await websockets.serve(ws_handler, "127.0.0.1", WS_PORT)
+        log.info(f"WebSocket Server listening on 127.0.0.1:{WS_PORT}")
+
+    log.info("Bridge is running. Waiting for connections...")
+    await asyncio.Future()  # Run forever (the server keeps serving)
 
 if __name__ == "__main__":
     asyncio.run(main())

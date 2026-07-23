@@ -32,6 +32,12 @@ $PY -m pip install --quiet --disable-pip-version-check -r "$DIR/PC_Bridge/requir
 
 # ---- 2. Bridge ----
 echo "[2/3] Starting ground-station bridge..."
+# Stop any leftover bridge so the new one can bind port 8080 AND re-open the
+# serial port (a stale bridge holding 8080 makes the new one crash on bind,
+# leaving the app talking to a bridge that has no serial data).
+pkill -f "gs_bridge.py" 2>/dev/null && sleep 0.5
+# Free port 8080 if something still holds it (fuser is the most portable tool).
+fuser -k 8080/tcp 2>/dev/null && sleep 0.5
 cd "$DIR/PC_Bridge"
 $PY gs_bridge.py > bridge_log.txt 2>&1 &
 BRIDGE_PID=$!

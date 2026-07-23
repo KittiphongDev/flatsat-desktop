@@ -99,7 +99,17 @@ class WebSocketService extends ChangeNotifier {
   String? serialError;
   List<SerialPort> availablePorts = [];
 
-  String _wsUrl = 'ws://localhost:8080';
+  String _wsUrl = 'ws://127.0.0.1:8080';
+
+  // Try IPv4 loopback first, then names, then IPv6. On Linux "localhost" can
+  // resolve to ::1 while the bridge listens on 127.0.0.1 (or vice-versa), so a
+  // single host string can silently fail to connect even though the bridge is
+  // up. Using the literal 127.0.0.1 first avoids that resolution mismatch.
+  static const List<String> _wsCandidates = [
+    'ws://127.0.0.1:8080',
+    'ws://localhost:8080',
+    'ws://[::1]:8080',
+  ];
 
   bool get isConnected => _isConnected;
   String get wsUrl => _wsUrl;
@@ -111,47 +121,52 @@ class WebSocketService extends ChangeNotifier {
     connect();
   }
 
-  /// Connect to the Python bridge WebSocket.
+  /// Connect to the Python bridge WebSocket, trying each candidate host until
+  /// one answers (handles the Linux IPv4/IPv6 "localhost" mismatch).
   void connect({String? url}) async {
-    if (url != null) _wsUrl = url;
     _disconnect();
+    final candidates = url != null ? [url] : _wsCandidates;
 
-    try {
-      _channel = WebSocketChannel.connect(Uri.parse(_wsUrl));
-      
-      // Wait for connection to establish, throws if server is down
-      await _channel!.ready;
+    for (final cand in candidates) {
+      try {
+        final ch = WebSocketChannel.connect(Uri.parse(cand));
+        await ch.ready; // throws if nothing is listening on this host
 
-      _isConnected = true;
-      _addLog('Connected to $_wsUrl');
-      notifyListeners();
+        _channel = ch;
+        _wsUrl = cand;
+        _isConnected = true;
+        _addLog('Connected to $cand');
+        notifyListeners();
 
-      _channel!.stream.listen(
-        _onMessage,
-        onError: (error) {
-          _addLog('WebSocket error: $error');
-          _isConnected = false;
-          notifyListeners();
-          _scheduleReconnect();
-        },
-        onDone: () {
-          _addLog('WebSocket disconnected');
-          _isConnected = false;
-          notifyListeners();
-          _scheduleReconnect();
-        },
-      );
-    } catch (e) {
-      _isConnected = false;
-      // No bridge answered — start one ourselves (desktop only; throttled;
-      // no-op if our child process is already running or on the web build).
-      if (!BridgeLauncher.running) {
-        _addLog('Bridge not reachable — starting it…');
-        await BridgeLauncher.start(_addLog);
+        _channel!.stream.listen(
+          _onMessage,
+          onError: (error) {
+            _addLog('WebSocket error: $error');
+            _isConnected = false;
+            notifyListeners();
+            _scheduleReconnect();
+          },
+          onDone: () {
+            _addLog('WebSocket disconnected');
+            _isConnected = false;
+            notifyListeners();
+            _scheduleReconnect();
+          },
+        );
+        return; // connected — stop trying candidates
+      } catch (_) {
+        // Try the next candidate host.
       }
-      notifyListeners();
-      _scheduleReconnect();
     }
+
+    // No candidate answered.
+    _isConnected = false;
+    if (!BridgeLauncher.running) {
+      _addLog('Bridge not reachable — starting it…');
+      await BridgeLauncher.start(_addLog);
+    }
+    notifyListeners();
+    _scheduleReconnect();
   }
 
   void _disconnect() {
