@@ -1,11 +1,112 @@
-[14:52:56] INFO: server listening on 127.0.0.1:8080
-[14:52:56] INFO: server listening on [::1]:8080
-[14:52:56] INFO: WebSocket Server listening on 127.0.0.1 + ::1 :8080
-[14:52:56] INFO: Bridge is running. Waiting for connections...
-[14:52:56] ERROR: Cannot open /dev/ttyUSB0: [Errno 2] could not open port /dev/ttyUSB0: [Errno 2] No such file or directory: '/dev/ttyUSB0'. Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[14:52:58] INFO: connection open
-[14:52:58] INFO: Dashboard connected (1 clients)
-[14:52:59] ERROR: Cannot open /dev/ttyUSB0: [Errno 2] could not open port /dev/ttyUSB0: [Errno 2] No such file or directory: '/dev/ttyUSB0'. Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[14:53:02] ERROR: Cannot open /dev/ttyUSB0: [Errno 2] could not open port /dev/ttyUSB0: [Errno 2] No such file or directory: '/dev/ttyUSB0'. Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[14:53:05] ERROR: Cannot open /dev/ttyUSB0: [Errno 2] could not open port /dev/ttyUSB0: [Errno 2] No such file or directory: '/dev/ttyUSB0'. Available ports: ['/dev/ttyS31', '/dev/ttyS30', '/dev/ttyS29', '/dev/ttyS28', '/dev/ttyS27', '/dev/ttyS26', '/dev/ttyS25', '/dev/ttyS24', '/dev/ttyS23', '/dev/ttyS22', '/dev/ttyS21', '/dev/ttyS20', '/dev/ttyS19', '/dev/ttyS18', '/dev/ttyS17', '/dev/ttyS16', '/dev/ttyS15', '/dev/ttyS14', '/dev/ttyS13', '/dev/ttyS12', '/dev/ttyS11', '/dev/ttyS10', '/dev/ttyS9', '/dev/ttyS8', '/dev/ttyS7', '/dev/ttyS6', '/dev/ttyS5', '/dev/ttyS4', '/dev/ttyS3', '/dev/ttyS2', '/dev/ttyS1', '/dev/ttyS0']. Retrying... (tip: close the Arduino Serial Monitor; on Linux ensure you're in the 'dialout' group)
-[14:53:07] INFO: Dashboard disconnected (0 clients)
+[16:15:47] INFO: server listening on 127.0.0.1:8080
+[16:15:47] INFO: server listening on [::1]:8080
+[16:15:47] INFO: WebSocket Server listening on 127.0.0.1 + ::1 :8080
+[16:15:47] INFO: Bridge is running. Waiting for connections...
+[16:15:47] INFO: Serial port /dev/ttyACM1 opened at 115200 baud
+[16:15:49] INFO: connection open
+[16:15:49] INFO: Dashboard connected (1 clients)
+[16:15:50] INFO: RX <- CMD 0x03 payload_len=8
+[16:15:50] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-52.5dBm
+[16:16:00] INFO: RX <- CMD 0x03 payload_len=8
+[16:16:00] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.0dBm
+[16:16:10] INFO: RX <- CMD 0x03 payload_len=8
+[16:16:10] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.5dBm
+[16:16:20] INFO: RX <- CMD 0x03 payload_len=8
+[16:16:20] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.0dBm
+[16:16:25] INFO: WS CMD: list_image
+[16:16:25] INFO: TX -> CMD 0x07 payload=none
+[16:16:25] INFO: Collect image: requested (cmd 0x07)
+[16:16:25] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:25] INFO: Collect image: 1/28
+[16:16:25] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:25] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:25] INFO: Collect image: 2/28
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: Collect image: 3/28
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: Collect image: 4/28
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: Collect image: 5/28
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: Collect image: 6/28
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:26] INFO: Collect image: 7/28
+[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: Collect image: 8/28
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: Collect image: 9/28
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: Collect image: 10/28
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: Collect image: 11/28
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: Collect image: 12/28
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:27] INFO: Collect image: 13/28
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: Collect image: 14/28
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: Collect image: 15/28
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: Collect image: 16/28
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: Collect image: 17/28
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: Collect image: 18/28
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:28] INFO: Collect image: 19/28
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: Collect image: 20/28
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: Collect image: 21/28
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: Collect image: 22/28
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: Collect image: 23/28
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:29] INFO: Collect image: 24/28
+[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:30] INFO: Collect image: 25/28
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:30] INFO: Collect image: 26/28
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:30] INFO: Collect image: 27/28
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=27
+[16:16:30] INFO: Collect image: 28/28
+[16:16:30] INFO: IMAGE_LIST complete: 61 files
+[16:16:30] INFO: RX <- CMD 0x0D payload_len=27
+[16:16:32] INFO: RX <- CMD 0x03 payload_len=8
+[16:16:32] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-32.5dBm
+[16:16:33] INFO: RX <- CMD 0x03 payload_len=8
+[16:16:33] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-32.5dBm
+[16:16:34] INFO: RX <- CMD 0x03 payload_len=8
+[16:16:34] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-32.5dBm
+[16:16:35] INFO: RX <- CMD 0x03 payload_len=8
+[16:16:35] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.0dBm
+[16:16:36] INFO: Dashboard disconnected (0 clients)

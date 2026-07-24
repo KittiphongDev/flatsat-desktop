@@ -687,8 +687,14 @@ def service_gps():
             send_command(CMD_GET_GPS)
 
 def parse_image_list(blob: bytes):
-    """Parse [nameLen][name][size(4B, big-endian)] repeating."""
+    """Parse [nameLen][name][size(4B, big-endian)] repeating.
+
+    Every real entry is a printable ASCII .jpg filename, so we stop at the
+    first byte that doesn't fit that shape. This prevents trailing padding or a
+    dropped chunk from inflating the count with garbage entries, and dedupes
+    names in case a redundant chunk slips through."""
     files = []
+    seen = set()
     idx = 0
     n = len(blob)
     while idx < n:
@@ -696,10 +702,20 @@ def parse_image_list(blob: bytes):
         idx += 1
         if fn_len == 0 or idx + fn_len + 4 > n:
             break
-        name = blob[idx:idx + fn_len].decode('ascii', errors='replace')
+        raw = blob[idx:idx + fn_len]
         idx += fn_len
         fsize = struct.unpack('>I', blob[idx:idx + 4])[0]
         idx += 4
+        # Validate: a real filename decodes as printable ASCII and ends in .jpg.
+        try:
+            name = raw.decode('ascii')
+        except UnicodeDecodeError:
+            break
+        if not name.isprintable() or not name.lower().endswith((".jpg", ".jpeg")):
+            break  # hit padding / garbage — the real list has ended
+        if name in seen:
+            continue
+        seen.add(name)
         files.append({"name": name, "size": fsize})
         known_image_sizes[name] = fsize  # so a later download can show a real %
     return files

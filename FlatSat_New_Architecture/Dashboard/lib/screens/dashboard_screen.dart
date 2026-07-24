@@ -419,7 +419,12 @@ class DashboardScreen extends StatelessWidget {
               value: ws.telemetry.linkStatus,
               accentColor:
                   ws.telemetry.isLinkActive ? c.success : c.error,
-              subtitle: ws.telemetry.errorString,
+              // This card is about the ground-station link, not the satellite's
+              // subsystems. Show the connection state; only surface satellite
+              // faults here when they exist, clearly labelled as such.
+              subtitle: ws.telemetry.systemErrors == 0
+                  ? (ws.telemetry.isLinkActive ? 'Ground station' : 'No signal')
+                  : 'Sat fault: ${ws.telemetry.errorString}',
               trailing: StatusIndicator(
                 isActive: ws.telemetry.isLinkActive,
                 label: '',
@@ -714,16 +719,11 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
           Divider(height: 1, color: c.border),
-          SizedBox(
+          _ImageScroll(
             height: listHeight,
-            child: Scrollbar(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: n,
-                itemBuilder: (ctx, i) =>
-                    _imageRow(context, ws, ws.imageList[i], unit),
-              ),
-            ),
+            count: n,
+            itemBuilder: (ctx, i) =>
+                _imageRow(context, ws, ws.imageList[i], unit),
           ),
         ],
       ),
@@ -1479,6 +1479,49 @@ class _WindowButtonsState extends State<_WindowButtons> with WindowListener {
           onPressed: () => windowManager.close(),
         ),
       ],
+    );
+  }
+}
+
+/// Fixed-height, scrollable image list with a draggable scrollbar. Owns its
+/// own ScrollController so the Scrollbar and ListView share it — required for
+/// click-and-drag on the thumb (not just mouse-wheel).
+class _ImageScroll extends StatefulWidget {
+  final double height;
+  final int count;
+  final IndexedWidgetBuilder itemBuilder;
+
+  const _ImageScroll(
+      {required this.height, required this.count, required this.itemBuilder});
+
+  @override
+  State<_ImageScroll> createState() => _ImageScrollState();
+}
+
+class _ImageScrollState extends State<_ImageScroll> {
+  final ScrollController _ctrl = ScrollController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.height,
+      child: Scrollbar(
+        controller: _ctrl,
+        thumbVisibility: true,
+        interactive: true,
+        child: ListView.builder(
+          controller: _ctrl,
+          padding: EdgeInsets.zero,
+          itemCount: widget.count,
+          itemBuilder: widget.itemBuilder,
+        ),
+      ),
     );
   }
 }

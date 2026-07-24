@@ -60,6 +60,22 @@ def test_log_collector_uint16():
     print("Test LOG OK: uint16 collector reassembles 300 chunks")
 
 
+def test_image_list_stops_at_garbage():
+    """Valid .jpg entries followed by padding/garbage must not inflate count."""
+    def entry(name, size):
+        return bytes([len(name)]) + name.encode() + size.to_bytes(4, "big")
+    blob = entry("img_0001.jpg", 51200) + entry("img_0002.jpg", 48000)
+    blob += b"\x00\x00\x00"          # zero padding (fn_len==0 -> stop)
+    blob += b"\x05\xff\xfe\x01\x02\x03\x04"  # garbage that isn't a .jpg name
+    files = gb.parse_image_list(blob)
+    assert len(files) == 2, f"expected 2, got {len(files)}: {files}"
+    assert files[0]["name"] == "img_0001.jpg" and files[0]["size"] == 51200
+    # Duplicate name from a redundant chunk is ignored.
+    blob2 = entry("a.jpg", 1) + entry("a.jpg", 1) + entry("b.jpg", 2)
+    assert len(gb.parse_image_list(blob2)) == 2
+    print("Test IMGLIST OK: stops at garbage + dedupes")
+
+
 def test_crc_vector():
     data = b'\xAA\xBB\x01\x00'
     assert gb.calculate_crc32(data) == (binascii.crc32(data) & 0xFFFFFFFF)
@@ -84,6 +100,7 @@ if __name__ == "__main__":
     test_collector_completes_with_dupes()
     test_collector_merges_across_retry()
     test_log_collector_uint16()
+    test_image_list_stops_at_garbage()
     test_crc_vector()
     test_frame_budget()
     test_parse_health()
