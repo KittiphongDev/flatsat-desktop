@@ -525,7 +525,7 @@ void pacedDelay(uint16_t ms) {
 // loop() keep listening to the uplink between chunks.
 struct ChunkJob {
   uint8_t  cmdType;
-  uint8_t  blob[220];
+  uint8_t  blob[900];   // large enough for a full image-list payload (~50 files)
   uint16_t blobLen;
 };
 #define JOB_QUEUE_SIZE 4
@@ -1121,9 +1121,11 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
     // --- LIST IMAGES ---
     case CMD_LIST_IMAGE: {
       Serial.println("[CMD] LIST_IMAGE");
-      // Iterate SD root and collect .jpg filenames
-      uint8_t listPayload[200];
-      uint8_t listIndex = 0;
+      // Iterate SD root and collect .jpg filenames.
+      // Buffer sized to hold the full list (~50 files); sent chunked below.
+      // static to keep this ~900 B off the stack (handler is not reentrant).
+      static uint8_t listPayload[900];
+      uint16_t listIndex = 0;
 
       File root = sd.open("/");
       if (root) {

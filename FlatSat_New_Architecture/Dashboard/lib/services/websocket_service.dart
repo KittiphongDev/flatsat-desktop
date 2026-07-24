@@ -84,7 +84,31 @@ class WebSocketService extends ChangeNotifier {
   bool isDownloading = false;
   bool downloadPaused = false;
   String? downloadCompleteFile;
+  // Filename of the most recent photo the satellite reported saving (from the
+  // TAKE_PIC ACK). Shown in the Image Manager until dismissed.
+  String? lastCapturedFile;
   List<String> eventLog = [];
+
+  void clearCapturedFile() {
+    lastCapturedFile = null;
+    notifyListeners();
+  }
+
+  /// Decode an ACK hex payload to a .jpg filename, or null if it isn't one.
+  /// The TAKE_PIC ACK carries the saved filename as printable ASCII; power
+  /// ACKs and ping pongs are short binary blobs that won't match.
+  String? _decodePhotoName(dynamic hex) {
+    if (hex is! String || hex.length < 8 || hex.length.isOdd) return null;
+    final bytes = <int>[];
+    for (var i = 0; i < hex.length; i += 2) {
+      final b = int.tryParse(hex.substring(i, i + 2), radix: 16);
+      if (b == null || b < 0x20 || b > 0x7e) return null; // not printable ASCII
+      bytes.add(b);
+    }
+    final s = String.fromCharCodes(bytes);
+    final low = s.toLowerCase();
+    return (low.endsWith('.jpg') || low.endsWith('.jpeg')) ? s : null;
+  }
 
   /// Raw serial traffic mirrored from the bridge (TX/RX frames + link errors).
   List<String> bridgeLog = [];
@@ -237,8 +261,15 @@ class WebSocketService extends ChangeNotifier {
         case 'ack':
           _addLog('ACK: ${data['data'] ?? 'OK'}');
           _applyPowerAck(data['data']);
-          // If a ping is outstanding, this ACK is its pong — record RTT.
-          if (_pingPending && _pingSentAt != null) {
+          final photoName = _decodePhotoName(data['data']);
+          if (photoName != null) {
+            // TAKE_PIC succeeded — surface the saved filename and refresh list.
+            lastCapturedFile = photoName;
+            _addLog('PHOTO: saved $photoName');
+            _flash('Photo saved: $photoName', success: true);
+            Future.delayed(const Duration(milliseconds: 800), sendListImage);
+          } else if (_pingPending && _pingSentAt != null) {
+            // If a ping is outstanding, this ACK is its pong — record RTT.
             pingRttMs = DateTime.now().difference(_pingSentAt!).inMilliseconds;
             _pingPending = false;
             _flash('Pong · ${pingRttMs}ms round-trip', success: true);

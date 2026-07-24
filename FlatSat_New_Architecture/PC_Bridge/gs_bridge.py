@@ -1194,7 +1194,7 @@ async def ws_handler(websocket):
                     send_command(CMD_PING)
 
                 elif cmd == "status":
-                    if download_state["active"]:
+                    if download_state["active"] and not download_state["paused"]:
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
@@ -1211,7 +1211,7 @@ async def ws_handler(websocket):
                     log.info(f"EPS log config: enable={enable} interval={interval}s")
 
                 elif cmd == "get_eps_log":
-                    if download_state["active"]:
+                    if download_state["active"] and not download_state["paused"]:
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
@@ -1231,7 +1231,7 @@ async def ws_handler(websocket):
                     start_gps()
 
                 elif cmd == "get_eps":
-                    if download_state["active"]:
+                    if download_state["active"] and not download_state["paused"]:
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
@@ -1242,7 +1242,7 @@ async def ws_handler(websocket):
                     send_command(CMD_TOGGLE_PWR, bytes([subsystem]))
 
                 elif cmd == "list_image":
-                    if download_state["active"]:
+                    if download_state["active"] and not download_state["paused"]:
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
@@ -1259,8 +1259,11 @@ async def ws_handler(websocket):
 
                 elif cmd == "download":
                     if download_state["active"]:
+                        msg = ("A download is paused — resume or cancel it first"
+                               if download_state["paused"]
+                               else "A download is already running")
                         await websocket.send(json.dumps(
-                            {"type": "busy", "data": "A download is already running"}))
+                            {"type": "busy", "data": msg}))
                     else:
                         filename = data.get("filename", "photo.jpg")
                         start_download(filename)

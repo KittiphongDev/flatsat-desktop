@@ -279,22 +279,7 @@ class DashboardScreen extends StatelessWidget {
   /// (e.g. the command button that drives this panel).
   Widget _section(BuildContext context, String title, Widget child,
       {Widget? action}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(child: _sectionTitle(context, title)),
-              if (action != null) action,
-            ],
-          ),
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
+    return _CollapsibleSection(title: title, action: action, child: child);
   }
 
   /// Compact command button used in panel headers.
@@ -379,33 +364,6 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [_xferBar(context, x, label), child],
-    );
-  }
-
-  // ---- Section Title ----
-  Widget _sectionTitle(BuildContext context, String title) {
-    final c = context.colors;
-    return Row(
-      children: [
-        Container(
-          width: 3,
-          height: 16,
-          decoration: BoxDecoration(
-            color: c.accent,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          title,
-          style: TextStyle(
-            color: c.textSecondary,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 2,
-          ),
-        ),
-      ],
     );
   }
 
@@ -553,9 +511,12 @@ class DashboardScreen extends StatelessWidget {
   // ---- Image Manager ----
   Widget _imageManager(BuildContext context, WebSocketService ws) {
     final c = context.colors;
+    final noSd = ws.telemetry.systemErrors & 0x02 != 0; // ERR_SD bit
 
     final Widget list;
-    if (ws.imageList.isEmpty) {
+    if (noSd) {
+      list = _noSdCard(context);
+    } else if (ws.imageList.isEmpty) {
       list = Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -574,14 +535,97 @@ class DashboardScreen extends StatelessWidget {
       list = _imageListCard(context, ws);
     }
 
-    // Prepend a "saved" banner after a completed download.
-    if (ws.downloadCompleteFile != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [_savedBanner(context, ws), const SizedBox(height: 10), list],
-      );
+    // Stack any status banners above the list.
+    final banners = <Widget>[];
+    if (ws.downloadCompleteFile != null) banners.add(_savedBanner(context, ws));
+    if (ws.lastCapturedFile != null) banners.add(_capturedBanner(context, ws));
+    if (banners.isEmpty) return list;
+
+    final children = <Widget>[];
+    for (final b in banners) {
+      children..add(b)..add(const SizedBox(height: 10));
     }
-    return list;
+    children.add(list);
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch, children: children);
+  }
+
+  /// Clear "no SD card" state shown when the satellite reports ERR_SD.
+  Widget _noSdCard(BuildContext context) {
+    final c = context.colors;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: c.error.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(kRadiusCard),
+        border: Border.all(color: c.error.withOpacity(0.35)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.sd_card_alert_outlined, color: c.error, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('No SD card detected',
+                    style: TextStyle(
+                        color: c.textPrimary,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700)),
+                const SizedBox(height: 3),
+                Text(
+                  'Photo capture, listing and download are unavailable until '
+                  'an SD card is inserted on the satellite.',
+                  style: TextStyle(color: c.textMuted, fontSize: 11.5),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Banner announcing the filename of the most recently captured photo.
+  Widget _capturedBanner(BuildContext context, WebSocketService ws) {
+    final c = context.colors;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: c.accent.withOpacity(0.07),
+        borderRadius: BorderRadius.circular(kRadiusControl),
+        border: Border.all(color: c.accent.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.photo_camera_outlined, color: c.accent, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(color: c.textPrimary, fontSize: 12),
+                children: [
+                  const TextSpan(
+                      text: 'Photo saved on SD:  ',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  TextSpan(
+                    text: ws.lastCapturedFile,
+                    style: const TextStyle(
+                        fontFamily: 'monospace', fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.close, color: c.textMuted, size: 16),
+            tooltip: 'Dismiss',
+            onPressed: ws.clearCapturedFile,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _savedBanner(BuildContext context, WebSocketService ws) {
@@ -635,6 +679,13 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _imageListCard(BuildContext context, WebSocketService ws) {
     final c = context.colors;
+    final unit = context.watch<SettingsService>().imageSizeUnit;
+    final n = ws.imageList.length;
+    // Cap the visible height so a long list scrolls instead of pushing the
+    // rest of the dashboard off-screen.
+    const rowHeight = 57.0;
+    final listHeight =
+        (n * rowHeight).clamp(rowHeight, 6 * rowHeight).toDouble();
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
@@ -642,79 +693,113 @@ class DashboardScreen extends StatelessWidget {
         border: Border.all(color: c.border),
       ),
       child: Column(
-        children: ws.imageList.map((img) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: c.border)),
-            ),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Count header — confirms the full list arrived.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
             child: Row(
               children: [
-                Icon(Icons.image, color: c.textSecondary, size: 20),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        img.name,
-                        style: TextStyle(
-                          color: c.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        formatImageSize(
-                            img.size, context.watch<SettingsService>().imageSizeUnit),
-                        style: TextStyle(color: c.textMuted, fontSize: 11),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.download, color: c.accent, size: 20),
-                  tooltip: 'Download',
-                  onPressed: () => ws.sendDownload(img.name),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete_outline, color: c.error, size: 20),
-                  tooltip: 'Delete',
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        backgroundColor: c.surface,
-                        title: const Text('Delete Image'),
-                        content: Text('Delete ${img.name} from SD card?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              ws.sendRemoveImage(img.name);
-                              Navigator.pop(ctx);
-                              Future.delayed(
-                                const Duration(milliseconds: 500),
-                                ws.sendListImage,
-                              );
-                            },
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(color: c.error),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                Icon(Icons.collections_outlined, size: 14, color: c.textMuted),
+                const SizedBox(width: 8),
+                Text(
+                  '$n image${n == 1 ? '' : 's'} on SD card',
+                  style: TextStyle(
+                      color: c.textSecondary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5),
                 ),
               ],
             ),
-          );
-        }).toList(),
+          ),
+          Divider(height: 1, color: c.border),
+          SizedBox(
+            height: listHeight,
+            child: Scrollbar(
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: n,
+                itemBuilder: (ctx, i) =>
+                    _imageRow(context, ws, ws.imageList[i], unit),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _imageRow(
+      BuildContext context, WebSocketService ws, dynamic img, dynamic unit) {
+    final c = context.colors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: c.border)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.image, color: c.textSecondary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  img.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: c.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  formatImageSize(img.size, unit),
+                  style: TextStyle(color: c.textMuted, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.download, color: c.accent, size: 20),
+            tooltip: 'Download',
+            onPressed: () => ws.sendDownload(img.name),
+          ),
+          IconButton(
+            icon: Icon(Icons.delete_outline, color: c.error, size: 20),
+            tooltip: 'Delete',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  backgroundColor: c.surface,
+                  title: const Text('Delete Image'),
+                  content: Text('Delete ${img.name} from SD card?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        ws.sendRemoveImage(img.name);
+                        Navigator.pop(ctx);
+                        Future.delayed(
+                          const Duration(milliseconds: 500),
+                          ws.sendListImage,
+                        );
+                      },
+                      child: Text('Delete', style: TextStyle(color: c.error)),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -1027,15 +1112,21 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             dl.hasTotal
-                ? '${dl.percent}%  •  ${dl.bytesReceived}/${dl.totalSize} B  •  '
+                ? '${dl.percent}%  •  ${_fmtBytes(dl.bytesReceived)} / ${_fmtBytes(dl.totalSize)}  •  '
                     '${_fmtBps(dl.speedBps)}  •  ETA ${_fmtEta(dl.etaSeconds)}'
-                : '${dl.bytesReceived} B received  •  ${_fmtBps(dl.speedBps)}',
+                : '${_fmtBytes(dl.bytesReceived)} received  •  ${_fmtBps(dl.speedBps)}',
             style: monoStyle(
                 color: c.textMuted, fontSize: 11, fontWeight: FontWeight.w400),
           ),
         ],
       ),
     );
+  }
+
+  static String _fmtBytes(int b) {
+    if (b >= 1024 * 1024) return '${(b / (1024 * 1024)).toStringAsFixed(2)} MB';
+    if (b >= 1024) return '${(b / 1024).toStringAsFixed(1)} KB';
+    return '$b B';
   }
 
   static String _fmtBps(double bps) {
@@ -1388,6 +1479,100 @@ class _WindowButtonsState extends State<_WindowButtons> with WindowListener {
           onPressed: () => windowManager.close(),
         ),
       ],
+    );
+  }
+}
+
+/// A dashboard section with a tappable header that collapses/expands its body.
+/// Collapsed state is keyed by title and kept in a static map so it survives
+/// widget rebuilds and layout (mobile/desktop) switches within a session.
+class _CollapsibleSection extends StatefulWidget {
+  final String title;
+  final Widget child;
+  final Widget? action;
+
+  const _CollapsibleSection(
+      {required this.title, required this.child, this.action});
+
+  @override
+  State<_CollapsibleSection> createState() => _CollapsibleSectionState();
+}
+
+class _CollapsibleSectionState extends State<_CollapsibleSection> {
+  static final Map<String, bool> _collapsed = {};
+
+  bool get _isCollapsed => _collapsed[widget.title] ?? false;
+
+  void _toggle() =>
+      setState(() => _collapsed[widget.title] = !_isCollapsed);
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: _toggle,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        AnimatedRotation(
+                          turns: _isCollapsed ? -0.25 : 0,
+                          duration: const Duration(milliseconds: 150),
+                          child: Icon(Icons.keyboard_arrow_down,
+                              size: 18, color: c.textSecondary),
+                        ),
+                        const SizedBox(width: 4),
+                        Container(
+                          width: 3,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: c.accent,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            widget.title,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: c.textSecondary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              if (widget.action != null && !_isCollapsed) widget.action!,
+            ],
+          ),
+          AnimatedCrossFade(
+            firstChild: Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: widget.child,
+            ),
+            secondChild: const SizedBox(width: double.infinity),
+            crossFadeState: _isCollapsed
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 150),
+          ),
+        ],
+      ),
     );
   }
 }
