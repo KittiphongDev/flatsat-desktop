@@ -76,6 +76,28 @@ def test_image_list_stops_at_garbage():
     print("Test IMGLIST OK: stops at garbage + dedupes")
 
 
+def test_imglist_stream_roundtrip():
+    """A large manifest streamed as uint16 chunks reassembles + parses fully."""
+    gb.schedule_broadcast = lambda *a, **k: None
+    def entry(name, size):
+        return bytes([len(name)]) + name.encode() + size.to_bytes(4, "big")
+    manifest = b"".join(entry(f"img_{i:04d}.jpg", 40000 + i) for i in range(80))
+    csz = 32
+    total = (len(manifest) + csz - 1) // csz
+    gb._imglist_collector.update({"active": True, "chunks": {}, "total": None,
+                                  "retries": 0, "last": __import__('time').time()})
+    blob = None
+    for i in range(total):
+        seg = manifest[i * csz:(i + 1) * csz]
+        payload = bytes([(i >> 8) & 0xFF, i & 0xFF,
+                         (total >> 8) & 0xFF, total & 0xFF]) + seg
+        blob = gb.collect_imglist_chunk(payload, len(payload))
+    files = gb.parse_image_list(blob)
+    assert len(files) == 80, f"expected 80 files, got {len(files)}"
+    assert files[79]["name"] == "img_0079.jpg"
+    print("Test IMGSTREAM OK: 80-file manifest streams + parses (unbounded)")
+
+
 def test_crc_vector():
     data = b'\xAA\xBB\x01\x00'
     assert gb.calculate_crc32(data) == (binascii.crc32(data) & 0xFFFFFFFF)
@@ -101,6 +123,7 @@ if __name__ == "__main__":
     test_collector_merges_across_retry()
     test_log_collector_uint16()
     test_image_list_stops_at_garbage()
+    test_imglist_stream_roundtrip()
     test_crc_vector()
     test_frame_budget()
     test_parse_health()

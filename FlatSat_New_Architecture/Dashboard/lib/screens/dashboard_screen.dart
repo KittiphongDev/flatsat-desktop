@@ -416,14 +416,15 @@ class DashboardScreen extends StatelessWidget {
             TelemetryCard(
               icon: Icons.link,
               title: 'LINK STATUS',
-              value: ws.telemetry.linkStatus,
-              accentColor:
-                  ws.telemetry.isLinkActive ? c.success : c.error,
-              // This card is about the ground-station link, not the satellite's
-              // subsystems. Show the connection state; only surface satellite
-              // faults here when they exist, clearly labelled as such.
+              // Connection health only — one of No signal / Stable / Not stable.
+              value: ws.telemetry.linkQuality,
+              accentColor: !ws.telemetry.isLinkActive
+                  ? c.error
+                  : (ws.telemetry.isLinkStable ? c.success : c.warning),
+              // Satellite subsystem faults are unrelated to the link, so only
+              // surface them here when present, clearly labelled.
               subtitle: ws.telemetry.systemErrors == 0
-                  ? (ws.telemetry.isLinkActive ? 'Ground station' : 'No signal')
+                  ? ''
                   : 'Sat fault: ${ws.telemetry.errorString}',
               trailing: StatusIndicator(
                 isActive: ws.telemetry.isLinkActive,

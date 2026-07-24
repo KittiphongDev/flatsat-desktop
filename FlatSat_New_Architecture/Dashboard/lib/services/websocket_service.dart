@@ -301,10 +301,12 @@ class WebSocketService extends ChangeNotifier {
           break;
 
         case 'image_progress':
+        case 'image_list_progress':
           imageXfer.applyProgress(data['data'] as Map<String, dynamic>);
           break;
 
         case 'image_failed':
+        case 'image_list_failed':
           imageXfer.markFailed();
           _addLog('Image list failed: ${data['data']}');
           _flash('Image list failed — try again', error: true);

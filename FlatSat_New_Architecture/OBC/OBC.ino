@@ -277,7 +277,8 @@ enum CommandByte {
   CMD_EPS_LOG_CFG  = 0x13, // GS -> OBC: [enable][interval_lo][interval_hi]
   CMD_GET_EPS_LOG  = 0x14, // GS -> OBC: request the whole saved EPS log
   CMD_EPS_LOG_DATA = 0x15, // OBC -> GS: log stream, uint16-chunked
-  CMD_EPS_LOG_CLEAR= 0x16  // GS -> OBC: delete the log after a verified pull
+  CMD_EPS_LOG_CLEAR= 0x16, // GS -> OBC: delete the log after a verified pull
+  CMD_IMAGE_LIST_DATA = 0x17 // OBC -> GS: full image list, uint16-chunked file stream
 };
 
 // --- KISS Framing ---
@@ -353,6 +354,7 @@ uint32_t getUnixTime() {
 //                         + 4*ADM(u16 mV, u16 mA).
 #define EPS_LOG_FILE    "eps_log.bin"
 #define EPS_LOG_TX      "eps_log.tx"   // frozen snapshot during a pull
+#define IMG_LIST_TX     "imglist.tx"   // regenerated manifest streamed to the GS
 #define EPS_RECORD_SIZE 48
 bool epsLogEnabled = false;
 uint32_t epsLogIntervalMs = 5000;
@@ -525,7 +527,7 @@ void pacedDelay(uint16_t ms) {
 // loop() keep listening to the uplink between chunks.
 struct ChunkJob {
   uint8_t  cmdType;
-  uint8_t  blob[900];   // large enough for a full image-list payload (~50 files)
+  uint8_t  blob[220];   // EPS/health dumps only (image list now streams as a file)
   uint16_t blobLen;
 };
 #define JOB_QUEUE_SIZE 4
@@ -630,33 +632,89 @@ void writeEpsLogRecord() {
   }
 }
 
+// --- Generic non-blocking file streamer (uint16-chunked, redundant) ---------
+// Shared by the EPS-log pull and the full image-list pull. Streams an on-SD
+// snapshot file in EPS_CHUNK_SIZE pieces with a uint16 [idx][total] header so
+// files of any length transfer without loss; the GS re-requests on gaps.
 bool          logTxActive = false;
 File          logTxFile;
 uint16_t      logTxChunk = 0, logTxTotal = 1, logTxCopy = 0;
 unsigned long logTxNextAt = 0;
 uint8_t       logTxBuf[EPS_CHUNK_SIZE];
 uint8_t       logTxBufLen = 0;
+uint8_t       logTxCmd = CMD_EPS_LOG_DATA;   // response cmd for this stream
+char          logTxPath[20] = EPS_LOG_TX;    // file currently being streamed
+bool          logTxDeleteAfter = false;      // remove the snapshot when done
 
 bool logTxActiveFwd() { return logTxActive; }
+
+// Open `path`, size it into chunks, and arm the streamer to send it as
+// `respCmd`. If `deleteAfter`, the file is removed once fully streamed.
+void beginFileTx(const char* path, uint8_t respCmd, bool deleteAfter) {
+  if (logTxFile.isOpen()) logTxFile.close();
+  uint32_t fsize = 0;
+  if (sd.exists(path) && logTxFile.open(path, O_RDONLY)) {
+    fsize = logTxFile.fileSize();
+  }
+  logTxTotal = (uint16_t)((fsize + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE);
+  if (logTxTotal == 0) logTxTotal = 1;   // empty file -> one empty chunk
+  logTxChunk = 0; logTxCopy = 0; logTxBufLen = 0;
+  logTxCmd = respCmd;
+  strncpy(logTxPath, path, sizeof(logTxPath) - 1);
+  logTxPath[sizeof(logTxPath) - 1] = 0;
+  logTxDeleteAfter = deleteAfter;
+  logTxActive = true;
+  logTxNextAt = millis();
+}
+
+// Build a fresh manifest of every .jpg on the card: [fnLen][name][size(4B BE)]
+// repeated. Unbounded (limited only by the SD), so nothing is dropped.
+void writeImageListFile() {
+  if (sd.exists(IMG_LIST_TX)) sd.remove(IMG_LIST_TX);
+  File out;
+  if (!out.open(IMG_LIST_TX, O_WRONLY | O_CREAT | O_TRUNC)) return;
+  File root = sd.open("/");
+  if (root) {
+    File entry;
+    while (entry.openNext(&root, O_RDONLY)) {
+      char name[32];
+      entry.getName(name, sizeof(name));
+      size_t nameLen = strlen(name);
+      if (nameLen > 4 &&
+          (strcmp(&name[nameLen - 4], ".jpg") == 0 ||
+           strcmp(&name[nameLen - 4], ".JPG") == 0)) {
+        uint8_t fnLen = (uint8_t)nameLen;
+        uint32_t fileSize = entry.fileSize();
+        out.write(&fnLen, 1);
+        out.write((const uint8_t*)name, fnLen);
+        uint8_t sz[4] = {(uint8_t)((fileSize >> 24) & 0xFF),
+                         (uint8_t)((fileSize >> 16) & 0xFF),
+                         (uint8_t)((fileSize >> 8) & 0xFF),
+                         (uint8_t)(fileSize & 0xFF)};
+        out.write(sz, 4);
+      }
+      entry.close();
+    }
+    root.close();
+  }
+  out.close();
+}
+
+void startImageListTx() {
+  writeImageListFile();
+  beginFileTx(IMG_LIST_TX, CMD_IMAGE_LIST_DATA, true);  // self-deletes when done
+  Serial.println("[IMGLIST] Manifest built, streaming");
+}
 
 void startEpsLogTx() {
   // Freeze the log (rename) so concurrent logging + the later delete are safe.
   if (!sd.exists(EPS_LOG_TX) && sd.exists(EPS_LOG_FILE)) {
     sd.rename(EPS_LOG_FILE, EPS_LOG_TX);
   }
-  if (logTxFile.isOpen()) logTxFile.close();
-  uint32_t fsize = 0;
-  if (sd.exists(EPS_LOG_TX) && logTxFile.open(EPS_LOG_TX, O_RDONLY)) {
-    fsize = logTxFile.fileSize();
-  }
-  logTxTotal = (uint16_t)((fsize + EPS_CHUNK_SIZE - 1) / EPS_CHUNK_SIZE);
-  if (logTxTotal == 0) logTxTotal = 1;   // empty log -> one empty chunk
-  logTxChunk = 0; logTxCopy = 0; logTxBufLen = 0;
-  logTxActive = true;
-  logTxNextAt = millis();
+  beginFileTx(EPS_LOG_TX, CMD_EPS_LOG_DATA, false);  // delete via bridge CLEAR
   Serial.print("[EPSLOG] Pull start, ");
-  Serial.print(fsize);
-  Serial.println(" bytes");
+  Serial.print((uint32_t)logTxTotal * EPS_CHUNK_SIZE);
+  Serial.println(" bytes (approx)");
 }
 
 void serviceEpsLogTx() {
@@ -676,7 +734,7 @@ void serviceEpsLogTx() {
   part[2] = (logTxTotal >> 8) & 0xFF;
   part[3] = logTxTotal & 0xFF;
   memcpy(&part[4], logTxBuf, logTxBufLen);
-  sendPacket(CMD_EPS_LOG_DATA, part, logTxBufLen + 4);
+  sendPacket(logTxCmd, part, logTxBufLen + 4);
   logTxNextAt = millis() + TX_CHUNK_GAP_MS;
   lastActivityTime = millis();
 
@@ -685,7 +743,8 @@ void serviceEpsLogTx() {
     if (++logTxChunk >= logTxTotal) {
       logTxActive = false;
       if (logTxFile.isOpen()) logTxFile.close();
-      Serial.println("[EPSLOG] Pull stream done");
+      if (logTxDeleteAfter && sd.exists(logTxPath)) sd.remove(logTxPath);
+      Serial.println("[FILETX] Stream done");
     }
   }
 }
@@ -1121,52 +1180,10 @@ void handleCommand(uint8_t cmdType, uint8_t *payload, uint8_t payloadLen) {
     // --- LIST IMAGES ---
     case CMD_LIST_IMAGE: {
       Serial.println("[CMD] LIST_IMAGE");
-      // Iterate SD root and collect .jpg filenames.
-      // Buffer sized to hold the full list (~50 files); sent chunked below.
-      // static to keep this ~900 B off the stack (handler is not reentrant).
-      static uint8_t listPayload[900];
-      uint16_t listIndex = 0;
-
-      File root = sd.open("/");
-      if (root) {
-        File entry;
-        while (entry.openNext(&root, O_RDONLY)) {
-          char name[32];
-          entry.getName(name, sizeof(name));
-
-          // Filter for .jpg files only
-          size_t nameLen = strlen(name);
-          if (nameLen > 4 &&
-              (strcmp(&name[nameLen-4], ".jpg") == 0 || strcmp(&name[nameLen-4], ".JPG") == 0)) {
-
-            // Format: [nameLen][name bytes][fileSize 4 bytes]
-            uint8_t fnLen = (uint8_t)nameLen;
-            uint32_t fileSize = entry.fileSize();
-
-            if (listIndex + 1 + fnLen + 4 < sizeof(listPayload)) {
-              listPayload[listIndex++] = fnLen;
-              memcpy(&listPayload[listIndex], name, fnLen);
-              listIndex += fnLen;
-              listPayload[listIndex++] = (fileSize >> 24) & 0xFF;
-              listPayload[listIndex++] = (fileSize >> 16) & 0xFF;
-              listPayload[listIndex++] = (fileSize >> 8) & 0xFF;
-              listPayload[listIndex++] = fileSize & 0xFF;
-            }
-          }
-          entry.close();
-        }
-        root.close();
-      }
-
-      // The list can exceed one 64-byte radio frame, so send it chunked
-      // (works for 0 images too — the bridge reassembles an empty list).
-      if (enqueueChunked(CMD_IMAGE_LIST, listPayload, listIndex)) {
-        Serial.print("[CMD] Image list queued, payload size: ");
-        Serial.println(listIndex);
-      } else {
-        sendPacket(CMD_NACK, nullptr, 0);
-        Serial.println("[CMD] TX queue full - NACK");
-      }
+      // Write the full manifest to SD and stream it as a file (uint16-chunked,
+      // redundant, GS re-requests gaps). No buffer cap, so every image is
+      // listed no matter how many are on the card.
+      startImageListTx();
       break;
     }
 

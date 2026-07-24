@@ -188,6 +188,7 @@ CMD_EPS_LOG_CFG  = 0x13
 CMD_GET_EPS_LOG  = 0x14
 CMD_EPS_LOG_DATA = 0x15
 CMD_EPS_LOG_CLEAR = 0x16
+CMD_IMAGE_LIST_DATA = 0x17   # OBC -> GS: full image list as a uint16-chunked file
 
 # ====================================================================
 # APPLICATION STATE
@@ -417,11 +418,20 @@ def process_packet(raw_bytes: bytearray):
                      f"Alt={alt:.1f}m Sats={sat_count}")
             schedule_broadcast({"type": "gps", "data": gps_data})
 
-    elif cmd_type == CMD_IMAGE_LIST:
-        blob = collect_chunk("image", payload, payload_len)
+    elif cmd_type == CMD_IMAGE_LIST_DATA:
+        # New unbounded path: the full list arrives as a uint16-chunked file.
+        blob = collect_imglist_chunk(payload, payload_len)
         if blob is not None:
             files = parse_image_list(blob)
             log.info(f"IMAGE_LIST complete: {len(files)} files")
+            schedule_broadcast({"type": "image_list", "data": files})
+
+    elif cmd_type == CMD_IMAGE_LIST:
+        # Legacy path (older firmware): uint8-chunked, capped list.
+        blob = collect_chunk("image", payload, payload_len)
+        if blob is not None:
+            files = parse_image_list(blob)
+            log.info(f"IMAGE_LIST (legacy) complete: {len(files)} files")
             schedule_broadcast({"type": "image_list", "data": files})
 
     elif cmd_type == CMD_HEALTH_DATA:
@@ -632,6 +642,52 @@ def service_log_collector():
             _log_collector["retries"] += 1
             _log_collector["last"] = now
             send_command(CMD_GET_EPS_LOG)
+
+# --- Full image list, streamed as a uint16-chunked file (unbounded) ----------
+_imglist_collector = {"active": False, "chunks": {}, "total": None,
+                      "retries": 0, "last": 0.0}
+
+def start_imglist_pull():
+    _imglist_collector.update({"active": True, "chunks": {}, "total": None,
+                               "retries": 0, "last": time.time()})
+    send_command(CMD_LIST_IMAGE)
+    log.info("Image list pull requested")
+
+def collect_imglist_chunk(payload, payload_len):
+    if not _imglist_collector["active"] or payload_len < 4:
+        return None
+    idx = (payload[0] << 8) | payload[1]
+    total = (payload[2] << 8) | payload[3]
+    if total == 0:
+        return None
+    _imglist_collector["total"] = total
+    is_new = idx not in _imglist_collector["chunks"]
+    _imglist_collector["chunks"][idx] = bytes(payload[4:payload_len])
+    _imglist_collector["last"] = time.time()
+    if is_new:
+        received = len(_imglist_collector["chunks"])
+        schedule_broadcast({"type": "image_list_progress", "data": {
+            "received": received, "total": total,
+            "percent": int(received * 100 / total)}})
+    if all(i in _imglist_collector["chunks"] for i in range(total)):
+        blob = b"".join(_imglist_collector["chunks"][i] for i in range(total))
+        _imglist_collector["active"] = False
+        return blob
+    return None
+
+def service_imglist_collector():
+    if not _imglist_collector["active"]:
+        return
+    now = time.time()
+    if now - _imglist_collector["last"] > LOG_RETRY_S:
+        if _imglist_collector["retries"] >= LOG_MAX_RETRIES:
+            _imglist_collector["active"] = False
+            schedule_broadcast({"type": "image_list_failed",
+                                "data": "Lost image list — try again"})
+        else:
+            _imglist_collector["retries"] += 1
+            _imglist_collector["last"] = now
+            send_command(CMD_LIST_IMAGE)
 
 def parse_eps_log(blob):
     """Parse fixed 48-byte records: t(u32) + 6*(u16 mV, i16 mA) +
@@ -1104,6 +1160,7 @@ def serial_reader_loop():
             service_collectors()
             service_gps()
             service_log_collector()
+            service_imglist_collector()
             service_download()
 
         except serial.SerialException as e:
@@ -1262,7 +1319,7 @@ async def ws_handler(websocket):
                         await websocket.send(json.dumps(
                             {"type": "busy", "data": "Download in progress"}))
                     else:
-                        start_collect("image", CMD_LIST_IMAGE)
+                        start_imglist_pull()
 
                 elif cmd == "remove_image":
                     filename = data.get("filename", "")

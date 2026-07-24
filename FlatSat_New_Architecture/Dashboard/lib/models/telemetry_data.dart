@@ -72,6 +72,21 @@ class TelemetryData {
 
   bool get isLinkActive => linkStatus == 'ACTIVE';
 
+  /// RSSI (dBm) at or above which the link is treated as solid. Below this the
+  /// signal is weak enough that frames start dropping, so we call it unstable.
+  static const double kRssiStableDbm = -100.0;
+
+  /// Three-state link health for the LINK STATUS card:
+  /// 'No signal' (nothing being received), 'Stable' (active + strong signal),
+  /// 'Not stable' (active but weak signal / marginal link).
+  String get linkQuality {
+    if (!isLinkActive) return 'No signal';
+    if (rssi != 0.0 && rssi < kRssiStableDbm) return 'Not stable';
+    return 'Stable';
+  }
+
+  bool get isLinkStable => linkQuality == 'Stable';
+
   /// SNR is a LoRa-only metric; the GS sends -12.8 as an "N/A" sentinel in FSK.
   bool get snrValid => snr > -12.75;
 
