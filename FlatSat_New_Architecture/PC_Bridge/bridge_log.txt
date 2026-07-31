@@ -1,112 +1,592 @@
-[16:15:47] INFO: server listening on 127.0.0.1:8080
-[16:15:47] INFO: server listening on [::1]:8080
-[16:15:47] INFO: WebSocket Server listening on 127.0.0.1 + ::1 :8080
-[16:15:47] INFO: Bridge is running. Waiting for connections...
-[16:15:47] INFO: Serial port /dev/ttyACM1 opened at 115200 baud
-[16:15:49] INFO: connection open
-[16:15:49] INFO: Dashboard connected (1 clients)
-[16:15:50] INFO: RX <- CMD 0x03 payload_len=8
-[16:15:50] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-52.5dBm
-[16:16:00] INFO: RX <- CMD 0x03 payload_len=8
-[16:16:00] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.0dBm
-[16:16:10] INFO: RX <- CMD 0x03 payload_len=8
-[16:16:10] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.5dBm
-[16:16:20] INFO: RX <- CMD 0x03 payload_len=8
-[16:16:20] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.0dBm
-[16:16:25] INFO: WS CMD: list_image
-[16:16:25] INFO: TX -> CMD 0x07 payload=none
-[16:16:25] INFO: Collect image: requested (cmd 0x07)
-[16:16:25] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:25] INFO: Collect image: 1/28
-[16:16:25] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:25] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:25] INFO: Collect image: 2/28
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: Collect image: 3/28
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: Collect image: 4/28
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: Collect image: 5/28
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: Collect image: 6/28
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:26] INFO: Collect image: 7/28
-[16:16:26] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: Collect image: 8/28
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: Collect image: 9/28
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: Collect image: 10/28
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: Collect image: 11/28
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: Collect image: 12/28
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:27] INFO: Collect image: 13/28
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: Collect image: 14/28
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: Collect image: 15/28
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: Collect image: 16/28
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: Collect image: 17/28
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: Collect image: 18/28
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:28] INFO: Collect image: 19/28
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: Collect image: 20/28
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: Collect image: 21/28
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: Collect image: 22/28
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: Collect image: 23/28
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:29] INFO: Collect image: 24/28
-[16:16:29] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:30] INFO: Collect image: 25/28
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:30] INFO: Collect image: 26/28
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:30] INFO: Collect image: 27/28
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=34
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=27
-[16:16:30] INFO: Collect image: 28/28
-[16:16:30] INFO: IMAGE_LIST complete: 61 files
-[16:16:30] INFO: RX <- CMD 0x0D payload_len=27
-[16:16:32] INFO: RX <- CMD 0x03 payload_len=8
-[16:16:32] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-32.5dBm
-[16:16:33] INFO: RX <- CMD 0x03 payload_len=8
-[16:16:33] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-32.5dBm
-[16:16:34] INFO: RX <- CMD 0x03 payload_len=8
-[16:16:34] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-32.5dBm
-[16:16:35] INFO: RX <- CMD 0x03 payload_len=8
-[16:16:35] INFO: BEACON: Bat=90% Temp=26C V=4 Errors=0x10 RSSI=-33.0dBm
-[16:16:36] INFO: Dashboard disconnected (0 clients)
+[12:06:30] INFO: server listening on 127.0.0.1:8080
+[12:06:30] INFO: server listening on [::1]:8080
+[12:06:30] INFO: WebSocket Server listening on 127.0.0.1 + ::1 :8080
+[12:06:30] INFO: Bridge is running. Waiting for connections...
+[12:06:30] INFO: Serial port /dev/ttyACM0 opened at 115200 baud
+[12:06:32] INFO: connection open
+[12:06:32] INFO: Dashboard connected (1 clients)
+[12:06:32] INFO: WS CMD: set_download_dir
+[12:06:32] INFO: Download directory set to: /home/pi/Documents/FlatSat Images
+[12:06:32] INFO: WS CMD: eps_log_config
+[12:06:32] INFO: TX -> CMD 0x13 payload=000500
+[12:06:32] INFO: EPS log config: enable=0 interval=5s
+[12:06:32] INFO: WS CMD: sync_time
+[12:06:32] INFO: TX -> CMD 0x12 payload=582d6c6a
+[12:06:32] INFO: Time sync -> epoch 1785474392
+[12:06:50] WARNING: No KISS data on /dev/ttyACM0 after 20 s — this is probably a debug console, not the Ground Station. Pick the GS port in the dashboard's port selector (the GS KISS link is on PC10/PC11 — usually a USB-serial adapter, e.g. ttyUSB0).
+[12:06:59] INFO: RX <- CMD 0x03 payload_len=8
+[12:06:59] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-43.5dBm
+[12:07:00] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:00] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-45.0dBm
+[12:07:01] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:01] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-45.0dBm
+[12:07:02] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:02] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:03] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:03] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:04] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:04] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:05] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:05] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:06] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:06] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:07] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:07] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:08] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:08] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:09] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:09] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:19] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:19] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:25] INFO: WS CMD: get_eps
+[12:07:25] INFO: TX -> CMD 0x0F payload=none
+[12:07:25] INFO: Collect eps: requested (cmd 0x0F)
+[12:07:25] INFO: RX <- CMD 0x10 payload_len=34
+[12:07:25] INFO: Collect eps: 1/3
+[12:07:25] INFO: RX <- CMD 0x10 payload_len=34
+[12:07:26] INFO: RX <- CMD 0x10 payload_len=34
+[12:07:26] INFO: Collect eps: 2/3
+[12:07:26] INFO: RX <- CMD 0x10 payload_len=34
+[12:07:26] INFO: RX <- CMD 0x10 payload_len=13
+[12:07:26] INFO: Collect eps: 3/3
+[12:07:26] INFO: EPS complete: 6 INA226, 2 TMP102, 4 ADM1177
+[12:07:26] INFO: RX <- CMD 0x10 payload_len=13
+[12:07:28] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:28] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:29] INFO: RX <- CMD 0x03 payload_len=8
+[12:07:29] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:07:29] INFO: WS CMD: list_image
+[12:07:29] INFO: TX -> CMD 0x07 payload=none
+[12:07:29] INFO: Image list pull requested
+[12:07:30] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:30] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:30] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:31] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:32] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:33] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:34] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:35] INFO: WS CMD: get_gps
+[12:07:35] INFO: TX -> CMD 0x05 payload=none
+[12:07:35] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:36] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: TX -> CMD 0x05 payload=none
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:37] INFO: WS CMD: status
+[12:07:37] INFO: TX -> CMD 0x0A payload=none
+[12:07:37] INFO: Collect health: requested (cmd 0x0A)
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:38] INFO: TX -> CMD 0x05 payload=none
+[12:07:38] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: TX -> CMD 0x0A payload=none
+[12:07:39] INFO: Collect health: re-request (retry 1)
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:39] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: TX -> CMD 0x05 payload=none
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: TX -> CMD 0x0A payload=none
+[12:07:40] INFO: Collect health: re-request (retry 2)
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:40] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:41] INFO: TX -> CMD 0x05 payload=none
+[12:07:41] INFO: TX -> CMD 0x0A payload=none
+[12:07:41] INFO: Collect health: re-request (retry 3)
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:42] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: TX -> CMD 0x0A payload=none
+[12:07:43] INFO: Collect health: re-request (retry 4)
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: TX -> CMD 0x05 payload=none
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:43] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: TX -> CMD 0x0A payload=none
+[12:07:44] INFO: Collect health: re-request (retry 5)
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:44] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:45] INFO: TX -> CMD 0x0A payload=none
+[12:07:45] INFO: Collect health: re-request (retry 6)
+[12:07:45] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:46] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: TX -> CMD 0x0A payload=none
+[12:07:47] INFO: Collect health: re-request (retry 7)
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:47] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: TX -> CMD 0x0A payload=none
+[12:07:48] INFO: Collect health: re-request (retry 8)
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:48] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:49] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:49] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:49] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:49] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:49] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:49] INFO: RX <- CMD 0x17 payload_len=14
+[12:07:49] INFO: RX <- CMD 0x17 payload_len=14
+[12:07:49] ERROR: Collect health: gave up after 8 retries
+[12:07:51] INFO: TX -> CMD 0x07 payload=none
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:52] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:53] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:54] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:55] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:56] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:57] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:58] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:07:59] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:00] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:01] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:02] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: IMAGE_LIST complete: 220 files
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:03] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:04] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:05] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:06] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:07] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:08] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:09] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=36
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=14
+[12:08:10] INFO: RX <- CMD 0x17 payload_len=14
+[12:08:12] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:12] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:22] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:22] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:25] INFO: WS CMD: status
+[12:08:25] INFO: TX -> CMD 0x0A payload=none
+[12:08:25] INFO: Collect health: requested (cmd 0x0A)
+[12:08:25] INFO: RX <- CMD 0x11 payload_len=27
+[12:08:25] INFO: Collect health: 1/1
+[12:08:25] INFO: HEALTH complete: 12/12 online
+[12:08:25] INFO: RX <- CMD 0x11 payload_len=27
+[12:08:27] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:27] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:27] INFO: WS CMD: get_gps
+[12:08:27] INFO: TX -> CMD 0x05 payload=none
+[12:08:27] INFO: RX <- CMD 0x0C payload_len=14
+[12:08:27] INFO: GPS: fix=False Lat=0.000000 Lon=0.000000 Alt=0.0m Sats=0
+[12:08:27] INFO: RX <- CMD 0x0C payload_len=14
+[12:08:27] INFO: RX <- CMD 0x0C payload_len=14
+[12:08:29] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:29] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:30] INFO: WS CMD: get_eps
+[12:08:30] INFO: TX -> CMD 0x0F payload=none
+[12:08:30] INFO: Collect eps: requested (cmd 0x0F)
+[12:08:30] INFO: RX <- CMD 0x10 payload_len=34
+[12:08:30] INFO: Collect eps: 1/3
+[12:08:30] INFO: RX <- CMD 0x10 payload_len=34
+[12:08:30] INFO: RX <- CMD 0x10 payload_len=34
+[12:08:30] INFO: Collect eps: 2/3
+[12:08:30] INFO: RX <- CMD 0x10 payload_len=34
+[12:08:30] INFO: RX <- CMD 0x10 payload_len=13
+[12:08:30] INFO: Collect eps: 3/3
+[12:08:30] INFO: EPS complete: 6 INA226, 2 TMP102, 4 ADM1177
+[12:08:31] INFO: RX <- CMD 0x10 payload_len=13
+[12:08:33] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:33] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:34] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:34] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:34] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:34] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:35] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:35] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:36] INFO: WS CMD: toggle_pwr
+[12:08:36] INFO: TX -> CMD 0x06 payload=01
+[12:08:36] INFO: RX <- CMD 0x02 payload_len=2
+[12:08:36] INFO: ACK received: 0100
+[12:08:37] INFO: WS CMD: toggle_pwr
+[12:08:37] INFO: TX -> CMD 0x06 payload=01
+[12:08:37] INFO: RX <- CMD 0x02 payload_len=2
+[12:08:37] INFO: ACK received: 0101
+[12:08:39] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:39] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:40] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:40] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:41] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:41] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:42] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:42] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:43] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:43] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:44] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:44] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:45] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:45] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:46] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:46] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:48] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:48] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:49] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:49] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-45.5dBm
+[12:08:50] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:50] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:51] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:51] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:08:52] INFO: RX <- CMD 0x03 payload_len=8
+[12:08:52] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-45.5dBm
+[12:09:02] INFO: RX <- CMD 0x03 payload_len=8
+[12:09:02] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:09:12] INFO: RX <- CMD 0x03 payload_len=8
+[12:09:12] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:09:21] INFO: RX <- CMD 0x03 payload_len=8
+[12:09:21] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:09:31] INFO: RX <- CMD 0x03 payload_len=8
+[12:09:31] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:09:41] INFO: RX <- CMD 0x03 payload_len=8
+[12:09:41] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
+[12:09:51] INFO: RX <- CMD 0x03 payload_len=8
+[12:09:51] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.5dBm
+[12:10:01] INFO: RX <- CMD 0x03 payload_len=8
+[12:10:01] INFO: BEACON: Bat=78% Temp=28C V=4 Errors=0x10 RSSI=-46.0dBm
